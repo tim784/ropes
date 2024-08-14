@@ -57,9 +57,9 @@ Ensure your browser has the requirements below. Then,
 
 1. Install Ropes by visiting the following URL
 
-   <https://github.com/tim784/ropes/releases/latest>
+   <https://ropes.win/>
 
-   and finding the `index.user.js` file. Click on it and your userscript manager
+   and clicking the install link. Click on it and your userscript manager
    should prompt you to install it. (If that doesn't work, you can copy the
    contents of the file and paste it into a new userscript in your manager.)
 
