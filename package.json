@@ -24,7 +24,7 @@
     "gen-stock-photos": "tsx --tsconfig ./tsconfig.node.json ./scripts/generateStockPhotos.ts",
     "cleanse-test-pages": "tsx --tsconfig ./tsconfig.node.json ./scripts/cleanseTestPages.ts",
     "dev-www": "vite --open --config www/vite.config.ts",
-    "build-www": "npm run build && vite build --config www/vite.config.ts && cp dist/index.user.js www/dist/index.user.js"
+    "build-www": "npm run build && vite build --config www/vite.config.ts && cp dist/index.user.js www/dist/index.user.js && head -n 11 www/dist/index.user.js"
   },
   "devDependencies": {
     "@prettier/plugin-xml": "^3.4.1",
