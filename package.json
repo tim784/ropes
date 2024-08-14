@@ -1,7 +1,7 @@
 {
   "name": "ropes",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Ropes is a userscript for the Empornium search page",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   },
   "homepage": "https://github.com/tim784/ropes",
   "custom": {
-    "forumHref": "/forums.php?action=viewthread&threadid=123456"
+    "forumHref": "/forum/thread/143907"
   },
   "type": "module",
   "scripts": {
