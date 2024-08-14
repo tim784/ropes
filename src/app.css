@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-1: #cc9029;
+    --brand-2: #1f5a99;
+  }
+
+  :root {
+    --background: #f8f9fc;
+    --foreground: theme('colors.slate.950');
+
+    --muted: theme('colors.slate.100');
+    --muted-foreground: theme('colors.slate.500');
+
+    --popover: theme('colors.slate.200');
+    --popover-foreground: theme('colors.slate.950');
+
+    --card: #f6f6f7;
+    --card-foreground: theme('colors.slate.950');
+
+    --border: theme('colors.slate.300');
+    --input: theme('colors.slate.300');
+
+    --primary: var(--brand-2);
+    --primary-foreground: theme('colors.slate.50');
+
+    --secondary: theme('colors.slate.200');
+    --secondary-foreground: theme('colors.slate.900');
+
+    --accent: theme('colors.slate.300');
+    --accent-foreground: theme('colors.slate.900');
+
+    --destructive: theme('colors.red.700');
+    --destructive-foreground: theme('colors.slate.50');
+
+    --ring: theme('colors.slate.950');
+
+    --radius: 0.5rem;
+
+    --background-darker: #f1f3f9;
+
+    --success: theme('colors.green.700');
+
+    --warning: theme('colors.amber.600');
+
+    --error: var(--destructive);
+  }
+
+  .dark {
+    --background: #111827;
+    --foreground: theme('colors.slate.50');
+
+    --muted: theme('colors.slate.700');
+    --muted-foreground: theme('colors.slate.400');
+
+    --popover: theme('colors.slate.800');
+    --popover-foreground: theme('colors.slate.50');
+
+    --card: #161f32;
+    --card-foreground: theme('colors.slate.50');
+
+    --border: theme('colors.slate.700');
+    --input: theme('colors.slate.700');
+
+    --primary: var(--brand-1);
+    --primary-foreground: theme('colors.slate.900');
+
+    --secondary: theme('colors.slate.700');
+    --secondary-foreground: theme('colors.slate.50');
+
+    --accent: theme('colors.slate.700');
+    --accent-foreground: theme('colors.slate.50');
+
+    --destructive: theme('colors.red.900');
+    --destructive-foreground: theme('colors.slate.50');
+
+    --ring: theme('colors.slate.50');
+
+    --background-darker: #0d121b;
+  }
+}
+
+@layer base {
+  * {
+    /* this applies the border color to everything, but doesn't actually show a
+    border until a border-width is set */
+    @apply border-border;
+  }
+
+  ::selection {
+    @apply bg-primary text-primary-foreground;
+  }
+}
+
+@layer base {
+  :root {
+    --header-height: 4rem;
+    --search-form-width: 24rem;
+  }
+}
+
+@layer base {
+  /* See LoadingSpinner.svelte */
+  .loading-spinner-rotate {
+    animation: rotate 0.86s infinite;
+    animation-timing-function: cubic-bezier(0.4, 0.15, 0.6, 0.85);
+    transform-origin: center;
+  }
+
+  @keyframes rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  .loading-spinner-load-in {
+    animation: load-in-spin 1s ease-in-out;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    transform-origin: center;
+  }
+
+  @keyframes load-in-spin {
+    from {
+      transform: rotate(50deg);
+      opacity: 0;
+      stroke-dashoffset: 60px;
+    }
+    to {
+      transform: rotate(230deg);
+      opacity: 1;
+      stroke-dashoffset: 50px;
+    }
+  }
+}
