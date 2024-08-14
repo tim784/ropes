@@ -7,7 +7,7 @@ Ropes is a userscript for the Empornium **search page**.
   sticky header and search form. Full-size images, in most cases, can be viewed
   by clicking on the expand button. Tags are available in a tooltip to take up
   less space. Torrent "state" (seeding/leeching/snatched, bookmarked, freeleech,
-  warned, etc.) are shown in in "pills" on the card.
+  warned, etc.) are shown in "pills" on the card.
 
 - Rich Tag Mode: In Ropes, search focuses on tags. Local tag caching makes
   autocompletion super fast (but we still ensure tags are valid with a debounced
@@ -89,7 +89,7 @@ When Ropes is installed and running, **it will likely break or be
 broken by other userscripts** that modify the Empornium search page. If you run
 into issues, try disabling other userscripts.
 
-Please also understand that Rope is a new project and may have bugs. If you see
+Please also understand that Ropes is a new project and may have bugs. If you see
 something that doesn't work as expected, please open an issue on the [GitHub
 repository](https://github.com/tim784/ropes). Try to include as much detail as
 you can, including:
