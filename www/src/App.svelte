@@ -1,5 +1,6 @@
 <script lang="ts">
   import ropesLogo from '/ropes.svg';
+  import packageJson from '../../package.json';
 </script>
 
 <main>
@@ -10,6 +11,10 @@
 
   <p>
     Get the latest version <a href="/index.user.js">here</a>.
+  </p>
+
+  <p>
+    <a href={packageJson.homepage}>Github</a>
   </p>
 </main>
 
