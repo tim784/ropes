@@ -52,7 +52,7 @@ jobs:
         run: npm run build-www
 
       - name: Copy userscript
-        run: cp ${{ steps.build.outputs.userscriptPath }} dist/www/
+        run: cp ${{ steps.build.outputs.userscriptPath }} dist/www/index.user.js
 
       # for faster feedback troubleshooting, website is available on action page
       - name: Upload Artifact
