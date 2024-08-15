@@ -174,11 +174,32 @@ npm run test
 
 Look for files named `*.test.ts` in the `src` directory.
 
-### Versioning
+### Versioning & Release
 
 Ropes uses [Semantic Versioning](https://semver.org/) because node/npm require
 it. But, because this is a userscript with no imaginable "public API", we only
 increment the **major** version.
+
+To make a cut a new release:
+
+1. Bump the version in `package.json`.
+
+   ```sh
+    npm version major
+    ```
+
+2. Make a new tag and push it.
+
+    ```sh
+    git tag -a v1.0.0 -m "Release 1.0.0"
+    git push origin v1.0.0
+    ```
+
+3. Run the "Release" GitHub Action, using this new tag as an input
+
+    ```sh
+    gh workflow run Release -f tag=v1.0.0
+    ```
 
 ### Scripts
 
