@@ -1,7 +1,7 @@
 {
   "name": "ropes",
   "private": true,
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Ropes is a userscript for the Empornium search page",
   "repository": {
     "type": "git",
