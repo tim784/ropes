@@ -16,6 +16,9 @@ jobs:
     # want.
     if: ${{ github.event.inputs.tag != '' }}
 
+    permissions:
+      contents: write
+
     runs-on: ubuntu-latest
 
     steps:
