@@ -19,3 +19,7 @@
 - nav sheet is janked. fix up.
 
 - scroll to top button
+
+- release github action
+
+- host on S3 behind CF. the CF pages product is underwhelming.

@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  build:
+
+    # explicit check for tag non-empty. if we pass an empty to
+    # actions/checkout, it will checkout the default branch, which we don't
+    # want.
+    if: ${{ github.event.inputs.tag != '' }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Install
+        uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Test
+        run: npm test
+
+      - name: Build Userscript
+        id: build
+        run: npm run build && echo "userscriptPath=$(pwd)/dist/index.user.js" >> "$GITHUB_OUTPUT"
+
+      - name: Cut Release
+        run: gh release create ${{ github.event.inputs.tag }} ${{ steps.build.outputs.userscriptPath }} --generate-notes --verify-tag
+
+      - name: Build website
+        run: npm run build-www
+
+      - name: Copy userscript
+        run: cp ${{ steps.build.outputs.userscriptPath }} dist/www/
+
+      # for faster feedback troubleshooting, website is available on action page
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-www
+          path: dist/www
+
+      - name: Upload to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: dist/www
