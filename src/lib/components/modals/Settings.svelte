@@ -129,7 +129,8 @@
         <h3 class="">About</h3>
         <ul>
           <li>Version: <span class="font-mono">{version}</span></li>
-          <li>GitHub: <Link href={packageJson.homepage}>{packageJson.homepage}</Link></li>
+          <li>Homepage: <Link href={packageJson.homepage}>{packageJson.homepage}</Link></li>
+          <li>GitHub: <Link href={packageJson.repository.url}>{packageJson.repository.url}</Link></li>
           <li>
             Forum Post: <Link href={packageJson.custom.forumHref}
               >{packageJson.custom.forumHref}</Link
