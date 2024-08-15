@@ -9,6 +9,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: './www/index.html'
+      },
+      output: {
+        entryFileNames: 'assets/[name].js', // No hash in entry file names
+        chunkFileNames: 'assets/[name].js', // No hash in chunk file names
+        assetFileNames: 'assets/[name].[ext]' // No hash in asset file names
       }
     }
   }
