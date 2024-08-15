@@ -186,13 +186,13 @@ To make a cut a new release:
 
    ```sh
     npm version major
+    # this will also create a new git tag
     ```
 
 2. Make a new tag and push it.
 
     ```sh
-    git tag -a v1.0.0 -m "Release 1.0.0"
-    git push origin v1.0.0
+    git push origin --tags
     ```
 
 3. Run the "Release" GitHub Action, using this new tag as an input
