@@ -42,6 +42,8 @@ jobs:
 
       - name: Cut Release
         run: gh release create ${{ github.event.inputs.tag }} ${{ steps.build.outputs.userscriptPath }} --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Build website
         run: npm run build-www
