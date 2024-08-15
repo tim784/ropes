@@ -1,4 +1,4 @@
-import { parseTaglist, TaglistTag } from '$lib/tag';
+import { TaglistTag } from '$lib/tag';
 import { expect, test } from 'vitest';
 
 test.each([
@@ -33,7 +33,7 @@ test.each([
   ['dupe dupe', ['dupe']]
 ] as [string, string[]][])('legal parseTaglist(%s)', (taglist, expectedStrs) => {
   let expected = expectedStrs.map(TaglistTag.fromString);
-  const parsed = parseTaglist(taglist);
+  const parsed = TaglistTag.validateSyntax(taglist);
   expect(parsed).toEqual(expected);
 });
 
@@ -43,7 +43,7 @@ test.each([
   ['tAgGiNg', ['tagging']],
 ] as [string, string[]][])('normalization parseTaglist(%s)', (taglist, expectedStrs) => {
   let expected = expectedStrs.map(TaglistTag.fromString);
-  const parsed = parseTaglist(taglist);
+  const parsed = TaglistTag.validateSyntax(taglist);
   expect(parsed).toEqual(expected);
 });
 
@@ -87,5 +87,5 @@ test.each([
   ['foo -', 'Negation operator should not be at end'],
   ['foo -foo', 'duplicated with different negation']
 ] as [string, string][])('illegal parseTaglist(%s)', (taglist, errorSubstring) => {
-  expect(() => parseTaglist(taglist)).toThrow(errorSubstring);
+  expect(() => TaglistTag.validateSyntax(taglist)).toThrow(errorSubstring);
 });
