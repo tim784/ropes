@@ -50,27 +50,3 @@ jobs:
         run: gh release create ${{ github.event.inputs.tag }} ${{ steps.build.outputs.userscriptPath }} --generate-notes --verify-tag
         env:
           GH_TOKEN: ${{ github.token }}
-
-      - name: Build website
-        run: npm run build-www
-
-      - name: Copy userscript
-        run: cp ${{ steps.build.outputs.userscriptPath }} www/dist
-
-      # for faster feedback troubleshooting, website is available on action page
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: www-dist
-          path: www/dist
-
-      - name: Upload to S3
-        uses: jakejarvis/s3-sync-action@v0.5.1
-        with:
-          args: --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: www/dist

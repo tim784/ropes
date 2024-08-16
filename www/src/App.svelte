@@ -14,7 +14,7 @@
   </p>
 
   <p>
-    <a href={packageJson.homepage}>Github</a>
+    <a href={packageJson.repository.url}>Github</a>
   </p>
 </main>
 

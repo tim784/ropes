@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  # run manually
+  workflow_dispatch:
+
+  # or run when release workflow is completed
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get latest userscript
+        id: getUserscript
+        run : |
+          LATEST_URL=$(gh release view --json assets --jq '.assets[0].url')
+          echo "userscriptUrl=${LATEST_URL}" >> "$GITHUB_OUTPUT"
+          echo "::notice title=userscriptUrl::${LATEST_URL}"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Install
+        uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build website
+        run: npm run build-www
+
+      - name: Download latest release userscript
+        run: curl ${{ steps.getUserscript.outputs.userscriptUrl }} -O --output-dir www/dist/
+
+      # for faster feedback troubleshooting, website is available on action page
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: www-dist
+          path: www/dist
+
+      - name: Upload to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: www/dist
