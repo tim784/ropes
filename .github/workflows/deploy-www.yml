@@ -48,7 +48,7 @@ jobs:
         run: npm run build-www
 
       - name: Download latest release userscript
-        run: curl ${{ steps.getUserscript.outputs.userscriptUrl }} -O --output-dir www/dist/
+        run: curl --location --remote-name --output-dir www/dist/ ${{ steps.getUserscript.outputs.userscriptUrl }}
 
       # for faster feedback troubleshooting, website is available on action page
       - name: Upload Artifact
