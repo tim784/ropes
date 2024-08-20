@@ -2,10 +2,8 @@
 
 - put images (gifs?) in the README
 
-- fine tune light-mode. it's taken the back seat during development.
+- fine tune light-mode. it's taken the back seat during development. In face, we
+  should probably just settle on a theme from
+  <https://www.shadcn-svelte.com/themes>
 
-- small screen size responsiveness...everywhere
-
-- nav sheet is janked. fix up.
-
-- scroll to top button
+- small screen nav menu shelf could use a styling pass. button spacing, etc.
