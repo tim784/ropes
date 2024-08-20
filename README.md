@@ -135,27 +135,27 @@ Full testing should be done with the next method.
 
 1. Run
 
-    `npm run watch`
+   `npm run watch`
 
-    to rebuild the userscript whenever there's a local file
-    change. The userscript is outputted to `dist/index.user.js`.
+   to rebuild the userscript whenever there's a local file
+   change. The userscript is outputted to `dist/index.user.js`.
 
 2. In another shell, run
 
-    `npm run serve-dist`
+   `npm run serve-dist`
 
-    to start a local server that serves the userscript. The server is
-    accessible at `http://<local-server>/index.user.js`.
+   to start a local server that serves the userscript. The server is
+   accessible at `http://127.0.0.1:3000/index.user.js`.
 
 3. (Possibly only with ViolentMonkey) Navigate in your browser to
-    `http://<local-server>/index.user.js`. The userscript manager should
-    recognize this URL path and display an installation page. On this page:
+   `http://127.0.0.1:3000/index.user.js`. The userscript manager should
+   recognize this URL path and display an installation page. On this page:
 
-    1. "Install" it, and
-    2. "Track" it. This will have the userscript manager poll the local server
+   1. "Install" it, and
+   2. "Track" it. This will have the userscript manager poll the local server
       for updates to the userscript.
 
-    **Keep this tab open while you develop** to continue tracking.
+   **Keep this tab open while you develop** to continue tracking.
 
 In this mode, **changes are only realized after a complete page reload** (F5
 or press the reload button), but everything is then real data.
@@ -187,19 +187,19 @@ To make a cut a new release:
    ```sh
     npm version major
     # this will also create a new git tag
-    ```
+   ```
 
 2. Make a new tag and push it.
 
-    ```sh
-    git push origin --tags
-    ```
+   ```sh
+   git push origin --tags
+   ```
 
 3. Run the `Release` workflow, using this new tag as an input
 
-    ```sh
-    gh workflow run Release -f tag=v1.0.0
-    ```
+   ```sh
+   gh workflow run Release -f tag=v1.0.0
+   ```
 
 When the `Release` workflow completes, the `Deploy Website` workflow will
 trigger automatically, which will put the latest release on <https://ropes.win>
@@ -228,4 +228,12 @@ committing a new test page.
 
 ```sh
 npm run cleanse-test-pages
+```
+
+#### Serve `dist` Directory
+
+This script serves the `dist` directory at `http://localhost:3000`. This powers the workflow mentioned above under "[Test with the Empornium Server](#test-with-the-empornium-server)".
+
+```sh
+npm run serve-dist
 ```
