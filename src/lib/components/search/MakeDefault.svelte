@@ -5,6 +5,7 @@
   import { SET_DEFAULT_NAME } from '$gather/search';
 
   const makeDefaultId = makeAppIdentifier('make-default');
+  const makeDefaultLabelId = makeAppIdentifier('make-default-label');
 
   let checked: boolean = false;
 
@@ -19,7 +20,15 @@
 </script>
 
 <div class="grid grid-flow-col items-baseline justify-between gap-2">
-  <label class="mb-2 block text-xl font-bold" for={makeDefaultId}>Make Default</label>
+  <label class="mb-2 block text-xl font-bold" for={makeDefaultId} id={makeDefaultLabelId}
+    >Make Default</label
+  >
 
-  <Switch id={makeDefaultId} class="justify-self-end" bind:checked {onCheckedChange} />
+  <Switch
+    id={makeDefaultId}
+    class="justify-self-end"
+    bind:checked
+    {onCheckedChange}
+    aria-labelledby={makeDefaultLabelId}
+  />
 </div>

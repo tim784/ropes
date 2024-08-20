@@ -16,6 +16,13 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [5.0.0](https://github.com/tim784/ropes/commits/v4.0.0) - 2024-08-20
+
+### Added
+
+- Inserted screen-reader-only description text for many elements
+- Started keeping a changelog (all previous versions are retroactively added)
+
 ## [4.0.0](https://github.com/tim784/ropes/commits/v4.0.0) - 2024-08-15
 
 (No user-facing changes. This release tested the release process.)

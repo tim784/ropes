@@ -56,6 +56,7 @@
         <Sheet.Trigger asChild let:builder>
           <Button builders={[builder]} variant="ghost" size="icon">
             <Hamburger />
+            <span class="sr-only">Expand Navigation Menu</span>
           </Button>
         </Sheet.Trigger>
         <Sheet.Content>

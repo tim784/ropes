@@ -17,7 +17,7 @@
 <!-- because this form uses a get, it doesn't really need to be a form. in face,
 i kinda like the search button showing the url it'd navigate to in non-SPA mode
 -->
-<form class="space-y-4 p-1 transition-colors w-full">
+<form class="w-full space-y-4 p-1 transition-colors">
   <TagsSection />
 
   <SortCriteria />
@@ -43,7 +43,8 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild let:builder>
         <Button builders={[builder]} type="button" size="lg" class="rounded-none rounded-e px-2">
-          <EllipsisVertical class="size-6" /></Button
+          <EllipsisVertical class="size-6" /><span class="sr-only">Other Search Actions</span
+          ></Button
         >
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
@@ -58,7 +59,9 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
               }}><UserSearch class="me-2" />Go to Default Search</DropdownMenu.Item
             >
           {:else}
-            <DropdownMenu.Item href="/torrents.php"><UserSearch class="me-2" />Go to Default Search</DropdownMenu.Item>
+            <DropdownMenu.Item href="/torrents.php"
+              ><UserSearch class="me-2" />Go to Default Search</DropdownMenu.Item
+            >
           {/if}
           <DropdownMenu.Item on:click={localFormData.clearTags}
             ><Eraser class="me-2" />Clear Tags</DropdownMenu.Item

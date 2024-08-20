@@ -11,7 +11,7 @@
 <BaseToast {dismissFn} variant="error">
   <div class="grid grid-cols-[auto_1fr] place-items-center gap-2">
     <div>
-      <CircleAlert />
+      <CircleAlert /><span class="sr-only">Error</span>
     </div>
     <div class="space-y-4 text-sm">
       <p>

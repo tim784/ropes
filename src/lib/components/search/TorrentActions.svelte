@@ -36,7 +36,7 @@
   {#if torrent.downloadHref !== null}
     <Button
       href={torrent.downloadHref}
-      class="flex-1 rounded-e-none rounded-s border-e-2 text-lg font-bold border-card"
+      class="flex-1 rounded-e-none rounded-s border-e-2 border-card text-lg font-bold"
     >
       <Download class="me-2 size-6" />Download
     </Button>
@@ -46,7 +46,7 @@
 
   <DropdownMenu.Root>
     <DropdownMenu.Trigger asChild let:builder>
-      <Button builders={[builder]} class="rounded-none rounded-e px-2">
+      <Button builders={[builder]} class="rounded-none rounded-e px-2" aria-label="Torrent Actions">
         <EllipsisVertical class="size-6" /></Button
       >
     </DropdownMenu.Trigger>

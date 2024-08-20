@@ -9,7 +9,7 @@
 <BaseToast {dismissFn}>
   <div class="grid grid-cols-[auto_1fr] place-items-center gap-2">
     <div>
-      <BellRing />
+      <BellRing /><span class="sr-only">Notification</span>
     </div>
     <div class="space-y-4 text-sm">
       <p>{text}</p>

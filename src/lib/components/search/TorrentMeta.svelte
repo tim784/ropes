@@ -68,14 +68,17 @@
       <span title="{seeders} Seeders">
         <ArrowUp class="me-0.5 inline size-5" />
         <span class="underline decoration-dotted">{seeders}</span>
+        <span class="sr-only">Seeders</span>
       </span>
       <span title="{leechers} Leechers">
         <ArrowDown class="me-0.5 inline size-5" />
         <span class="underline decoration-dotted">{leechers}</span>
+        <span class="sr-only">Leechers</span>
       </span>
       <span title="{snatches} Snatches">
         <FileCheck class="me-0.5 inline size-5" />
         <span class="underline decoration-dotted">{snatches}</span>
+        <span class="sr-only">Snatches</span>
       </span>
     </div>
 

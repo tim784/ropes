@@ -46,7 +46,7 @@
       intervalId = null;
     }
   }
-  
+
   onMount(() => {
     startInterval();
     return () => {
@@ -63,18 +63,13 @@
   while focusin/out do. -->
   <div
     class="grid grid-cols-[auto_minmax(10ch,_50ch)_auto] gap-2"
-    on:pointerenter={() => pointerEntered = true}
-    on:focusin={() => focused = true}
-    on:pointerleave={() => pointerEntered = false}
-    on:focusout={() => focused = false}
+    on:pointerenter={() => (pointerEntered = true)}
+    on:focusin={() => (focused = true)}
+    on:pointerleave={() => (pointerEntered = false)}
+    on:focusout={() => (focused = false)}
   >
-    <Button
-      variant="ghost"
-      size="round-icon-sm"
-      on:click={decrementIndex}
-      aria-label="previous thread"
-    >
-      <ArrowLeft />
+    <Button variant="ghost" size="round-icon-sm" on:click={decrementIndex}>
+      <ArrowLeft /><span class="sr-only">Previous Thread</span>
     </Button>
 
     <!-- little hack here: this is relative because we will have two elements
@@ -83,16 +78,16 @@
       same spot. -->
     <div class="relative">
       {#key posts[shownPostIndex].href}
-        <div transition:fade class="absolute w-full text-center truncate">
-            <Link href={posts[shownPostIndex].href}>
-              {$settings.sfwMode ? getSfwPostTitle() : posts[shownPostIndex].title}
-            </Link>
+        <div transition:fade class="absolute w-full truncate text-center">
+          <Link href={posts[shownPostIndex].href}>
+            {$settings.sfwMode ? getSfwPostTitle() : posts[shownPostIndex].title}
+          </Link>
         </div>
       {/key}
     </div>
 
-    <Button variant="ghost" size="round-icon-sm" on:click={incrementIndex} aria-label="next thread">
-      <ArrowRight />
+    <Button variant="ghost" size="round-icon-sm" on:click={incrementIndex}>
+      <ArrowRight /><span class="sr-only">Next Thread</span>
     </Button>
   </div>
 {:else}

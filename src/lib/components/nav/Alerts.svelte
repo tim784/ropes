@@ -13,11 +13,15 @@
   <DropdownMenu.Trigger asChild let:builder>
     <Button builders={[builder]} variant="ghost" size="icon" class="relative">
       <Rss />
+      <span class="sr-only">Notifications</span>
       {#if hasAlerts}
         <span
-          class="animate-slow-ping absolute right-1 top-1 inline-flex h-2 w-2 rounded-full bg-primary opacity-75"
+          class="absolute right-1 top-1 inline-flex h-2 w-2 animate-slow-ping rounded-full bg-primary opacity-75"
         ></span>
-        <span class="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full bg-primary"></span>
+        <span class="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full bg-primary"
+        ></span><span class="sr-only">Notifications Present</span>
+      {:else}
+        <span class="sr-only">No Notifications</span>
       {/if}
     </Button>
   </DropdownMenu.Trigger>

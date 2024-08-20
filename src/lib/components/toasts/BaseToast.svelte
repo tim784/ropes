@@ -130,7 +130,7 @@
 
   <div class="grid grid-cols-[1fr_auto] place-items-center gap-3 px-4 pb-4 pt-4">
     <slot />
-    <Button variant="ghost" size="round-icon-sm" on:click={dismissFn}><X /></Button>
+    <Button variant="ghost" size="round-icon-sm" on:click={dismissFn}><X /><span class="sr-only">Close</span></Button>
   </div>
 </div>
 

@@ -4,10 +4,6 @@
 
 - fine tune light-mode. it's taken the back seat during development.
 
-- fix all accessibility issues from firefox devtools
-
-- fix all bad CSS in dev tools console with CSS messages on
-
 - revisit rich tag. we should be using the props on the elements, not doing
   query selections, etc.
 

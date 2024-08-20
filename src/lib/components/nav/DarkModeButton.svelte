@@ -13,8 +13,8 @@
   }}
 >
   {#if $settings.darkMode}
-    <Sun />
+    <Sun /><span class="sr-only">Turn on Light Color Scheme</span>
   {:else}
-    <Moon />
+    <Moon /><span class="sr-only">Turn on Dark Color Scheme</span>
   {/if}
 </Button>

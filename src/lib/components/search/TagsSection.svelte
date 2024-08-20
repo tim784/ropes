@@ -9,11 +9,11 @@
   import { localFormData } from '$src/lib/stores/localFormData';
   import { Switch } from '$lib/components/ui/switch';
   import { TAGLIST_NAME } from '$src/lib/gather/search';
-  import ConfirmButton from '../ui/ConfirmButton.svelte';
   import { makeAppIdentifier } from '$lib/constants';
 
   const tagsElementId = makeAppIdentifier('tags-entry');
   const richTagsSwitchId = makeAppIdentifier('rich-tag-toggle');
+  const richTagsSwitchLabelId = makeAppIdentifier('rich-tag-toggle-label');
 
   let tagsInvalidReason: null | string = null;
   let useRichTagMode = $settings.preferRichTagMode;
@@ -57,14 +57,20 @@
 <input type="hidden" name={TAGLIST_NAME} value={taglist} />
 
 <div class="grid grid-cols-[auto_auto_1fr] items-center gap-2">
-  <label for={richTagsSwitchId}>Use Rich Tag Mode</label>
+  <label for={richTagsSwitchId} id={richTagsSwitchLabelId}>Use Rich Tag Mode</label>
 
   <div>
     {#if tagsInvalidReason}
       <Popover.Root>
         <Popover.Trigger asChild let:builder>
-          <Button builders={[builder]} type="button" variant="ghost" size="icon">
+          <Button
+            builders={[builder]}
+            type="button"
+            variant="ghost"
+            size="icon"
+          >
             <Info class="size-5 text-warning" />
+            <span class="sr-only">Show Rich Tag Mode Errors</span>
           </Button>
         </Popover.Trigger>
         <Popover.Content>
@@ -82,6 +88,7 @@
 
   <Switch
     id={richTagsSwitchId}
+    aria-labelledby={richTagsSwitchLabelId}
     class="justify-self-end"
     disabled={!canUseRichTagMode}
     bind:checked={useRichTagMode}

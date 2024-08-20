@@ -17,7 +17,7 @@
 
 <ul
   class={cn(
-    'inline-flex flex-wrap gap-4 justify-center *:flex *:gap-1 *:underline *:decoration-dotted',
+    'inline-flex flex-wrap justify-center gap-4 *:flex *:gap-1 *:underline *:decoration-dotted',
     className
   )}
 >
@@ -25,14 +25,38 @@
   not even sure how you get them, and people shouldn't be reminded to ask about
   them (e.g. via forum, etc) -->
   {#if $locals.inviteCount > 0}
-    <li title="Invites Available"><UserPlus /> {$locals.inviteCount}</li>
+    <li title="Invites Available">
+      <UserPlus />{$locals.inviteCount}<span class="sr-only">Invites Available</span>
+    </li>
   {/if}
 
-  <li title="Torrents Seeding"><FileUp />{formatNumber($locals.torrentsSeedingCount)}</li>
-  <li title="Torrents Leeching"><FileDown /> {formatNumber($locals.torrentsLeechingCount)}</li>
-  <li title="Upload Amount"><CloudUpload /> {$locals.uploadedBytes}</li>
-  <li title="Download Amount"><CloudDownload /> {$locals.downloadedBytes}</li>
-  <li title="Ratio"><Ratio /> {$locals.ratio}</li>
-  <li title="Credit Balance"><Coins /> {formatNumber($locals.creditCount)}</li>
-  <li title="Slots Available"><Box /> {formatNumber($locals.slotCount)}</li>
+  <li title="Torrents Seeding">
+    <FileUp />{formatNumber($locals.torrentsSeedingCount)}<span class="sr-only"
+      >Torrents Seeding</span
+    >
+  </li>
+  <li title="Torrents Leeching">
+    <FileDown />
+    {formatNumber($locals.torrentsLeechingCount)}<span class="sr-only">Torrents Leeching</span>
+  </li>
+  <li title="Upload Amount">
+    <CloudUpload />
+    {$locals.uploadedBytes}<span class="sr-only">Upload Amount</span>
+  </li>
+  <li title="Download Amount">
+    <CloudDownload />
+    {$locals.downloadedBytes}<span class="sr-only">Download Amount</span>
+  </li>
+  <li title="Ratio">
+    <Ratio />
+    {$locals.ratio}<span class="sr-only">Ratio</span>
+  </li>
+  <li title="Credit Balance">
+    <Coins />
+    {formatNumber($locals.creditCount)}<span class="sr-only">Credit Balance</span>
+  </li>
+  <li title="Slots Available">
+    <Box />
+    {formatNumber($locals.slotCount)}<span class="sr-only">Slots Available</span>
+  </li>
 </ul>

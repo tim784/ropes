@@ -81,7 +81,7 @@
       class="absolute right-4 top-4 z-10 bg-accent/50 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
       on:click={handleImageExpandClick}
     >
-      <Maximize2 class="size-6" />
+      <Maximize2 class="size-6" /><span class="sr-only">Expand Image</span>
     </Button>
   </div>
 

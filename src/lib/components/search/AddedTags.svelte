@@ -49,7 +49,7 @@
             localFormData.negateTag(tag);
             e.preventDefault();
           }}
-          aria-label="negate tag"
+          aria-label="Negate Tag"
         >
           {#if tag.isNegated}
             <span class="text-red-500">not</span>
@@ -72,7 +72,7 @@
       <Button
         variant="ghost"
         size="round-icon-sm"
-        aria-label="delete tag"
+        aria-label="Delete Tag"
         on:click={(e) => {
           localFormData.deleteTag(tag);
           e.preventDefault();

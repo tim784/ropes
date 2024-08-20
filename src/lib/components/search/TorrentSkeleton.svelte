@@ -19,6 +19,7 @@
     <Image
       class="absolute left-1/2 top-1/2 size-20 -translate-x-1/2 -translate-y-1/2 text-muted-foreground"
     />
+    <span class="sr-only">Image Placeholder</span>
   </Skeleton>
 
   <div class="flex w-full flex-col gap-4 p-4">

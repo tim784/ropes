@@ -34,7 +34,9 @@
   <div class="sticky top-0 z-10 border-b bg-background-darker px-8 py-4">
     <div class="flex items-baseline justify-between">
       <h2 class="m-0">{appTitle} Settings</h2>
-      <Button variant="ghost" size="icon" type="button" on:click={closeFn}><X /></Button>
+      <Button variant="ghost" size="icon" type="button" on:click={closeFn}
+        ><X /><span class="sr-only">Close</span></Button
+      >
     </div>
   </div>
 
@@ -130,7 +132,9 @@
         <ul>
           <li>Version: <span class="font-mono">{version}</span></li>
           <li>Homepage: <Link href={packageJson.homepage}>{packageJson.homepage}</Link></li>
-          <li>GitHub: <Link href={packageJson.repository.url}>{packageJson.repository.url}</Link></li>
+          <li>
+            GitHub: <Link href={packageJson.repository.url}>{packageJson.repository.url}</Link>
+          </li>
           <li>
             Forum Post: <Link href={packageJson.custom.forumHref}
               >{packageJson.custom.forumHref}</Link
