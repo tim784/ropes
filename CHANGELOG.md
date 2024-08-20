@@ -20,6 +20,7 @@ The types of changes are:
 
 ### Added
 
+- Scroll to Top button appears after scrolling down some distance
 - Many elements now have descriptions accessible to screen readers
 - Started keeping a changelog (all previous versions are retroactively added)
 

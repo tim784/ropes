@@ -8,6 +8,7 @@
   import ToastContainer from './ToastContainer.svelte';
   import { makeAppIdentifier } from '../constants';
   import { setContext } from 'svelte';
+  import ScrollToTop from './ScrollToTop.svelte';
 
   const portalId = makeAppIdentifier('portal');
   setContext<string>('portalId', `#${portalId}`);
@@ -31,4 +32,5 @@
 
   <ToastContainer />
   <div id={portalId} />
+  <ScrollToTop />
 </div>
