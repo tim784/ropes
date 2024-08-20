@@ -20,7 +20,7 @@ The types of changes are:
 
 ### Added
 
-- Many elements are now accessible to screen readers with descriptions
+- Many elements now have descriptions accessible to screen readers
 - Started keeping a changelog (all previous versions are retroactively added)
 
 ### Fixed
@@ -30,7 +30,9 @@ The types of changes are:
 
 ### Changed
 
-- Reworked some internal code around Rich Tag Input to better utilize the
+- Modals now have an autofocused close button, have fade in/out animations, and
+  use a different backend component that makes things much simpler to maintain.
+- Refactored some internal code around Rich Tag Input to better utilize the
   underlying component. Should be slightly more performant now.
 
 ## [4.0.0](https://github.com/tim784/ropes/commits/v4.0.0) - 2024-08-15

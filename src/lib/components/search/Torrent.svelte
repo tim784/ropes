@@ -4,7 +4,6 @@
   import Button from '$components/ui/Button.svelte';
   import type { Me } from '$gather/me';
   import TorrentActions from './TorrentActions.svelte';
-  import { currentModal } from '$stores/modal';
   import { getContext, onMount } from 'svelte';
   import { bookmark, type Action as BookmarkAction } from '$api/bookmark';
   import { toasts } from '$stores/toasts';
@@ -16,6 +15,10 @@
   import BookmarkToast from '$components/toasts/BookmarkToast.svelte';
   import SlotUsedToast from '$components/toasts/SlotUsedToast.svelte';
   import { fade } from 'svelte/transition';
+  import * as Dialog from '$lib/components/ui/dialog';
+
+  const portalId = getContext<string>('portalId');
+  const observer = getContext<IntersectionObserver>('intersectionObserver');
 
   export let torrent: Torrent;
   export let me: Me;
@@ -49,12 +52,6 @@
     isPersonalDoubleseed = true;
   }
 
-  function handleImageExpandClick() {
-    currentModal.set(TorrentImageExpand, { torrent });
-  }
-
-  const observer = getContext<IntersectionObserver>('intersectionObserver');
-
   onMount(() => {
     observer.observe(el);
     return () => {
@@ -71,18 +68,23 @@
 >
   <div class="relative w-full">
     <img
-      class="opactiy-0 animate-fade-in max-h-64 w-full object-contain object-top"
+      class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
       src={torrent.imageHref}
       alt={torrent.name}
     />
-    <Button
-      size="icon"
-      variant="ghost"
-      class="absolute right-4 top-4 z-10 bg-accent/50 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
-      on:click={handleImageExpandClick}
-    >
-      <Maximize2 class="size-6" /><span class="sr-only">Expand Image</span>
-    </Button>
+    <Dialog.Root portal={portalId}>
+      <Dialog.Trigger asChild let:builder>
+        <Button
+          builders={[builder]}
+          size="icon"
+          variant="ghost"
+          class="absolute right-4 top-4 z-10 bg-accent/50 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
+        >
+          <Maximize2 class="size-6" /><span class="sr-only">Expand Image</span>
+        </Button>
+      </Dialog.Trigger>
+      <TorrentImageExpand {torrent} />
+    </Dialog.Root>
   </div>
 
   <div class="flex w-full flex-col items-start gap-4 p-4">

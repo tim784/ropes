@@ -6,7 +6,6 @@
   import { page, isSearchPage } from '$stores/page';
   import Search from './Search.svelte';
   import ToastContainer from './ToastContainer.svelte';
-  import ModalContainer from './ModalContainer.svelte';
   import { makeAppIdentifier } from '../constants';
   import { setContext } from 'svelte';
 
@@ -31,6 +30,5 @@
   </main>
 
   <ToastContainer />
-  <ModalContainer />
   <div id={portalId} />
 </div>

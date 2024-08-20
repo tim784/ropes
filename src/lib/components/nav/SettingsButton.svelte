@@ -1,7 +1,21 @@
 <script lang="ts">
   import Button from '$components/ui/Button.svelte';
-  import { currentModal } from '$stores/modal';
   import Settings from '../modals/Settings.svelte';
+  import * as Dialog from '$lib/components/ui/dialog';
+  import { getContext } from 'svelte';
+
+  const portalId = getContext<string>('portalId');
+
+  let settingsDialogOpen: boolean = false;
+
+  const closeSettingsDialog = () => {
+    settingsDialogOpen = false;
+  };
 </script>
 
-<Button variant="ghost" on:click={() => currentModal.set(Settings)}>Settings</Button>
+<Dialog.Root portal={portalId} bind:open={settingsDialogOpen}>
+  <Dialog.Trigger asChild let:builder>
+    <Button builders={[builder]} variant="ghost">Settings</Button>
+  </Dialog.Trigger>
+  <Settings closeFn={closeSettingsDialog} />
+</Dialog.Root>

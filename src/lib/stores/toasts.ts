@@ -48,13 +48,4 @@ function makeToastsStore() {
 
 export type ToastsStore = ReturnType<typeof makeToastsStore>;
 
-/**
- * Store for global toasts, but these will be displayed behind modals.
- */
 export const toasts = makeToastsStore();
-
-/**
- * Store for toasts that should be displayed in front of modals, but will vanish
- * when the modal is closed.
- */
-export const modalToasts = makeToastsStore();

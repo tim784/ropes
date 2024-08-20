@@ -10,9 +10,12 @@
   import { Switch } from '$lib/components/ui/switch';
   import { isSupportedPage, page } from '$stores/page';
   import ConfirmButton from '$components/ui/ConfirmButton.svelte';
-  import { modalToasts } from '$stores/toasts';
+  import { toasts } from '$stores/toasts';
   import TextToast from '../toasts/TextToast.svelte';
   import { appTitle } from '$lib/constants';
+  import * as Dialog from '$lib/components/ui/dialog';
+  import { fade } from 'svelte/transition';
+  import ToastContainer from '$components/ToastContainer.svelte';
 
   export let closeFn: () => void;
 
@@ -28,32 +31,38 @@
   const version = ('GM_info' in globalThis && GM_info?.script?.version) || packageJson.version;
 </script>
 
-<div
-  class="prose max-h-[75dvh] max-w-2xl overflow-y-scroll rounded bg-background text-foreground dark:prose-invert"
+<Dialog.Content
+  class="container prose max-h-[75dvh] max-w-2xl overflow-y-scroll p-0 dark:prose-invert sm:rounded-none md:w-auto"
+  transition={fade}
 >
   <div class="sticky top-0 z-10 border-b bg-background-darker px-8 py-4">
     <div class="flex items-baseline justify-between">
       <h2 class="m-0">{appTitle} Settings</h2>
-      <Button variant="ghost" size="icon" type="button" on:click={closeFn}
-        ><X /><span class="sr-only">Close</span></Button
+
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        class="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        on:click={closeFn}><X /><span class="sr-only">Close</span></Button
       >
     </div>
   </div>
 
-  <div class="mb-8 ml-8 mr-8">
-    <ul class=" mt-0">
-      <li class="">
+  <div class="mb-8 ml-8 mr-8 first:*:mt-0 last:*:mb-8">
+    <ul>
+      <li>
         <div class="flex items-baseline justify-between">
-          <h3 class="">Open Links in New Tab</h3>
+          <h3 class="mt-0">Open Links in New Tab</h3>
           <Switch bind:checked={$settings.openNonRopesInNewTab} />
         </div>
         <p>If set, links (that aren't search pages) will open in a new tab.</p>
         <p>If unset, links will open in this tab.</p>
       </li>
 
-      <li class="">
+      <li>
         <div class="flex items-baseline justify-between">
-          <h3 class="">Prefer Rich Tag Mode</h3>
+          <h3>Prefer Rich Tag Mode</h3>
           <Switch bind:checked={$settings.preferRichTagMode} />
         </div>
         <p>
@@ -62,9 +71,9 @@
         </p>
       </li>
 
-      <li class="">
+      <li>
         <div class="flex items-baseline justify-between">
-          <h3 class="">Show Latest Forum Threads</h3>
+          <h3>Show Latest Forum Threads</h3>
           <Switch bind:checked={$settings.showLatestForumThreads} />
         </div>
         <p>
@@ -74,9 +83,9 @@
         </p>
       </li>
 
-      <li class="">
+      <li>
         <div class="flex items-baseline justify-between">
-          <h3 class="">Single-Page App Mode</h3>
+          <h3>Single-Page App Mode</h3>
           <Switch bind:checked={$settings.spaMode} />
         </div>
         <p>
@@ -90,13 +99,13 @@
         </p>
       </li>
 
-      <li class="">
+      <li>
         <div class="flex items-baseline justify-between">
-          <h3 class="">Clear Seen Torrents</h3>
+          <h3>Clear Seen Torrents</h3>
           <ConfirmButton
             on:confirm={() => {
               seenTorrents.clear();
-              modalToasts.add(TextToast, { text: 'Seen torrents cleared!' });
+              toasts.add(TextToast, { text: 'Seen torrents cleared!' });
             }}
             size="sm"
             class="w-[20ch] font-bold"
@@ -109,14 +118,14 @@
         </p>
       </li>
 
-      <li class="">
+      <li>
         <div class="flex items-baseline justify-between">
-          <h3 class="">Clear Cached Tags</h3>
+          <h3>Clear Cached Tags</h3>
           <ConfirmButton
             on:confirm={() => {
               tagCache.clear();
               notTags.clear();
-              modalToasts.add(TextToast, { text: 'Cached tags cleared!' });
+              toasts.add(TextToast, { text: 'Cached tags cleared!' });
             }}
             size="sm"
             class="w-[20ch] font-bold"
@@ -127,8 +136,8 @@
         <p>Clear the local list of tags that power the tag autocomplete feature.</p>
       </li>
 
-      <li class="">
-        <h3 class="">About</h3>
+      <li>
+        <h3>About</h3>
         <ul>
           <li>Version: <span class="font-mono">{version}</span></li>
           <li>Homepage: <Link href={packageJson.homepage}>{packageJson.homepage}</Link></li>
@@ -145,4 +154,4 @@
       </li>
     </ul>
   </div>
-</div>
+</Dialog.Content>
