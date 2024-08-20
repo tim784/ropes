@@ -8,7 +8,10 @@
     "strict": true,
     "lib": ["esnext", "DOM", "DOM.Iterable"],
     // "noEmit": true
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "types": [
+      "node"
+    ],
   },
   "include": ["vite.config.ts", "vite/**/*.ts", "src/lib/constants.ts", "scripts/**/*.ts"],
 }
