@@ -16,7 +16,7 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [5.0.0](https://github.com/tim784/ropes/commits/v4.0.0) - 2024-08-20
+## [5.0.0](https://github.com/tim784/ropes/commits/v5.0.0) - 2024-08-20
 
 ### Added
 
