@@ -195,11 +195,16 @@ To make a cut a new release:
     git push origin --tags
     ```
 
-3. Run the "Release" GitHub Action, using this new tag as an input
+3. Run the `Release` workflow, using this new tag as an input
 
     ```sh
     gh workflow run Release -f tag=v1.0.0
     ```
+
+When the `Release` workflow completes, the `Deploy Website` workflow will
+trigger automatically, which will put the latest release on <https://ropes.win>
+(which is where userscript managers will look for updates). `Deploy Website`
+can also be run manually.
 
 ### Scripts
 
@@ -224,8 +229,3 @@ committing a new test page.
 ```sh
 npm run cleanse-test-pages
 ```
-
-### Deploying
-
-1. Bump the version in `package.json`.
-2. Run the `Trigger CloudFlare Pages Deploy Hook` GitHub Action.
