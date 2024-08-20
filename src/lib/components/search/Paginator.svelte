@@ -66,14 +66,14 @@
     return pages;
   }
 
-  function urlForPage(pageItem: PageItem, search: Search): string {
+  function urlForPage(pageNumber: number, search: Search): string {
     let form = cloneFormData(search.formData);
-    form.set('page', pageItem.number.toString());
+    form.set('page', pageNumber.toString());
     return getSearchUrlOfFormData(form);
   }
 </script>
 
-<ul class="my-4 flex items-baseline justify-center gap-4">
+<ul class="my-4 flex items-center justify-center gap-4">
   {#await page.dataPromise}
     {#each Array.from({ length: 5 }) as _}
       <li>
@@ -82,7 +82,35 @@
     {/each}
   {:then { pagination, search }}
     {@const pageRadius = makePageRadius(pagination)}
-    <li></li>
+    <li>
+      {#if pagination.currentPage !== 1}
+        {#if $settings.spaMode}
+          <Button
+            size="sm"
+            variant="outline"
+            class="px-2"
+            on:click={() => {
+              pageStore.navigateToSearch(undefined, pagination.currentPage - 1);
+            }}
+          >
+            <ChevronLeft />
+          </Button>
+        {:else}
+          <Button
+            size="sm"
+            href={urlForPage(pagination.currentPage - 1, search)}
+            variant="outline"
+            class="px-2"
+          >
+            <ChevronLeft />
+          </Button>
+        {/if}
+      {:else}
+        <Button size="sm" class="px-2" variant="outline" disabled>
+          <ChevronLeft />
+        </Button>
+      {/if}
+    </li>
     {#each pageRadius as pageItem}
       {#if pageItem === null}
         <li>...</li>
@@ -104,7 +132,7 @@
               <Button
                 size="sm"
                 class="font-bold"
-                href={urlForPage(pageItem, search)}
+                href={urlForPage(pageItem.number, search)}
                 variant="outline"
               >
                 {pageItem.number}
@@ -118,5 +146,35 @@
         </li>
       {/if}
     {/each}
+
+    <li>
+      {#if pagination.currentPage !== pagination.totalPages}
+        {#if $settings.spaMode}
+          <Button
+            size="sm"
+            variant="outline"
+            class="px-2"
+            on:click={() => {
+              pageStore.navigateToSearch(undefined, pagination.currentPage + 1);
+            }}
+          >
+            <ChevronRight />
+          </Button>
+        {:else}
+          <Button
+            size="sm"
+            href={urlForPage(pagination.currentPage + 1, search)}
+            variant="outline"
+            class="px-2"
+          >
+            <ChevronRight />
+          </Button>
+        {/if}
+      {:else}
+        <Button size="sm" class="px-2" variant="outline" disabled>
+          <ChevronRight />
+        </Button>
+      {/if}
+    </li>
   {/await}
 </ul>

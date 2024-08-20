@@ -22,6 +22,8 @@ The types of changes are:
 
 - Scroll to Top button appears after scrolling down some distance
 - Many elements now have descriptions accessible to screen readers
+- The paginator component now has left and right buttons for relative-step
+  navigation
 - Started keeping a changelog (all previous versions are retroactively added)
 
 ### Fixed
