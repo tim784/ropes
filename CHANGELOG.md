@@ -20,8 +20,18 @@ The types of changes are:
 
 ### Added
 
-- Inserted screen-reader-only description text for many elements
+- Many elements are now accessible to screen readers with descriptions
 - Started keeping a changelog (all previous versions are retroactively added)
+
+### Fixed
+
+- Rich Tag Input now properly loses focus when pressing Enter to submit the
+  search
+
+### Changed
+
+- Reworked some internal code around Rich Tag Input to better utilize the
+  underlying component. Should be slightly more performant now.
 
 ## [4.0.0](https://github.com/tim784/ropes/commits/v4.0.0) - 2024-08-15
 

@@ -1,7 +1,6 @@
 <script lang="ts">
   import Nav from './Nav.svelte';
   import { cleanSlate } from '$actions/cleanSlate';
-  // import { listenToPopState } from '$actions/popState';
   import { sfwTitleSwap } from '$actions/sfwTitleSwap';
   import { darkMode } from '$actions/darkMode';
   import { page, isSearchPage } from '$stores/page';

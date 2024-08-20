@@ -55,7 +55,7 @@
 
   function resetInput() {
     // yeesh, gotta do em both it seems.
-    inputState.update((state) => ({ ...state, search: '' }));
+    inputState.update((state) => ({ ...state, value: '', search: '' }));
     inputElement.value = '';
   }
 
@@ -103,16 +103,6 @@
   let inputWidth: number;
   let inputElement: HTMLInputElement;
 
-  function getSelectedSuggestionName() {
-    const selected = document.querySelector(
-      '[data-cmdk-item][data-selected="true"]'
-    ) as HTMLElement | null;
-    if (!selected) {
-      return null;
-    }
-    return selected.dataset.suggestionName;
-  }
-
   function addSuggestionToTags(suggestionName: string) {
     const suggestionTaglistTag = new TaglistTag(negationChar, suggestionName);
     localFormData.addTag(suggestionTaglistTag);
@@ -127,26 +117,25 @@
       // kinda crazy we need to do this ourselves. seems cmdk-sv tried to rebuild
       // an <input> element from scratch with keydown handlers and forgot this
       // one, i think. https://github.com/huntabyte/cmdk-sv/issues/97
-      if (inputElement) {
-        let position = 0;
-        if (e.key === 'End') {
-          position = inputElement.value.length;
-        }
-        inputElement.setSelectionRange(position, position);
-        e.preventDefault();
+      let position = 0;
+      if (e.key === 'End') {
+        position = $inputState.search.length;
       }
+      inputElement.setSelectionRange(position, position);
+      e.preventDefault();
     } else if (e.key === 'Enter') {
-      const selectedSuggestionName = getSelectedSuggestionName();
+      const selectedSuggestionName = $inputState.value;
       if (selectedSuggestionName) {
         addSuggestionToTags(selectedSuggestionName);
       } else if (emptyInput) {
         $localFormData.submit();
+        inputElement.blur();
       }
       e.preventDefault();
     }
   }
 
-  function handleItemClick(suggestion: CacheTag) {
+  function handleSelect(suggestion: CacheTag) {
     addSuggestionToTags(suggestion.name);
     isPointerOverSuggestions = false;
   }
@@ -208,17 +197,19 @@
           >
             <Command.Group heading="Suggestions">
               {#each suggestions as suggestion (suggestion.name)}
-                <Command.Item data-suggestion-name={suggestion.name}
-                  ><button
-                    type="button"
-                    class="flex w-full justify-between px-2 py-1.5"
-                    class:font-bold={suggestion.exact}
-                    on:click={() => handleItemClick(suggestion)}
+                <Command.Item
+                  data-suggestion-name={suggestion.name}
+                  value={suggestion.name}
+                  onSelect={() => handleSelect(suggestion)}
+                  class="cursor-pointer"
+                  ><div
                     transition:wipe={{ axis: 'y' }}
+                    class:font-bold={suggestion.exact}
+                    class="flex w-full justify-between px-2 py-1.5"
                   >
                     <span>{negationChar}{suggestion.name}</span>
                     <span class="text-sm text-foreground/50">({suggestion.count} uses)</span>
-                  </button></Command.Item
+                  </div></Command.Item
                 >
               {/each}
             </Command.Group>
