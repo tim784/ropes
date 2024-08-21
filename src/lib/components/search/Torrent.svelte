@@ -66,26 +66,28 @@
   bind:this={el}
   transition:fade
 >
-  <div class="relative w-full">
-    <img
-      class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
-      src={torrent.imageHref}
-      alt={torrent.name}
-    />
-    <Dialog.Root portal={portalId}>
-      <Dialog.Trigger asChild let:builder>
-        <Button
-          builders={[builder]}
-          size="icon"
-          variant="ghost"
-          class="absolute right-4 top-4 z-10 bg-accent/50 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
-        >
-          <Maximize2 class="size-6" /><span class="sr-only">Expand Image</span>
-        </Button>
-      </Dialog.Trigger>
-      <TorrentImageExpand {torrent} />
-    </Dialog.Root>
-  </div>
+  {#if torrent.imageHref !== null}
+    <div class="relative w-full">
+      <img
+        class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
+        src={torrent.imageHref}
+        alt={torrent.name}
+      />
+      <Dialog.Root portal={portalId}>
+        <Dialog.Trigger asChild let:builder>
+          <Button
+            builders={[builder]}
+            size="icon"
+            variant="ghost"
+            class="absolute right-4 top-4 z-10 bg-accent/50 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
+          >
+            <Maximize2 class="size-6" /><span class="sr-only">Expand Image</span>
+          </Button>
+        </Dialog.Trigger>
+        <TorrentImageExpand {torrent} />
+      </Dialog.Root>
+    </div>
+  {/if}
 
   <div class="flex w-full flex-col items-start gap-4 p-4">
     <TorrentMeta

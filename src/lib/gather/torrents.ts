@@ -1,5 +1,5 @@
 import { querySelector, querySelectorAll, removeNonNumericChars } from './util';
-import { parseEmpDate } from "../util";
+import { parseEmpDate } from '../util';
 import { User } from './user';
 
 export enum InteractionState {
@@ -27,7 +27,7 @@ export type Torrent = {
   id: string;
   name: string;
   pageHref: string;
-  imageHref: string;
+  imageHref: string | null;
   downloadHref: string | null;
   freeleechHref: string | null;
   doubleseedHref: string | null;
@@ -41,7 +41,7 @@ export type Torrent = {
   freeleechState: FreeleechState;
   doubleseedState: DoubleseedState;
   interactionState: InteractionState;
-  tags: string[];
+  tags: string[] | null;
   isBookmarked: boolean;
 };
 
@@ -66,8 +66,11 @@ function getTorrentName(nameColumn: TorrentNameColumnElement): string {
   return querySelector(':scope > a', nameColumn)?.textContent?.trim() || '';
 }
 
-function getTorrentImageHref(nameColumn: TorrentNameColumnElement): string {
-  const script = querySelector('script', nameColumn)!;
+function getTorrentImageHref(nameColumn: TorrentNameColumnElement): string | null {
+  const script = querySelector('script', nameColumn);
+  if (script === null) {
+    return null;
+  }
   const textContent = script.textContent!;
   const match = textContent.match(/(?<=src=\\").+?(?=\\"><\\\/td>)/gm)!;
   const escapedHref = match?.[0];
@@ -78,10 +81,17 @@ function getTorrentImageHref(nameColumn: TorrentNameColumnElement): string {
 
 function getTorrentUploadDateTime(torrentElement: TorrentElement): Date {
   const dateColumn = querySelector('td:nth-of-type(5) span', torrentElement)!;
-  const dateText = dateColumn.getAttribute('title')!;
   // e.g. Jul 08 2024, 00:28
   // times are local (from setting in settings page i think?)
-  const datetime = parseEmpDate(dateText);
+  let datetime = parseEmpDate(dateColumn.getAttribute('title')!);
+
+  if (Number.isNaN(datetime.valueOf())) {
+    // this means the user has set their "Time Style" setting to "Display times
+    // as date and time". we can parse this, we just instead have to look at the
+    // textContent of the span. this setting is probably uncommon.
+    datetime = parseEmpDate(dateColumn.textContent!);
+  }
+
   return datetime;
 }
 
@@ -172,9 +182,12 @@ function getInteractionState(nameColumn: TorrentNameColumnElement): InteractionS
   return InteractionState.None;
 }
 
-function getTags(nameColumn: TorrentNameColumnElement): string[] {
+function getTags(nameColumn: TorrentNameColumnElement): string[] | null {
   const tagsContainer = querySelector('.tags', nameColumn);
-  const tagsText = tagsContainer!.textContent!.trim();
+  if (tagsContainer === null) {
+    return null;
+  }
+  const tagsText = tagsContainer.textContent!.trim();
   const split = tagsText!.split(/[\s,]+/);
   return split;
 }

@@ -16,6 +16,20 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [6.0.0](https://github.com/tim784/ropes/commits/v6.0.0) - 2024-08-21
+
+### Fixed
+
+- Upload dates can still be found when the user has an Empornium "Time Style"
+  setting of "Display times as date and time". Before, we'd fail to parse the
+  date. This is probably uncommon.
+- When the user has set the Empornium "Hide floating info window on browse
+  torrents page" setting, we now simply do not present an image instead of
+  crashing. (Empornium does not send image hrefs in this case.) This is probably uncommon.
+- When the user has set the Empornium "Hide tags in lists" setting, we now do
+  not show a "See Tags" button, instead of crashing. (Empornium does not send
+  tags in this case.) This is probably uncommon.
+
 ## [5.0.0](https://github.com/tim784/ropes/commits/v5.0.0) - 2024-08-20
 
 ### Added

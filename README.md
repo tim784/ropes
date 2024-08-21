@@ -83,6 +83,10 @@ Ensure your browser has the requirements below. Then,
 
   - [Greasemonkey](https://www.greasespot.net/)
 
+## Changelog
+
+The changelog is kept in [CHANGELOG.md](./CHANGELOG.md).
+
 ## Support
 
 When Ropes is installed and running, **it will likely break or be
@@ -232,7 +236,9 @@ npm run cleanse-test-pages
 
 #### Serve `dist` Directory
 
-This script serves the `dist` directory at `http://localhost:3000`. This powers the workflow mentioned above under "[Test with the Empornium Server](#test-with-the-empornium-server)".
+This script serves the `dist` directory at `http://localhost:3000`. This powers
+the workflow mentioned above under "[Test with the Empornium
+Server](#test-with-the-empornium-server)".
 
 ```sh
 npm run serve-dist

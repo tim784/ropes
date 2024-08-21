@@ -11,8 +11,11 @@ function getPath(target: string, importMetaUrl?: string | undefined): string {
   return resolve(thisDir, target);
 }
 
-const searchPage1Path = getPath('./pages/emp-searchPage1.html');
-const searchPage2Path = getPath('./pages/emp-searchPage2.html');
+const searchPage1Path = getPath('./pages/emp-searchPage-1-full.html');
+const searchPage2Path = getPath('./pages/emp-searchPage-2-single.html');
+const searchPage3Path = getPath('./pages/emp-searchPage-3-timeStyle.html');
+const searchPage4Path = getPath('./pages/emp-searchPage-4-hideFloating.html');
+const searchPage5Path = getPath('./pages/emp-searchPage-5-hideTags.html');
 const torrentDetailPagePath = getPath('./pages/emp-torrentDetail.html');
 const indexPagePath = getPath('./pages/index.html');
 
@@ -70,20 +73,32 @@ export function mockEmpServer() {
   // - searching for torrents
   // - viewing torrent details
   // - thanking a torrent uploader
-  app.get('/torrents.php', (req: express.Request, res: express.Response, next: NextFunction) => {
+  app.get('/torrents.php', (req: express.Request, res: express.Response) => {
     const query = req.query;
 
-    let html: string;
+    let path: string;
 
     if (query.id) {
-      html = fs.readFileSync(torrentDetailPagePath, 'utf-8');
+      path = torrentDetailPagePath;
     } else {
-      if (!query.page || query.page === '1') {
-        html = fs.readFileSync(searchPage1Path, 'utf-8');
-      } else {
-        html = fs.readFileSync(searchPage2Path, 'utf-8');
+      switch (query.page) {
+        case '2':
+          path = searchPage2Path;
+          break;
+        case '3':
+          path = searchPage3Path;
+          break;
+        case '4':
+          path = searchPage4Path;
+          break;
+        case '5':
+          path = searchPage5Path;
+          break;
+        default:
+          path = searchPage1Path;
       }
     }
+    const html = fs.readFileSync(path, 'utf-8');
 
     // !!! This is critical for Vite to inject our userscript and for HMR to work
     const injectedHtml = injectViteUserscriptAndHmr(html);

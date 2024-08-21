@@ -90,25 +90,26 @@
           Anonymous
         {/if}
       </span>
-      <span>
-        <Popover.Root>
-          <Popover.Trigger asChild let:builder
-            ><Link builders={[builder]} class="text-md">See tags</Link></Popover.Trigger
-          >
-          <Popover.Content class="z-20 max-h-96 min-w-96 overflow-y-scroll">
-            <div class="flex flex-wrap gap-x-[2ch] font-mono underline decoration-primary">
-              {#each torrent.tags.sort() as tag (tag)}
-                <div>
-                  {#if $settings.spaMode}<Link on:click={() => searchTag(tag)} class="inline"
-                      >{tag}</Link
-                    >{:else}<Link href={searchTagUrl(tag)} class="inline">{tag}</Link
-                    >{/if}
-                </div>
-              {/each}
-            </div>
-          </Popover.Content>
-        </Popover.Root>
-      </span>
+      {#if torrent.tags !== null}
+        <span>
+          <Popover.Root>
+            <Popover.Trigger asChild let:builder
+              ><Link builders={[builder]} class="text-md">See tags</Link></Popover.Trigger
+            >
+            <Popover.Content class="z-20 max-h-96 min-w-96 overflow-y-scroll">
+              <div class="flex flex-wrap gap-x-[2ch] font-mono underline decoration-primary">
+                {#each torrent.tags.sort() as tag (tag)}
+                  <div>
+                    {#if $settings.spaMode}<Link on:click={() => searchTag(tag)} class="inline"
+                        >{tag}</Link
+                      >{:else}<Link href={searchTagUrl(tag)} class="inline">{tag}</Link>{/if}
+                  </div>
+                {/each}
+              </div>
+            </Popover.Content>
+          </Popover.Root>
+        </span>
+      {/if}
     </div>
   </div>
 </div>
