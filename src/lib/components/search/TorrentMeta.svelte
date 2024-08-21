@@ -39,7 +39,7 @@
 <div class="flex flex-col">
   <TorrentBadges {torrent} {hasSeen} {isBookmarked} {isPersonalDoubleseed} {isPersonalFreeleech} />
 
-  <Link href={torrent.pageHref} class="my-2">
+  <Link href={torrent.pageHref} class="my-2 underline hover:text-foreground/80" variant="foreground">
     <h3 class="inline text-xl font-bold tracking-tight">
       {torrent.name}
     </h3>

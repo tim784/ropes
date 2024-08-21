@@ -4,18 +4,23 @@
 
 @layer base {
   :root {
-    --brand-1: #cc9029;
-    --brand-2: #1f5a99;
+    --brand-1: #2563eb;
+    --brand-2: #facc15;
+  }
+
+  .dark {
+    --brand-1: #3b82f6;
+    --brand-2: #facc15;
   }
 
   :root {
-    --background: #f8f9fc;
+    --background: #fff;
     --foreground: theme('colors.slate.950');
 
     --muted: theme('colors.slate.100');
     --muted-foreground: theme('colors.slate.500');
 
-    --popover: theme('colors.slate.200');
+    --popover: theme('colors.slate.100');
     --popover-foreground: theme('colors.slate.950');
 
     --card: #f6f6f7;
@@ -24,7 +29,7 @@
     --border: theme('colors.slate.300');
     --input: theme('colors.slate.300');
 
-    --primary: var(--brand-2);
+    --primary: var(--brand-1);
     --primary-foreground: theme('colors.slate.50');
 
     --secondary: theme('colors.slate.200');
@@ -40,7 +45,7 @@
 
     --radius: 0.5rem;
 
-    --background-darker: #f1f3f9;
+    --background-darker: #f6f6f7;
 
     --success: theme('colors.green.700');
 
@@ -65,7 +70,7 @@
     --border: theme('colors.slate.700');
     --input: theme('colors.slate.700');
 
-    --primary: var(--brand-1);
+    --primary: var(--brand-1);;
     --primary-foreground: theme('colors.slate.900');
 
     --secondary: theme('colors.slate.700');

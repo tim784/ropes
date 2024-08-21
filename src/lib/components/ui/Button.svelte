@@ -22,6 +22,7 @@
         xs: 'rounded-md px-2',
         lg: 'h-11 rounded-md px-8',
         icon: 'size-10',
+        'round-icon': 'size-10 rounded-full',
         'round-icon-sm': 'size-6 p-1 rounded-full',
         none: ''
       }

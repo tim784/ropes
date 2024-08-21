@@ -20,7 +20,7 @@
 <div
   class="grid h-[var(--header-height)] grid-rows-[auto_1fr] border-b bg-background-darker/90 backdrop-blur"
 >
-  <div class="h-2 bg-gradient-to-r from-brand-1 to-brand-2" />
+  <div class="h-2 bg-gradient-to-r from-brand-2 to-brand-1" />
 
   <div class="grid grid-flow-col items-center justify-between px-4">
     <ul class="flex items-center">

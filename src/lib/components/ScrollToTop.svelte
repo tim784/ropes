@@ -26,7 +26,7 @@
 
 {#if visible}
   <div class="fixed bottom-8 right-8" transition:fly={{ y: 100 }}>
-    <Button on:click={scrollToTop} title="Scroll to Top" size="icon" class="border-2">
+    <Button on:click={scrollToTop} title="Scroll to Top" size="round-icon" class="border-2">
       <ArrowUpToLine class="size-6" />
       <span class="sr-only">Scroll to top</span>
     </Button>
