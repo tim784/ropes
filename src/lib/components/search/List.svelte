@@ -57,7 +57,9 @@
 </script>
 
 <div>
-  <ol class="relative grid grid-cols-[repeat(auto-fill,_minmax(22rem,_1fr))] gap-4">
+  <ol
+    class="relative grid grid-cols-[repeat(auto-fill,_minmax(var(--torrent-card-width),_1fr))] gap-4"
+  >
     {#await dataPromise}
       {#each Array.from({ length: lastTorrentCount }) as _}
         <li>

@@ -18,9 +18,9 @@
   }
 </script>
 
-<div class="relative flex flex-col items-start overflow-visible bg-inherit lg:flex-row">
+<div class="relative flex flex-col items-start overflow-visible bg-inherit md:flex-row">
   <aside
-    class="bg-background-darker p-4 lg:sticky lg:left-0 lg:top-[var(--header-height)] lg:h-[calc(100vh_-_var(--header-height))] lg:min-w-[var(--search-form-width)] lg:max-w-[var(--search-form-width)] lg:overflow-y-scroll lg:border-r"
+    class="bg-background-darker p-4 md:sticky md:left-0 md:top-[var(--header-height)] md:h-[calc(100vh_-_var(--header-height))] md:min-w-[var(--search-form-width)] md:max-w-[var(--search-form-width)] md:overflow-y-scroll md:border-r"
   >
     <Form />
   </aside>

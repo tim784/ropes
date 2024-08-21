@@ -34,6 +34,8 @@ The types of changes are:
 
 - For small screen sizes, the navigation menu after clicking on the hamburger
   icon now better styling.
+- Breakpoints for the search form layout and torrent card width have been
+  adjusted.
 
 ## [5.0.0](https://github.com/tim784/ropes/commits/v5.0.0) - 2024-08-20
 
