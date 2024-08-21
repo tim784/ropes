@@ -20,15 +20,20 @@ The types of changes are:
 
 ### Fixed
 
-- Upload dates can still be found when the user has an Empornium "Time Style"
-  setting of "Display times as date and time". Before, we'd fail to parse the
-  date. This is probably uncommon.
-- When the user has set the Empornium "Hide floating info window on browse
-  torrents page" setting, we now simply do not present an image instead of
-  crashing. (Empornium does not send image hrefs in this case.) This is probably uncommon.
-- When the user has set the Empornium "Hide tags in lists" setting, we now do
-  not show a "See Tags" button, instead of crashing. (Empornium does not send
-  tags in this case.) This is probably uncommon.
+- Instead of showing `NaN`, upload dates can now still be parsed when the user
+  has the Empornium "Time Style" setting as "Display times as date and time".
+  This is probably uncommon.
+- Instead of crashing, don't show an image when the user has set the Empornium
+  "Hide floating info window on browse torrents page" setting. (Empornium does
+  not send image hrefs in this case.) This is probably uncommon.
+- Instead of crashing, don't show a "See Tags" button when the user has set the
+  Empornium "Hide tags in lists" setting. (Empornium does not send tags in this
+  case.) This is probably uncommon.
+
+### Changed
+
+- For small screen sizes, the navigation menu after clicking on the hamburger
+  icon now better styling.
 
 ## [5.0.0](https://github.com/tim784/ropes/commits/v5.0.0) - 2024-08-20
 

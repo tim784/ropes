@@ -61,9 +61,9 @@
         </Sheet.Trigger>
         <Sheet.Content>
           <Sheet.Header>
-            <Sheet.Title>Ropes Navigation</Sheet.Title>
+            <Sheet.Title class="mb-4">Ropes Navigation</Sheet.Title>
           </Sheet.Header>
-          <ul>
+          <ul class="grid grid-flow-row gap-2 justify-items-center">
             <li><NavMenu /></li>
             <li><SettingsButton /></li>
             <li><UnloadButton /></li>
