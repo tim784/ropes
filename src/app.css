@@ -41,6 +41,9 @@
     --destructive: theme('colors.red.700');
     --destructive-foreground: theme('colors.slate.50');
 
+    --skeleton: theme('colors.slate.300');
+    --skeleton-foreground: theme('colors.slate.500');
+
     --ring: theme('colors.slate.950');
 
     --radius: 0.5rem;
@@ -81,6 +84,9 @@
 
     --destructive: theme('colors.red.900');
     --destructive-foreground: theme('colors.slate.50');
+
+    --skeleton: theme('colors.slate.600');
+    --skeleton-foreground: theme('colors.slate.800');
 
     --ring: theme('colors.slate.50');
 

@@ -46,6 +46,10 @@ const config: Config = {
           DEFAULT: 'hsl(from var(--card) h s l / <alpha-value>)',
           foreground: 'hsl(from var(--card-foreground) h s l / <alpha-value>)'
         },
+        skeleton: {
+          DEFAULT: 'hsl(from var(--skeleton) h s l / <alpha-value>)',
+          foreground: 'hsl(from var(--skeleton-foreground) h s l / <alpha-value>)'
+        },
         brand: 'hsl(from var(--brand) h s l / <alpha-value>)',
         'brand-accent': 'hsl(from var(--brand-accent) h s l / <alpha-value>)',
         success: 'hsl(from var(--success) h s l / <alpha-value>)',

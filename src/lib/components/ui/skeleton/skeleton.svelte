@@ -9,6 +9,6 @@
   export { className as class };
 </script>
 
-<div class={cn('animate-pulse rounded-md bg-muted', className)} style:width {...$$restProps}>
+<div class={cn('animate-pulse rounded-md bg-skeleton text-skeleton-foreground', className)} style:width {...$$restProps}>
   <slot />
 </div>

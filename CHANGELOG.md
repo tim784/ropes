@@ -32,9 +32,12 @@ The types of changes are:
 
 ### Changed
 
+- Updated the "primary" color to be more consistent among light and dark modes.
 - For small screen sizes, the navigation menu after clicking on the hamburger
-  icon now better styling.
+  icon now has better styling.
 - Breakpoints for the search form layout and torrent card width have been
+  adjusted to better fit the screen.
+- Skeleton colors (the placeholder when an element is loading) have been
   adjusted.
 
 ## [5.0.0](https://github.com/tim784/ropes/commits/v5.0.0) - 2024-08-20

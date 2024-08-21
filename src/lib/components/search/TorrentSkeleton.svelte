@@ -17,7 +17,7 @@
   <!-- image -->
   <Skeleton class="relative h-52 w-full">
     <Image
-      class="absolute left-1/2 top-1/2 size-20 -translate-x-1/2 -translate-y-1/2 text-muted-foreground"
+      class="absolute left-1/2 top-1/2 size-20 -translate-x-1/2 -translate-y-1/2"
     />
     <span class="sr-only">Image Placeholder</span>
   </Skeleton>
