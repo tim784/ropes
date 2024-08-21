@@ -30,19 +30,19 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
       <Button
         type="button"
         on:click={$localFormData.submit}
-        class="rounded-e-none rounded-s border-e-2 border-background-darker text-xl font-bold"
+        class="rounded-e-none rounded-s-lg border-e-2 text-xl font-bold"
         size="lg"><Search class="me-2" />Search</Button
       >
     {:else}
       <Button
         href={$localFormData.getUrl()}
-        class="rounded-e-none rounded-s border-e-2 border-background-darker text-xl font-bold"
+        class="rounded-e-none rounded-s-lg border-e-2 text-xl font-bold"
         size="lg"><Search class="me-2" />Search</Button
       >
     {/if}
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild let:builder>
-        <Button builders={[builder]} type="button" size="lg" class="rounded-none rounded-e px-2">
+        <Button builders={[builder]} type="button" size="lg" class="rounded-none rounded-e-lg px-2">
           <EllipsisVertical class="size-6" /><span class="sr-only">Other Search Actions</span
           ></Button
         >

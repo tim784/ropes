@@ -1,6 +1,20 @@
 import { makeAppIdentifier } from '$lib/constants';
 import { localStorageBacked } from './localStorageBacked';
 
+export type Theme =
+  | 'blue'
+  // | 'gray'
+  | 'green'
+  // | 'neutral'
+  | 'orange'
+  | 'red'
+  | 'rose'
+  // | 'slate'
+  // | 'stone'
+  | 'violet'
+  | 'yellow'
+  | 'zinc';
+
 export type Settings = {
   sfwMode: boolean;
   preferRichTagMode: boolean;
@@ -8,6 +22,7 @@ export type Settings = {
   showLatestForumThreads: boolean;
   darkMode: boolean;
   spaMode: boolean;
+  theme: Theme;
 };
 
 const watchMedia = window.matchMedia('(prefers-color-scheme: dark)');
@@ -17,21 +32,20 @@ function defaultSettings(): Settings {
     sfwMode: false,
     preferRichTagMode: true,
     openNonRopesInNewTab: true,
-    showLatestForumThreads: false,
+    showLatestForumThreads: true,
     darkMode: watchMedia.matches,
     spaMode: true,
+    theme: 'zinc'
   };
 }
 
 const key = makeAppIdentifier('settings');
 
 function createSettingsStore() {
-  const settings = localStorageBacked<Settings>(
-    key,
-    defaultSettings,
-    JSON.stringify,
-    (str) => ({ ...defaultSettings(), ...JSON.parse(str) })
-  );
+  const settings = localStorageBacked<Settings>(key, defaultSettings, JSON.stringify, (str) => ({
+    ...defaultSettings(),
+    ...JSON.parse(str)
+  }));
 
   // update dark mode setting when the user changes their system preference
   watchMedia.addEventListener('change', (e) => {

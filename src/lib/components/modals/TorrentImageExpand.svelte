@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { Torrent } from '$gather/torrents';
   import * as Dialog from '$lib/components/ui/dialog';
   import { fade } from 'svelte/transition';
   import Button from '../ui/Button.svelte';
   import X from 'lucide-svelte/icons/x';
-  export let torrent: Torrent;
+
+  export let imageHref: string;
+  export let alt: string;
   
   const resizePathPartPattern = /^\/images\/resize\/\d+/;
 
@@ -30,8 +31,8 @@
       normal image. note that this does cause a flicker because normal
       image will come straight from cache, while big image must load from
       network. -->
-    <source srcset={getFullSizeImageUrlOrFallback(torrent.imageHref)} />
-    <img src={torrent.imageHref} alt={torrent.name} />
+    <source srcset={getFullSizeImageUrlOrFallback(imageHref)} />
+    <img src={imageHref} {alt} />
   </picture>
   <svelte:fragment slot="close"
     ><Dialog.Close asChild let:builder>

@@ -26,11 +26,11 @@
   $: platformKeys = keysForPlatform(keys);
 </script>
 
-<div class={cn('inline-flex text-muted-foreground px-0.5', className)}>
+<div class={cn('inline-flex text-foreground/75 px-0.5', className)}>
   {#each platformKeys as key, index (key)}
     <span>
       <kbd
-        class="inline-flex h-6 items-center gap-1 rounded-lg border border-border bg-background-darker px-1.5 font-mono font-bold"
+        class="inline-flex h-6 items-center gap-1 rounded-lg border border-border bg-background px-1.5 font-mono font-bold"
         >{key}</kbd
       >
     </span>{#if index !== keys.length - 1}+{/if}

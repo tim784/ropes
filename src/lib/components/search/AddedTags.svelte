@@ -52,9 +52,9 @@
           aria-label="Negate Tag"
         >
           {#if tag.isNegated}
-            <span class="text-red-500">not</span>
+            <span class="text-error">not</span>
           {:else}
-            <span class="text-green-500">is</span>
+            <span class="text-success">is</span>
           {/if}
         </Button>
       </div>

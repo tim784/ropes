@@ -17,6 +17,7 @@ function formatVersionDate(date?: Date): string {
 const getDevelopmentMetadata = () =>
   new UserscriptMetadata({
     name: 'Ropes for Empornium',
+    author: 'timdotcom',
     match: ['https://www.empornium.sx/*', 'https://www.empornium.is/*'],
     version: `${packageJson.version}.dev+${formatVersionDate()}`,
     description: `A new take on browsing for torrents on Empornium.`,
@@ -28,6 +29,7 @@ const getProductionMetadata = () => {
   const developmentMetadata = getDevelopmentMetadata();
   return new UserscriptMetadata({
     name: developmentMetadata.name,
+    author: developmentMetadata.author,
     match: developmentMetadata.match,
     version: packageJson.version,
     description: developmentMetadata.description,

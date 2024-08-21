@@ -26,7 +26,7 @@
 <div
   class={cn(
     'flex items-center border border-input bg-background px-2 group-focus-within:border group-focus-within:border-ring',
-    suggestionsOpen ? 'rounded-t' : 'rounded border'
+    suggestionsOpen ? 'rounded-t-lg' : 'rounded-lg border'
   )}
   data-cmdk-input-wrapper=""
   bind:clientHeight

@@ -1,4 +1,3 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
 import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
 
@@ -6,7 +5,21 @@ const config: Config = {
   darkMode: 'selector',
 
   content: ['./src/**/*.{html,js,svelte,ts}'],
-  safelist: ['dark'],
+  safelist: [
+    'dark',
+    'theme-blue',
+    'theme-gray',
+    'theme-green',
+    'theme-neutral',
+    'theme-orange',
+    'theme-red',
+    'theme-rose',
+    'theme-slate',
+    'theme-stone',
+    'theme-violet',
+    'theme-yellow',
+    'theme-zinc'
+  ],
   theme: {
     extend: {
       colors: {
@@ -14,9 +27,6 @@ const config: Config = {
         input: 'hsl(from var(--input) h s l / <alpha-value>)',
         ring: 'hsl(from var(--ring) h s l / <alpha-value>)',
         background: 'hsl(from var(--background) h s l / <alpha-value>)',
-        'background-darker': 'hsl(from var(--background-darker) h s l / <alpha-value>)',
-        'brand-1': 'hsl(from var(--brand-1) h s l / <alpha-value>)',
-        'brand-2': 'hsl(from var(--brand-2) h s l / <alpha-value>)',
         foreground: 'hsl(from var(--foreground) h s l / <alpha-value>)',
         primary: {
           DEFAULT: 'hsl(from var(--primary) h s l / <alpha-value>)',
@@ -50,8 +60,6 @@ const config: Config = {
           DEFAULT: 'hsl(from var(--skeleton) h s l / <alpha-value>)',
           foreground: 'hsl(from var(--skeleton-foreground) h s l / <alpha-value>)'
         },
-        brand: 'hsl(from var(--brand) h s l / <alpha-value>)',
-        'brand-accent': 'hsl(from var(--brand-accent) h s l / <alpha-value>)',
         success: 'hsl(from var(--success) h s l / <alpha-value>)',
         warning: 'hsl(from var(--warning) h s l / <alpha-value>)',
         error: 'hsl(from var(--error) h s l / <alpha-value>)'

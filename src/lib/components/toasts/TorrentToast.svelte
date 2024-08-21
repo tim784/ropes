@@ -9,7 +9,7 @@
 <BaseToast {dismissFn}>
   <div class="grid grid-cols-[max-content_auto] place-items-center">
     <img
-      class="h-24 max-h-full w-48 rounded object-contain"
+      class="h-24 max-h-full w-48 rounded-lg object-contain"
       src={torrent.imageHref}
       alt={torrent.name}
     />

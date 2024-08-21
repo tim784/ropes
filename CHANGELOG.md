@@ -18,6 +18,12 @@ The types of changes are:
 
 ## [6.0.0](https://github.com/tim784/ropes/commits/v6.0.0) - 2024-08-21
 
+### Added
+
+- The theme (for colors) is now customizable in settings. Choose from blue,
+  green, orange, red, rose, violet, yellow, and zinc (the default). These colors
+  also work in dark mode.
+
 ### Fixed
 
 - Clicking a torrent's Download button will no longer attempt to open a new tab.
@@ -33,7 +39,6 @@ The types of changes are:
 
 ### Changed
 
-- Updated the "primary" color to be more consistent among light and dark modes.
 - For small screen sizes, the navigation menu after clicking on the hamburger
   icon now has better styling.
 - Breakpoints for the search form layout and torrent card width have been

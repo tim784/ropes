@@ -34,6 +34,7 @@ export class UserscriptMetadata {
   name: string;
 
   // optional
+  author?: string;
   match?: string[]; // multiple allowed
   version?: string;
   description?: string;
@@ -44,6 +45,7 @@ export class UserscriptMetadata {
 
   constructor(metadata: UserscriptMetadata) {
     this.name = metadata.name;
+    this.author = metadata.author;
     this.match = metadata.match || [];
     this.version = metadata.version;
     this.description = metadata.description;
@@ -55,6 +57,7 @@ export class UserscriptMetadata {
 
   toString() {
     const lines = ['// ==UserScript==', metadataLine('name', this.name)];
+    if (this.author) lines.push(metadataLine('author', this.author));
     for (const match of this.match || []) {
       lines.push(metadataLine('match', match));
     }

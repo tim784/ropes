@@ -178,7 +178,7 @@
     />
     {#if open}
       <Command.List
-        class="absolute z-10 w-full rounded-b border border-ring bg-popover px-2 py-1.5 text-sm text-popover-foreground shadow-md"
+        class="absolute z-10 w-full rounded-b-lg border border-ring bg-popover px-2 py-1.5 text-sm text-popover-foreground shadow-md"
         style={`top: ${inputHeight}px;`}
       >
         {#if isLoading}

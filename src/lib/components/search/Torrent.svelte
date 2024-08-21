@@ -61,7 +61,7 @@
 </script>
 
 <div
-  class="group flex max-w-full flex-col items-center overflow-hidden rounded-lg bg-card shadow-lg"
+  class="group flex max-w-full flex-col items-center overflow-hidden rounded-lg bg-card border"
   data-torrent-id={torrent.id}
   bind:this={el}
   transition:fade
@@ -84,7 +84,7 @@
             <Maximize2 class="size-6" /><span class="sr-only">Expand Image</span>
           </Button>
         </Dialog.Trigger>
-        <TorrentImageExpand {torrent} />
+        <TorrentImageExpand imageHref={torrent.imageHref} alt={torrent.name} />
       </Dialog.Root>
     </div>
   {/if}

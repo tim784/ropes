@@ -22,8 +22,6 @@
   <div class="text-success">Success</div>
   <div class="text-warning">Warning</div>
   <div class="text-error">Error</div>
-  <div class="text-xl font-bold text-brand-1">Brand-1</div>
-  <div class="text-xl font-bold text-brand-2">Brand-2</div>
   <Button
     on:click={() => {
       toasts.add(TextToast, {
