@@ -20,6 +20,7 @@ The types of changes are:
 
 ### Fixed
 
+- Clicking a torrent's Download button will no longer attempt to open a new tab.
 - Instead of showing `NaN`, upload dates can now still be parsed when the user
   has the Empornium "Time Style" setting as "Display times as date and time".
   This is probably uncommon.

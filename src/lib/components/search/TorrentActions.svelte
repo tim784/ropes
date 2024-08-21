@@ -36,12 +36,15 @@
   {#if torrent.downloadHref !== null}
     <Button
       href={torrent.downloadHref}
+      target="_self"
       class="flex-1 rounded-e-none rounded-s border-e-2 border-card text-base font-bold"
     >
       <Download class="me-2 size-6" />Download
     </Button>
   {:else}
-    <Button disabled class="flex-1 rounded-e-none rounded-s border-e-2 px-2 text-base">Warned</Button>
+    <Button disabled class="flex-1 rounded-e-none rounded-s border-e-2 px-2 text-base"
+      >Warned</Button
+    >
   {/if}
 
   <DropdownMenu.Root>
