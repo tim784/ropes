@@ -70,7 +70,6 @@ app.use(
     const { address, port } = getConnInfo(c).remote;
     const start = new Date();
     const millisStart = start.getTime();
-    console.log(raw.headers);
     await next();
     const duration = time(millisStart);
     const status = colorStatus(c.res.status);
