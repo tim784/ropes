@@ -27,6 +27,11 @@ The types of changes are:
   has increased, but this should matter less because userscripts
   are loaded from disk, not the network.
 
+### Fixed
+
+- (Possibly) no longer crash due to a malformed query selector when gathering
+  torrent data from the page.
+
 ## [6.0.0](https://github.com/tim784/ropes/commits/v6.0.0) - 2024-08-21
 
 ### Added

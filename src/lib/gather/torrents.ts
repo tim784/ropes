@@ -55,10 +55,10 @@ function getNthColumnText(torrentElement: TorrentElement, n: number): string {
 }
 
 function getTorrentRows(doc: Document): TorrentElement[] {
-  return querySelectorAll('table#torrent_table > tbody > tr:not(:first-child)', doc);
+  return querySelectorAll('#torrent_table > tr:not(:first-child)', doc);
 }
 
-function getTorrentNameColumn(torrentElement: TorrentElement): TorrentNameColumnElement {
+function getTorrentNameColumn(torrentElement: TorrentElement) {
   return querySelector('td:nth-of-type(2)', torrentElement) as TorrentNameColumnElement;
 }
 
