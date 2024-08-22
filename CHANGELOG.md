@@ -31,6 +31,7 @@ The types of changes are:
 
 - (Possibly) no longer crash due to a malformed query selector when gathering
   torrent data from the page.
+- Ropes' styles no longer conflict with EMP Dark's.
 
 ## [6.0.0](https://github.com/tim784/ropes/commits/v6.0.0) - 2024-08-21
 

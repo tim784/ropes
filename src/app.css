@@ -3,6 +3,20 @@
 @tailwind utilities;
 
 @layer base {
+  /* i don't like to do this, but EMP Dark is too aggressive. maybe put this
+  behind a setting */
+  :root {
+    font-size: inherit !important;
+  }
+
+  body {
+    font-family: inherit !important;
+    max-width: inherit !important; /* only needed for EMP Dark's "Limit Width" */
+  }
+}
+
+@layer base {
+
   :root {
     --skeleton: theme('colors.zinc.300');
     --skeleton-foreground: theme('colors.zinc.500');
