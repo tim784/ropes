@@ -25,10 +25,12 @@
 </script>
 
 {#if visible}
-  <div class="fixed bottom-8 right-8" transition:fly={{ y: 100 }}>
-    <Button on:click={scrollToTop} title="Scroll to Top" size="round-icon" class="border-2">
-      <ArrowUpToLine class="size-6" />
-      <span class="sr-only">Scroll to top</span>
-    </Button>
+  <div class="container fixed bottom-0 scroll-to-top" transition:fly={{ y: 100 }}>
+    <div class="ml-auto w-max">
+      <Button on:click={scrollToTop} title="Scroll to Top" size="round-icon" class="border-2 me-4 mb-4">
+        <ArrowUpToLine class="size-6" />
+        <span class="sr-only">Scroll to top</span>
+      </Button>
+    </div>
   </div>
 {/if}

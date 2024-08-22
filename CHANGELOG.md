@@ -20,6 +20,8 @@ The types of changes are:
 
 ### Changed
 
+- The content of the page is now constrained to a maximum width, making it more
+  readable on large screens.
 - Builds are no longer minified. This should provide more helpful error messages
   in the console and add some transparency to the code. The size of the script
   has increased, but this should matter less because userscripts

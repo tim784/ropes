@@ -25,7 +25,7 @@
     <Form />
   </aside>
 
-  <div class="w-full space-y-4 p-4">
+  <div class="w-full space-y-4 py-4 px-16">
     {#if import.meta.env.DEV}
       <ThemeTest />
     {/if}

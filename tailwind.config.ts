@@ -82,6 +82,9 @@ const config: Config = {
       animation: {
         'fade-in': 'fade-in 1s ease-in-out',
         'slow-ping': 'slow-ping 30s ease-in-out infinite'
+      },
+      screens: {
+        '3xl': '2560px'
       }
     }
   },

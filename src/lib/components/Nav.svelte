@@ -18,16 +18,15 @@
 </script>
 
 <div
-  class="grid h-[var(--header-height)] grid-rows-[auto_1fr] border-b bg-background/90 backdrop-blur"
+  class="h-[var(--header-height)] border-b bg-background/90 backdrop-blur"
 >
-  <div class="h-1 bg-primary" />
+  <div class="h-[0.25rem] bg-primary" />
 
-  <div class="grid grid-flow-col items-center justify-between px-4">
+  <div class="grid grid-flow-col items-center justify-between px-4 h-[calc(100%_-_0.25rem)] container mx-auto">
     <ul class="flex items-center">
       <li>
         <Logo class="me-2 size-8" />
       </li>
-
       <li>
         <h1 class="whitespace-nowrap">
           <span class="me-1 text-3xl font-black uppercase">{appTitle}</span>
@@ -42,6 +41,7 @@
       </li>
     </ul>
 
+    <!-- uncollapsed -->
     <ul class="hidden grid-flow-row gap-2 lg:grid lg:grid-flow-col">
       <li><NavMenu /></li>
       <li><SettingsButton /></li>
@@ -51,6 +51,8 @@
       <li><DarkModeButton /></li>
     </ul>
 
+    <!-- collapsed. unfortunate copy-paste of content here, but i don't think
+    there's any way we can structure this to be reused in both cases -->
     <div class="lg:hidden">
       <Sheet.Root portal={portalId}>
         <Sheet.Trigger asChild let:builder>
@@ -63,7 +65,7 @@
           <Sheet.Header>
             <Sheet.Title class="mb-4">Ropes Navigation</Sheet.Title>
           </Sheet.Header>
-          <ul class="grid grid-flow-row gap-2 justify-items-center">
+          <ul class="grid grid-flow-row justify-items-center gap-2">
             <li><NavMenu /></li>
             <li><SettingsButton /></li>
             <li><UnloadButton /></li>
