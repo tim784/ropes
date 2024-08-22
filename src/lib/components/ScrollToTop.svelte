@@ -25,12 +25,14 @@
 </script>
 
 {#if visible}
-  <div class="container fixed bottom-0 scroll-to-top" transition:fly={{ y: 100 }}>
-    <div class="ml-auto w-max">
-      <Button on:click={scrollToTop} title="Scroll to Top" size="round-icon" class="border-2 me-4 mb-4">
-        <ArrowUpToLine class="size-6" />
-        <span class="sr-only">Scroll to top</span>
-      </Button>
+  <div class="fixed inset-x-0 bottom-0 scroll-to-top" transition:fly={{ y: 100 }}>
+    <div class="container mx-auto w-full">
+      <div class="ml-auto w-max">
+        <Button on:click={scrollToTop} title="Scroll to Top" size="round-icon" class="border-2 me-4 mb-4">
+          <ArrowUpToLine class="size-6" />
+          <span class="sr-only">Scroll to top</span>
+        </Button>
+      </div>
     </div>
   </div>
 {/if}
