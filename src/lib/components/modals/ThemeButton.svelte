@@ -5,7 +5,6 @@
   export let theme: Theme;
 
   $: isCurrent = $settings.theme === theme;
-  $: console.log('isCurrent', isCurrent); 
 </script>
 
 <!-- we hack in the classes a theme button by applying these styles directly -->
