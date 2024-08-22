@@ -27,6 +27,7 @@
     "build-www": "vite build --config www/vite.config.ts"
   },
   "devDependencies": {
+    "@hono/node-server": "^1.12.1",
     "@prettier/plugin-xml": "^3.4.1",
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@tailwindcss/typography": "^0.5.14",
@@ -41,6 +42,7 @@
     "date-fns": "^3.6.0",
     "express": "^4.19.2",
     "form-data": "^4.0.0",
+    "hono": "^4.5.8",
     "jsdom": "^24.1.1",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
@@ -55,9 +57,7 @@
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
     "vite-plugin-css-injected-by-js": "^3.5.1",
-    "vitest": "^2.0.5",
-    "@hono/node-server": "^1.12.1",
-    "hono": "^4.5.6"
+    "vitest": "^2.0.5"
   },
   "dependencies": {
     "bits-ui": "^0.21.13",
