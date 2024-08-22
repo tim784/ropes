@@ -20,18 +20,18 @@
   use:sfwTitleSwap
   use:darkMode
   use:theme
-  class="min-h-dvh bg-background text-foreground transition-colors antialiased duration-300"
+  class="min-h-dvh bg-background text-foreground antialiased transition-colors duration-300"
 >
   <header class="sticky top-0 z-30">
     <Nav />
   </header>
 
-  <main>
+  <main class="container relative mx-auto">
     {#if isSearchPage($page)}
       <Search page={$page} />
     {/if}
   </main>
-
+  
   <ToastContainer />
   <div id={portalId} />
   <ScrollToTop />
