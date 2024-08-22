@@ -1,4 +1,4 @@
-import { defineConfig, ViteDevServer } from 'vite';
+import { defineConfig, PluginOption, ViteDevServer } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import { OutputBundle, OutputOptions } from 'rollup';
@@ -86,15 +86,15 @@ export default defineConfig(({ mode }) => {
         configureServer(server: ViteDevServer) {
           server.middlewares.use(mockEmpServer());
         }
-      },
+      } as PluginOption,
 
       // visualize the bundle size
       shouldIncludeVisualizer &&
         visualizer({
           filename: './dist/bundle-analysis.html',
           open: true // Automatically open the report in the browser
-        })
-    ].filter(Boolean),
+        }),
+    ].filter(Boolean) as PluginOption[],
 
     build: {
       // this prevents vite from emitting a warning about emitted chunks being
@@ -104,29 +104,17 @@ export default defineConfig(({ mode }) => {
 
       rollupOptions: {
         output: {
-          entryFileNames: `[name].user.js`,
-          chunkFileNames: `[name].js`,
-          assetFileNames: `[name][extname]`
+          entryFileNames: `[name].user.js`
         },
 
         input: {
           index: 'src/main.ts'
-        },
-
-        // supress bottleneck eval warnings. only used for redis backing, which
-        // we don't use
-        // https://github.com/SGrondin/bottleneck/issues/221#issuecomment-2251112451
-        onwarn(warning, warn) {
-          if (warning.code === 'EVAL') {
-            if (warning.id?.includes('RedisConnection.js')) {
-              return;
-            }
-          }
-          // Use default for everything else
-          warn(warning);
         }
-      }
+      },
+
+      minify: false,
     },
+
     server: {
       open: '/torrents.php'
     },

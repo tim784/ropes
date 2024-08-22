@@ -16,6 +16,15 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [7.0.0](https://github.com/tim784/ropes/commits/v7.0.0) - 2024-08-22
+
+### Changed
+
+- Builds are no longer minified. This should provide more helpful error messages
+  in the console and add some transparency to the code. The size of the script
+  has increased, but this should matter less because userscripts
+  are loaded from disk, not the network.
+
 ## [6.0.0](https://github.com/tim784/ropes/commits/v6.0.0) - 2024-08-21
 
 ### Added
