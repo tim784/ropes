@@ -68,5 +68,8 @@
     "p-queue": "^8.0.1",
     "tailwind-merge": "^2.4.0",
     "tailwind-variants": "^0.2.1"
+  },
+  "overrides": {
+    "tough-cookie": "^5.0.0-rc.4"
   }
 }
