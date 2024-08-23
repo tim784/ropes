@@ -26,7 +26,7 @@
     <Nav />
   </header>
 
-  <main class="container relative mx-auto">
+  <main class="max-w-screen-3xl relative mx-auto">
     {#if isSearchPage($page)}
       <Search page={$page} />
     {/if}

@@ -16,6 +16,13 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [8.0.0](https://github.com/tim784/ropes/commits/v8.0.0) - 2024-08-23
+
+### Changed
+
+- Revert some work on breakpoints that caused jerky layout-shift when resizing
+  the window.
+
 ## [7.0.0](https://github.com/tim784/ropes/commits/v7.0.0) - 2024-08-22
 
 ### Changed

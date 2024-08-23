@@ -53,21 +53,14 @@
 @layer base {
   :root {
     --header-height: 4rem;
-    --search-form-width: 16rem;
+    --search-form-width: 20rem;
     --torrent-card-width: 16rem;
   }
 
   @media screen(xl) {
     :root {
-      --search-form-width: 20rem;
-      --torrent-card-width: 20rem;
-    }
-  }
-
-  @media screen(2xl) {
-    :root {
       --search-form-width: 24rem;
-      --torrent-card-width: 24rem;
+      --torrent-card-width: 20rem;
     }
   }
 }

@@ -22,7 +22,7 @@
 >
   <div class="h-[0.25rem] bg-primary" />
 
-  <div class="grid grid-flow-col items-center justify-between px-4 h-[calc(100%_-_0.25rem)] container mx-auto">
+  <div class="grid grid-flow-col items-center justify-between px-4 h-[calc(100%_-_0.25rem)] max-w-screen-3xl mx-auto">
     <ul class="flex items-center">
       <li>
         <Logo class="me-2 size-8" />
