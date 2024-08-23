@@ -1,12 +1,41 @@
-import { appId } from "./lib/constants";
-import Entrypoint from "$lib/components/Entrypoint.svelte";
+import { appTitle, makeAppIdentifier } from './lib/constants';
+import { determinePageType, PageType } from '$stores/page';
+import { enabled } from '$stores/enabled';
+import App from '$components/App.svelte';
 
-const appDiv = document.createElement("div");
-appDiv.id = appId
-document.body.prepend(appDiv);
+function pageTypeIsSupported() {
+  // Flesh out more page types when we implement them
+  return determinePageType() === PageType.Search;
+}
 
-const app = new Entrypoint({
-  target: appDiv,
-});
+function placeLoadButton() {
+  const enableButtonId = makeAppIdentifier('enable-button');
 
-export default app;
+  if (document.getElementById(enableButtonId)) {
+    return;
+  }
+
+  const ul = document.querySelector('#menu ul:last-of-type');
+  const li = document.createElement('li');
+
+  // we make an <a>, and not a <button>, so that the styling is consistent with
+  // the other items in the menu
+  const a = document.createElement('a');
+
+  // needed because we have no href
+  a.style.cursor = 'pointer';
+  
+  a.id = enableButtonId;
+  a.textContent = `Load ${appTitle}`;
+  a.addEventListener('click', () => enabled.set(true));
+  li.appendChild(a);
+  ul?.appendChild(li);
+}
+
+if (pageTypeIsSupported()) {
+  placeLoadButton();
+
+  new App({
+    target: document.body
+  });
+}

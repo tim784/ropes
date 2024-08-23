@@ -1,125 +1,118 @@
-// Clears and restores empornium elements and stylesheets
-// This ensures that empornium elements are hidden and empornium stylesheets are disabled (and vice versa)
-import { writable, get } from 'svelte/store';
-import { appId, appStylesId } from '$lib/constants';
+// Cleans and restores empornium elements, stylesheets, and style attribute
+// values applied directly to the <html> and <body> elements (because they can
+// effect us). This ensures that empornium elements are hidden and empornium
+// stylesheets are disabled (and vice versa)
+
+import { writable } from 'svelte/store';
+import { appId } from '$lib/constants';
+
+function isNotOurs(element: HTMLElement) {
+  return element.closest(`#${appId}`) === null;
+}
 
 type EmporniumElement = {
-  ref: HTMLElement;
-  oldDisplay: string;
+  element: HTMLElement;
+  oldDisplayValue: string;
 };
 
 function hideEmporniumElements() {
-  // don't target ourselves
-  const emporniumElements = [...document.querySelectorAll(`body > *:not(#${appId})`)]
+  const emporniumElements = [...document.querySelectorAll(`body > *`)]
     .filter((element) => element instanceof HTMLElement)
+    .filter(isNotOurs)
     .map((element) => {
       const oldDisplay = element.style.display;
 
       element.style.display = 'none';
 
       return {
-        ref: element,
-        oldDisplay
+        element,
+        oldDisplayValue: oldDisplay
       } as EmporniumElement;
     });
   return emporniumElements;
 }
 
 function showEmporniumElements(emporniumElements: EmporniumElement[]) {
-  emporniumElements.forEach(({ ref: element, oldDisplay: display }) => {
-    element.style.display = display;
+  emporniumElements.forEach(({ element, oldDisplayValue: oldDisplay }) => {
+    element.style.display = oldDisplay;
   });
 }
 
 type EmporniumStyleSheet = {
-  ref: CSSStyleSheet;
+  stylesheet: CSSStyleSheet;
   oldDisabled: boolean;
 };
 
-function isAppyStyleSheet(styleSheet: CSSStyleSheet) {
-  const owner = styleSheet.ownerNode as HTMLStyleElement | null;
-
-  // check if its our stylesheet or vite's dev server stylesheet
-  return owner?.id === appStylesId;
-}
-
-function isViteDevServerStyleSheet(styleSheet: CSSStyleSheet) {
-  const owner = styleSheet.ownerNode as HTMLStyleElement | null;
-
-  return owner?.hasAttribute('data-vite-dev-id');
-}
-
-function isOurStyleSheet(styleSheet: CSSStyleSheet) {
-  return isAppyStyleSheet(styleSheet) || isViteDevServerStyleSheet(styleSheet);
-}
-
 function disableEmporniumStyleSheets() {
-  const documentStyleSheets = document.styleSheets;
-  const originalStyleSheets: EmporniumStyleSheet[] = [];
-  for (let i = 0; i < documentStyleSheets.length; i++) {
-    let styleSheet = documentStyleSheets[i];
-
-    if (!isOurStyleSheet(styleSheet)) {
-      const oldDisabled = styleSheet.disabled;
-      styleSheet.disabled = true;
-      originalStyleSheets.push({
-        ref: styleSheet,
+  return [...document.styleSheets]
+    .filter((stylesheet) => {
+      const owner = stylesheet.ownerNode as HTMLStyleElement | null;
+      return owner ? isNotOurs(owner) : false;
+    })
+    .map((stylesheet) => {
+      const oldDisabled = stylesheet.disabled;
+      stylesheet.disabled = true;
+      return {
+        stylesheet,
         oldDisabled
-      } as EmporniumStyleSheet);
-    } else {
-      // this branch isn't really necessary, but during development with the
-      // vite dev server, something about HMR injection of our stylesheets
-      // causes them to be disabled. doing this doesn't hurt production.
-      styleSheet.disabled = false;
-    }
-  }
-
-  return originalStyleSheets;
+      } as EmporniumStyleSheet;
+    });
 }
 
 function enableEmporniumStyleSheets(originalStyleSheets: EmporniumStyleSheet[]) {
   originalStyleSheets.forEach((styleSheet) => {
-    styleSheet.ref.disabled = styleSheet.oldDisabled;
+    styleSheet.stylesheet.disabled = styleSheet.oldDisabled;
   });
-
-  // again, this isn't necessary for production. vite dev server HMR injection
-  // of our stylesheets breaks our stylesheet toggling. doesn't hurt production.
-  const documentStyleSheets = document.styleSheets;
-  for (let i = 0; i < documentStyleSheets.length; i++) {
-    let styleSheet = documentStyleSheets[i];
-    if (isOurStyleSheet(styleSheet)) {
-      styleSheet.disabled = true;
-    }
-  }
 }
 
-type emporniumResources = {
+function cleanStyle(element: HTMLElement) {
+  const oldStyle = element.getAttribute('style');
+  if (oldStyle) {
+    element.setAttribute('style', '');
+  }
+  return oldStyle;
+}
+
+function restoreStyle(element: HTMLElement, oldStyle: string | null) {
+  if (oldStyle === null) return;
+  element.setAttribute('style', oldStyle);
+}
+
+type EmporniumResources = {
   elements: EmporniumElement[];
   styleSheets: EmporniumStyleSheet[];
+  htmlStyle: string | null;
+  bodyStyle: string | null;
 };
 
-function createEmporniumStore() {
-  const emporniumStore = writable<emporniumResources>({
+function defaultEmporniumResources(): EmporniumResources {
+  return {
     elements: [],
-    styleSheets: []
-  });
+    styleSheets: [],
+    htmlStyle: null,
+    bodyStyle: null
+  };
+}
+
+function createEmporniumStore() {
+  const emporniumStore = writable<EmporniumResources>(defaultEmporniumResources());
 
   return {
-    clear: () => {
+    clean: () =>
       emporniumStore.set({
         elements: hideEmporniumElements(),
-        styleSheets: disableEmporniumStyleSheets()
-      });
-    },
-    restore: () => {
-      const { elements, styleSheets } = get(emporniumStore);
-      showEmporniumElements(elements);
-      enableEmporniumStyleSheets(styleSheets);
-      emporniumStore.set({
-        elements: [],
-        styleSheets: []
-      });
-    }
+        styleSheets: disableEmporniumStyleSheets(),
+        htmlStyle: cleanStyle(document.documentElement),
+        bodyStyle: cleanStyle(document.body)
+      }),
+    restore: () =>
+      emporniumStore.update((emporniumResources) => {
+        showEmporniumElements(emporniumResources.elements);
+        enableEmporniumStyleSheets(emporniumResources.styleSheets);
+        restoreStyle(document.documentElement, emporniumResources.htmlStyle);
+        restoreStyle(document.body, emporniumResources.bodyStyle);
+        return defaultEmporniumResources();
+      })
   };
 }
 

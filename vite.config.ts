@@ -8,6 +8,11 @@ import { appStylesId } from './src/lib/constants';
 import packageJson from './package.json';
 import path from 'path';
 
+type Foo = NonNullable<
+  NonNullable<Parameters<typeof cssInjectedByJsPlugin>[0]>['injectCodeFunction']
+>;
+type Bar = Parameters<Foo>[1];
+
 import { visualizer } from 'rollup-plugin-visualizer';
 
 function formatVersionDate(date?: Date): string {
@@ -61,7 +66,7 @@ function banner(metadata: UserscriptMetadata) {
 export default defineConfig(({ mode }) => {
   return {
     plugins: [
-      svelte(),
+      svelte({ emitCss: false, compilerOptions: { css: 'injected' } }),
 
       // This plugin is used to inject CSS as JS. This is necessary because we're
       // a userscript and regarding external resources:
@@ -93,7 +98,7 @@ export default defineConfig(({ mode }) => {
         visualizer({
           filename: './dist/bundle-analysis.html',
           open: true // Automatically open the report in the browser
-        }),
+        })
     ].filter(Boolean) as PluginOption[],
 
     build: {
@@ -112,7 +117,7 @@ export default defineConfig(({ mode }) => {
         }
       },
 
-      minify: false,
+      minify: false
     },
 
     server: {
