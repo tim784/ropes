@@ -12,9 +12,7 @@
   import * as Sheet from '$components/ui/sheet';
   import Hamburger from 'lucide-svelte/icons/menu';
   import Button from '$components/ui/Button.svelte';
-  import { getContext } from 'svelte';
-
-  const portalId = getContext<string>('portalId');
+  import { portal } from '$stores/portal';
 </script>
 
 <div
@@ -54,7 +52,7 @@
     <!-- collapsed. unfortunate copy-paste of content here, but i don't think
     there's any way we can structure this to be reused in both cases -->
     <div class="lg:hidden">
-      <Sheet.Root portal={portalId}>
+      <Sheet.Root portal={$portal}>
         <Sheet.Trigger asChild let:builder>
           <Button builders={[builder]} variant="ghost" size="icon">
             <Hamburger />

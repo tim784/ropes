@@ -1,4 +1,5 @@
 import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
+import Root from "./dropdown-menu-root.svelte";
 import Item from "./dropdown-menu-item.svelte";
 import Label from "./dropdown-menu-label.svelte";
 import Content from "./dropdown-menu-content.svelte";
@@ -11,7 +12,7 @@ import SubTrigger from "./dropdown-menu-sub-trigger.svelte";
 import CheckboxItem from "./dropdown-menu-checkbox-item.svelte";
 
 const Sub = DropdownMenuPrimitive.Sub;
-const Root = DropdownMenuPrimitive.Root;
+// const Root = DropdownMenuPrimitive.Root;
 const Trigger = DropdownMenuPrimitive.Trigger;
 const Group = DropdownMenuPrimitive.Group;
 

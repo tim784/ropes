@@ -7,27 +7,27 @@ function themeClass(theme: string) {
   return `${themePrefix}${theme}`;
 }
 
-function removeTheme() {
-  document.body.classList.forEach((className) => {
+function removeTheme(node: HTMLElement) {
+  node.classList.forEach((className) => {
     if (className.startsWith(themePrefix)) {
-      document.body.classList.remove(className);
+      node.classList.remove(className);
     }
   });
 }
 
-function setTheme(theme: Theme) {
-  removeTheme();
-  document.body.classList.add(themeClass(theme));
+function setTheme(theme: Theme, node: HTMLElement) {
+  removeTheme(node);
+  node.classList.add(themeClass(theme));
 }
 
-export const theme: Action = () => {
+export const theme: Action = (node) => {
   const unsubscribe = settings.subscribe((value) => {
-    setTheme(value.theme);
+    setTheme(value.theme, node);
   });
 
   return {
     destroy() {
-      removeTheme();
+      removeTheme(node);
       unsubscribe();
     }
   };

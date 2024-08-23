@@ -1,18 +1,18 @@
 import type { Action } from 'svelte/action';
 import { settings } from '$stores/settings';
 
-export const darkMode: Action = () => {
+export const darkMode: Action = (node) => {
   const unsubscribe = settings.subscribe((value) => {
     if (value.darkMode) {
-      document.body.classList.add('dark');
+      node.classList.add('dark');
     } else {
-      document.body.classList.remove('dark');
+      node.classList.remove('dark');
     }
   });
 
   return {
     destroy() {
-      document.body.classList.remove('dark');
+      node.classList.remove('dark');
       unsubscribe();
     }
   };

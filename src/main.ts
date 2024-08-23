@@ -1,4 +1,4 @@
-import { appTitle, makeAppIdentifier } from './lib/constants';
+import { appTitle, makeAppIdentifier, appId } from './lib/constants';
 import { determinePageType, PageType } from '$stores/page';
 import { enabled } from '$stores/enabled';
 import App from '$components/App.svelte';
@@ -24,7 +24,7 @@ function placeLoadButton() {
 
   // needed because we have no href
   a.style.cursor = 'pointer';
-  
+
   a.id = enableButtonId;
   a.textContent = `Load ${appTitle}`;
   a.addEventListener('click', () => enabled.set(true));
@@ -32,10 +32,17 @@ function placeLoadButton() {
   ul?.appendChild(li);
 }
 
+function createEntrypointDiv() {
+  const entrypointDiv = document.createElement('div');
+  entrypointDiv.id = appId;
+  document.body.appendChild(entrypointDiv);
+  return entrypointDiv.attachShadow({ mode: 'open' });
+}
+
 if (pageTypeIsSupported()) {
   placeLoadButton();
 
   new App({
-    target: document.body
+    target: createEntrypointDiv()
   });
 }

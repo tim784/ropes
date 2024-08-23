@@ -5,6 +5,7 @@ const config: Config = {
   darkMode: 'selector',
 
   content: ['./src/**/*.{html,js,svelte,ts}'],
+
   safelist: [
     'dark',
     'theme-blue',

@@ -1,17 +1,10 @@
 import { defineConfig, PluginOption, ViteDevServer } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import { OutputBundle, OutputOptions } from 'rollup';
 import { UserscriptMetadata } from './vite/userscriptMetadata';
 import { mockEmpServer } from './vite/mockEmp/server';
-import { appStylesId } from './src/lib/constants';
 import packageJson from './package.json';
 import path from 'path';
-
-type Foo = NonNullable<
-  NonNullable<Parameters<typeof cssInjectedByJsPlugin>[0]>['injectCodeFunction']
->;
-type Bar = Parameters<Foo>[1];
 
 import { visualizer } from 'rollup-plugin-visualizer';
 
@@ -49,7 +42,7 @@ const shouldIncludeVisualizer = process.env.VISUALIZE === 'true';
 
 // plugin to inject a banner into the generated code. we use for the userscript
 // metadata
-function banner(metadata: UserscriptMetadata) {
+function prependUserscriptMetadata(metadata: UserscriptMetadata) {
   return {
     name: 'vite-plugin-banner',
     generateBundle(_options: OutputOptions, bundle: OutputBundle) {
@@ -66,24 +59,14 @@ function banner(metadata: UserscriptMetadata) {
 export default defineConfig(({ mode }) => {
   return {
     plugins: [
+      // this causes svelte to not emit CSS asset files and instead, apply CSS
+      // programmatically from within the JS bundle -- good for userscripts.
       svelte({ emitCss: false, compilerOptions: { css: 'injected' } }),
 
-      // This plugin is used to inject CSS as JS. This is necessary because we're
-      // a userscript and regarding external resources:
-      // - _don't want to_ load them because we want to be self-contained, and
-      // - _can't_ load them because of CSP.
-      //
-      // NOTE: At the beginning of development, before I ironed out things,
-      // topExecutionPriority was necessary to be true. However, since then, it
-      // doesn't seem to be needed anymore. If we run into problems with styles
-      // not loading/unloading, we can try setting it back to true. (And, to
-      // clarify, all this flag does is put the CSS-loading at the top of the
-      // bundle, which I wouldn't really want because it looks better if the
-      // userscript banner is first.)
-      cssInjectedByJsPlugin({ topExecutionPriority: false, styleId: appStylesId }),
-
       // this injects the userscript metadata into the generated code
-      banner(mode === 'production' ? getProductionMetadata() : getDevelopmentMetadata()),
+      prependUserscriptMetadata(
+        mode === 'production' ? getProductionMetadata() : getDevelopmentMetadata()
+      ),
 
       // this is our test server: serves HTML and various mocked Emp endpoints
       {

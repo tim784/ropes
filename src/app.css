@@ -5,19 +5,23 @@
 @layer base {
   /* i don't like to do this, but EMP Dark is too aggressive. maybe put this
   behind a setting */
-  :root {
-    font-size: inherit !important;
+  :host {
+    /* font-size: inherit !important; */
   }
 
   body {
-    font-family: inherit !important;
-    max-width: inherit !important; /* only needed for EMP Dark's "Limit Width" */
+    /* font-family: inherit !important; */
+
+    /* only needed for EMP Dark's "Limit Width" */
+    /* max-width: inherit !important; */
+
   }
+
+  
 }
 
 @layer base {
-
-  :root {
+  :host {
     --skeleton: theme('colors.zinc.300');
     --skeleton-foreground: theme('colors.zinc.500');
 
@@ -51,14 +55,14 @@
 }
 
 @layer base {
-  :root {
+  :host {
     --header-height: 4rem;
     --search-form-width: 20rem;
     --torrent-card-width: 16rem;
   }
 
   @media screen(xl) {
-    :root {
+    :host {
       --search-form-width: 24rem;
       --torrent-card-width: 20rem;
     }

@@ -7,7 +7,7 @@
   import { getContext, onMount } from 'svelte';
   import { bookmark, type Action as BookmarkAction } from '$api/bookmark';
   import { toasts } from '$stores/toasts';
-  import { locals } from '$src/lib/stores/locals';
+  import { locals } from '$stores/locals';
   import Maximize2 from 'lucide-svelte/icons/maximize-2';
   import TorrentImageExpand from '$components/modals/TorrentImageExpand.svelte';
   import { get } from 'svelte/store';
@@ -15,9 +15,9 @@
   import BookmarkToast from '$components/toasts/BookmarkToast.svelte';
   import SlotUsedToast from '$components/toasts/SlotUsedToast.svelte';
   import { fade } from 'svelte/transition';
-  import * as Dialog from '$lib/components/ui/dialog';
+  import * as Dialog from '$components/ui/dialog';
+  import { portal } from '$stores/portal';
 
-  const portalId = getContext<string>('portalId');
   const observer = getContext<IntersectionObserver>('intersectionObserver');
 
   export let torrent: Torrent;
@@ -73,7 +73,7 @@
         src={torrent.imageHref}
         alt={torrent.name}
       />
-      <Dialog.Root portal={portalId}>
+      <Dialog.Root portal={$portal}>
         <Dialog.Trigger asChild let:builder>
           <Button
             builders={[builder]}
