@@ -20,8 +20,7 @@ The types of changes are:
 
 ### Added
 
-- Most buttons that only displayed an icon now have a tooltip that describes
-  their function.
+- Most icon now have a tooltip that describes their function.
 
 ### Fixed
 
@@ -37,6 +36,7 @@ The types of changes are:
   when resizing the window.
 
 ### Changed
+
 - Refactor some internals with how Ropes is mounted inside the Empornium page.
   This should better prevent styles from Empornium and other userscripts from
   contaminating Ropes' styles.
