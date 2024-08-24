@@ -201,7 +201,7 @@ To make a new release, we need to do a few things:
 #### Nushell
 
    ```sh
-   let new_version = (npm version major) # 1
+   let new_version = (npm version major | tee { print }) # 1
    git push origin --tags # 2
    gh workflow run Release -f tag=$new_version # 3
    ```
