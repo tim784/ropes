@@ -184,25 +184,34 @@ Ropes uses [Semantic Versioning](https://semver.org/) because node/npm require
 it. But, because this is a userscript with no imaginable "public API", we only
 increment the **major** version.
 
-To make a cut a new release:
+To make a new release, we need to do a few things:
 
 1. Bump the version in `package.json`.
-
-   ```sh
-    npm version major
-    # this will also create a new git tag
-   ```
-
 2. Make a new tag and push it.
-
-   ```sh
-   git push origin --tags
-   ```
-
 3. Run the `Release` workflow, using this new tag as an input
 
+#### Bash-like shells
+
    ```sh
-   gh workflow run Release -f tag=v1.0.0
+   NEW_VERSION=$(npm version major) # 1
+   git push origin --tags # 2
+   gh workflow run Release -f tag=${NEW_VERSION} # 3
+   ```
+
+#### Nushell
+
+   ```sh
+   let new_version = (npm version major) # 1
+   git push origin --tags # 2
+   gh workflow run Release -f tag=$new_version # 3
+   ```
+
+#### PowerShell
+
+   ```pwsh
+   $NEW_VERSION = npm version major # 1
+   git push origin --tags # 2
+   gh workflow run Release -f tag=${NEW_VERSION} # 3
    ```
 
 When the `Release` workflow completes, the `Deploy Website` workflow will
