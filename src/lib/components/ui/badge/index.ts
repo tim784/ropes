@@ -14,7 +14,7 @@ export const badgeVariants = tv({
       amber: 'bg-amber-500',
       indigo: 'bg-indigo-500',
       emerald: 'bg-emerald-500',
-      outline: 'text-foreground'
+      outline: 'text-foreground border border-primary'
     },
     size: {
       default: 'px-2.5 py-0.5',
@@ -70,6 +70,11 @@ export const badgeVariants = tv({
       variant: 'emerald',
       hover: true,
       class: 'hover:bg-emerald-500/80'
+    },
+    {
+      variant: 'outline',
+      hover: true,
+      class: 'hover:bg-primary/20'
     }
   ],
   defaultVariants: {

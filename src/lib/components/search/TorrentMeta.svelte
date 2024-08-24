@@ -51,11 +51,7 @@
   <TorrentBadges {torrent} {hasSeen} {isBookmarked} {isPersonalDoubleseed} {isPersonalFreeleech} />
 
   <div class="my-2">
-    <Link
-      href={torrent.pageHref}
-      class="underline hover:text-foreground/80"
-      variant="foreground"
-    >
+    <Link href={torrent.pageHref} class="underline hover:text-foreground/80" variant="foreground">
       <h3 class="inline text-xl font-bold tracking-tight">
         {torrent.name}
       </h3>
@@ -141,12 +137,18 @@
               ><Link builders={[builder]} class="text-md">See tags</Link></Popover.Trigger
             >
             <Popover.Content class="z-20 max-h-96 min-w-96 overflow-y-scroll">
-              <div class="flex flex-wrap gap-x-[2ch] font-mono underline decoration-primary">
+              <div class="flex flex-wrap gap-x-[2ch]">
                 {#each torrent.tags.sort() as tag}
-                  <div>
-                    {#if $settings.spaMode}<Link on:click={() => searchTag(tag)} class="inline"
+                  <div class="font-mono">
+                    {#if $settings.spaMode}<Link
+                        on:click={() => searchTag(tag)}
+                        class="inline text-foreground underline hover:text-foreground/80"
                         >{tag}</Link
-                      >{:else}<Link href={searchTagUrl(tag)} class="inline">{tag}</Link>{/if}
+                      >{:else}<Link
+                        href={searchTagUrl(tag)}
+                        class="inline text-foreground underline hover:text-foreground/80"
+                        >{tag}</Link
+                      >{/if}
                   </div>
                 {/each}
               </div>
