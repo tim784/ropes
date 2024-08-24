@@ -20,7 +20,7 @@ The types of changes are:
 
 ### Added
 
-- Most icon now have a tooltip that describes their function.
+- Most icons now have a tooltip that describes their function.
 
 ### Fixed
 

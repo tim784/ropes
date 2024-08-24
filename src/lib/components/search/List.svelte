@@ -7,6 +7,7 @@
   import { seenTorrents } from '$stores/seen';
   import { onDestroy, setContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
+  import Torrent from './Torrent.svelte';
 
   export let torrentsPromise: Promise<Torrent[]>;
   export let mePromise: Promise<Me>;
@@ -26,8 +27,41 @@
     // doesn't really work because the layout (which affects scroll position)
     // changes when torrents (and especially images) load. so, for now, just
     // scroll to the top.
-    window.scrollTo({ top: 0 });
+
+    // also, don't do this in dev, its distracting when we're trying to work on
+    // a particular part of the page.
+    if (!import.meta.env.DEV) {
+      window.scrollTo({ top: 0 });
+    }
   })(torrentsPromise);
+
+  /**
+   * Group torrents by imageHref into an array of arrays of torrents. Torrents with
+   * null imageHref are grouped separately. The order of the torrents is preserved, except of course,
+   * for grouped torrents being consecutive.
+   *
+   * @param torrents The torrents to group
+   *
+   * @returns An array of arrays of torrents
+   */
+  function groupTorrents(torrents: Torrent[]): Torrent[][] {
+    const groups = new Map<string, Torrent[]>();
+    let nullKey = 0;
+
+    const getNullKey = () => {
+      return (nullKey++).toString();
+    };
+
+    for (const torrent of torrents) {
+      const key = torrent.imageHref ?? getNullKey();
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)?.push(torrent);
+    }
+
+    return [...groups.values()];
+  }
 
   // set up intersection observer for when torrents are in the viewport
   const intersectionObserver = new IntersectionObserver(
@@ -67,6 +101,7 @@
         </li>
       {/each}
     {:then [torrents, me]}
+      {@const groups = groupTorrents(torrents)}
       {#each torrents as torrent (torrent.id)}
         <li>
           <TorrentComponent torrent={$settings.sfwMode ? getSfwTorrent(torrent) : torrent} {me} />
