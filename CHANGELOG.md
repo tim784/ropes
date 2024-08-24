@@ -16,13 +16,17 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [8.0.0](https://github.com/tim784/ropes/commits/v8.0.0) - 2024-08-23
+## [8.0.0](https://github.com/tim784/ropes/commits/v8.0.0) - 2024-08-24
+
+### Fixed
+
+- Allow the search form to take up the full width of the screen for small screen
+  widths.
+- Revert some work on screen viewport breakpoints that caused jerky layout-shift
+  when resizing the window.
 
 ### Changed
-
-- Revert some work on breakpoints that caused jerky layout-shift when resizing
-  the window.
-- Change some internals with how Ropes is mounted inside the Empornium page.
+- Refactor some internals with how Ropes is mounted inside the Empornium page.
   This should better prevent styles from Empornium and other userscripts from
   contaminating Ropes' styles.
 
