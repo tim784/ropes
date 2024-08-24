@@ -248,5 +248,5 @@
     {/if}
   </Command.Root>
 
-  <AddedTags />
+  {#if tags.length > 0}<AddedTags />{/if}
 </div>

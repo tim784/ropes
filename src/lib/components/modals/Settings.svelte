@@ -74,7 +74,7 @@
         <Switch bind:checked={$settings.openNonRopesInNewTab} />
       </div>
       <p>If set, links (that aren't search pages) will open in a new tab.</p>
-      <p>If unset, links will open in this tab.</p>
+      <p>If unset, all links will open in this tab.</p>
     </li>
 
     <li>
