@@ -98,7 +98,7 @@
             >
             <Popover.Content class="z-20 max-h-96 min-w-96 overflow-y-scroll">
               <div class="flex flex-wrap gap-x-[2ch] font-mono underline decoration-primary">
-                {#each torrent.tags.sort() as tag (tag)}
+                {#each torrent.tags.sort() as tag}
                   <div>
                     {#if $settings.spaMode}<Link on:click={() => searchTag(tag)} class="inline"
                         >{tag}</Link

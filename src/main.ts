@@ -35,8 +35,9 @@ function placeLoadButton() {
 function createEntrypointDiv() {
   const entrypointDiv = document.createElement('div');
   entrypointDiv.id = appId;
-  document.body.appendChild(entrypointDiv);
-  return entrypointDiv.attachShadow({ mode: 'open' });
+  // document.body.appendChild(entrypointDiv);
+  // return entrypointDiv.attachShadow({ mode: 'open' });
+  return document.body.appendChild(entrypointDiv);
 }
 
 if (pageTypeIsSupported()) {

@@ -22,6 +22,9 @@ The types of changes are:
 
 - Revert some work on breakpoints that caused jerky layout-shift when resizing
   the window.
+- Change some internals with how Ropes is mounted inside the Empornium page.
+  This should better prevent styles from Empornium and other userscripts from
+  contaminating Ropes' styles.
 
 ## [7.0.0](https://github.com/tim784/ropes/commits/v7.0.0) - 2024-08-22
 

@@ -4,8 +4,7 @@
   import { sfwTitleSwap } from '$actions/sfwTitleSwap';
   import { darkMode } from '$actions/darkMode';
   import { theme } from '$actions/theme';
-  import { addOuterStylesheet } from '$actions/addOuterStylesheet';
-  import { hideEmporniumElements } from '$actions/hideEmporniumElements';
+  import { cleanseEmpornium } from '$actions/cleanseEmpornium';
   import { page, isSearchPage } from '$stores/page';
   import Search from './Search.svelte';
   import ToastContainer from './ToastContainer.svelte';
@@ -24,9 +23,8 @@
 
 {#if $enabled}
   <div
-    use:addOuterStylesheet
     use:addAppStylesheet
-    use:hideEmporniumElements
+    use:cleanseEmpornium
     use:sfwTitleSwap
     use:darkMode
     use:theme
@@ -42,8 +40,8 @@
       {/if}
     </main>
 
-    <ToastContainer />
     <div bind:this={portalElement} id={makeAppIdentifier('portal')} />
+    <ToastContainer />
     <ScrollToTop />
   </div>
 {/if}
