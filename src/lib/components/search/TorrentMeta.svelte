@@ -8,8 +8,10 @@
   import ArrowUp from 'lucide-svelte/icons/arrow-up';
   import FileCheck from 'lucide-svelte/icons/file-check';
   import TorrentBadges from '$components/search/TorrentBadges.svelte';
-  import { TAGLIST_NAME } from '$src/lib/gather/search';
+  import { TAGLIST_NAME } from '$gather/search';
   import { settings } from '$stores/settings';
+  import * as Tooltip from '$components/ui/tooltip/index.js';
+  import InlineSeparator from '$components/ui/InlineSeparator.svelte';
 
   export let torrent: Torrent;
   export let hasSeen: boolean;
@@ -20,8 +22,17 @@
   $: seeders = formatNumber(torrent.seeders);
   $: leechers = formatNumber(torrent.leechers);
   $: snatches = formatNumber(torrent.snatches);
-
-  const relativeDateTime = getRelativeDifference(torrent.uploadDateTime);
+  $: absoluteDateTime = torrent.uploadDateTime.toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
+  });
+  $: relativeDateTime = getRelativeDifference(torrent.uploadDateTime);
+  $: isoDateTime = torrent.uploadDateTime.toISOString();
 
   function searchTag(tag: string) {
     const formData = new FormData();
@@ -39,50 +50,78 @@
 <div class="flex flex-col">
   <TorrentBadges {torrent} {hasSeen} {isBookmarked} {isPersonalDoubleseed} {isPersonalFreeleech} />
 
-  <Link href={torrent.pageHref} class="my-2 underline hover:text-foreground/80" variant="foreground">
+  <Link
+    href={torrent.pageHref}
+    class="my-2 underline hover:text-foreground/80"
+    variant="foreground"
+  >
     <h3 class="inline text-xl font-bold tracking-tight">
       {torrent.name}
     </h3>
   </Link>
 
   <div class="space-y-0.5">
-    <div class="meta-list">
+    <div>
       <span>{torrent.size}</span>
-      <date
-        class="underline decoration-dotted"
-        title={torrent.uploadDateTime.toLocaleString(undefined, {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          weekday: 'long',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true
-        })}
+
+      <InlineSeparator />
+
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild let:builder>
+          <date
+            class="underline decoration-dotted"
+            datetime={isoDateTime}
+            use:builder.action
+            {...builder}
+          >
+            {relativeDateTime}
+            <span class="sr-only">Uploaded at {absoluteDateTime}</span>
+          </date>
+        </Tooltip.Trigger>
+        <Tooltip.Content>{absoluteDateTime}</Tooltip.Content></Tooltip.Root
       >
-        {relativeDateTime}
-      </date>
     </div>
 
-    <div class="meta-list">
-      <span title="{seeders} Seeders">
-        <ArrowUp class="me-0.5 inline size-5" />
-        <span class="underline decoration-dotted">{seeders}</span>
-        <span class="sr-only">Seeders</span>
-      </span>
-      <span title="{leechers} Leechers">
-        <ArrowDown class="me-0.5 inline size-5" />
-        <span class="underline decoration-dotted">{leechers}</span>
-        <span class="sr-only">Leechers</span>
-      </span>
-      <span title="{snatches} Snatches">
-        <FileCheck class="me-0.5 inline size-5" />
-        <span class="underline decoration-dotted">{snatches}</span>
-        <span class="sr-only">Snatches</span>
-      </span>
+    <div>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild let:builder>
+          <span use:builder.action {...builder}>
+            <ArrowUp class="inline size-5" />
+            <span class="underline decoration-dotted">{seeders}</span>
+            <span class="sr-only">Seeders</span>
+          </span></Tooltip.Trigger
+        >
+        <Tooltip.Content>Seeders</Tooltip.Content></Tooltip.Root
+      >
+
+      <InlineSeparator />
+
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild let:builder>
+          <span use:builder.action {...builder}>
+            <ArrowDown class=" inline size-5" />
+            <span class="underline decoration-dotted">{leechers}</span>
+            <span class="sr-only">Leechers</span>
+          </span>
+        </Tooltip.Trigger>
+        <Tooltip.Content>Leechers</Tooltip.Content>
+      </Tooltip.Root>
+
+      <InlineSeparator />
+
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild let:builder>
+          <span use:builder.action {...builder}>
+            <FileCheck class=" inline size-5" />
+            <span class="underline decoration-dotted">{snatches}</span>
+            <span class="sr-only">Snatches</span>
+          </span>
+        </Tooltip.Trigger>
+        <Tooltip.Content>Snatches</Tooltip.Content>
+      </Tooltip.Root>
     </div>
 
-    <div class="meta-list">
+    <div>
       <span>
         {#if torrent.uploader}
           <Link href={torrent.uploader.href}>@{torrent.uploader.name}</Link>
@@ -90,7 +129,10 @@
           Anonymous
         {/if}
       </span>
+
       {#if torrent.tags !== null}
+        <InlineSeparator />
+
         <span>
           <Popover.Root>
             <Popover.Trigger asChild let:builder
@@ -113,10 +155,3 @@
     </div>
   </div>
 </div>
-
-<style lang="postcss">
-  .meta-list > *:not(:last-child)::after {
-    content: '•';
-    margin-inline-start: 0.5rem;
-  }
-</style>

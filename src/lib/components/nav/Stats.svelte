@@ -10,6 +10,7 @@
   import FileUp from 'lucide-svelte/icons/file-up';
   import UserPlus from 'lucide-svelte/icons/user-plus';
   import { formatNumber } from '$src/lib/util';
+  import * as Tooltip from '$components/ui/tooltip/index.js';
 
   let className: (typeof $$props)['class'] = undefined;
   export { className as class };
@@ -25,38 +26,84 @@
   not even sure how you get them, and people shouldn't be reminded to ask about
   them (e.g. via forum, etc) -->
   {#if $locals.inviteCount > 0}
-    <li title="Invites Available">
-      <UserPlus />{$locals.inviteCount}<span class="sr-only">Invites Available</span>
-    </li>
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild let:builder>
+        <li use:builder.action {...builder}>
+          <UserPlus />{$locals.inviteCount}<span class="sr-only">Invites Available</span>
+        </li></Tooltip.Trigger
+      >
+      <Tooltip.Content>Invites Available</Tooltip.Content>
+    </Tooltip.Root>
   {/if}
 
-  <li title="Torrents Seeding">
-    <FileUp />{formatNumber($locals.torrentsSeedingCount)}<span class="sr-only"
-      >Torrents Seeding</span
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <FileUp />{formatNumber($locals.torrentsSeedingCount)}<span class="sr-only"
+          >Torrents Seeding</span
+        >
+      </li></Tooltip.Trigger
     >
-  </li>
-  <li title="Torrents Leeching">
-    <FileDown />
-    {formatNumber($locals.torrentsLeechingCount)}<span class="sr-only">Torrents Leeching</span>
-  </li>
-  <li title="Upload Amount">
-    <CloudUpload />
-    {$locals.uploadedBytes}<span class="sr-only">Upload Amount</span>
-  </li>
-  <li title="Download Amount">
-    <CloudDownload />
-    {$locals.downloadedBytes}<span class="sr-only">Download Amount</span>
-  </li>
-  <li title="Ratio">
-    <Ratio />
-    {$locals.ratio}<span class="sr-only">Ratio</span>
-  </li>
-  <li title="Credit Balance">
-    <Coins />
-    {formatNumber($locals.creditCount)}<span class="sr-only">Credit Balance</span>
-  </li>
-  <li title="Slots Available">
-    <Box />
-    {formatNumber($locals.slotCount)}<span class="sr-only">Slots Available</span>
-  </li>
+    <Tooltip.Content>Torrents Seeding</Tooltip.Content>
+  </Tooltip.Root>
+
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <FileDown />
+        {formatNumber($locals.torrentsLeechingCount)}<span class="sr-only">Torrents Leeching</span>
+      </li></Tooltip.Trigger
+    >
+    <Tooltip.Content>Torrents Leeching</Tooltip.Content>
+  </Tooltip.Root>
+
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <CloudUpload />
+        {$locals.uploadedBytes}<span class="sr-only">Upload Amount</span>
+      </li></Tooltip.Trigger
+    >
+    <Tooltip.Content>Upload Amount</Tooltip.Content>
+  </Tooltip.Root>
+
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <CloudDownload />
+        {$locals.downloadedBytes}<span class="sr-only">Download Amount</span>
+      </li></Tooltip.Trigger
+    >
+    <Tooltip.Content>Download Amount</Tooltip.Content>
+  </Tooltip.Root>
+
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <Ratio />
+        {$locals.ratio}<span class="sr-only">Ratio</span>
+      </li></Tooltip.Trigger
+    >
+    <Tooltip.Content>Ratio</Tooltip.Content>
+  </Tooltip.Root>
+
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <Coins />
+        {formatNumber($locals.creditCount)}<span class="sr-only">Credit Balance</span>
+      </li></Tooltip.Trigger
+    >
+    <Tooltip.Content>Credit Balance</Tooltip.Content>
+  </Tooltip.Root>
+
+  <Tooltip.Root>
+    <Tooltip.Trigger asChild let:builder>
+      <li use:builder.action {...builder}>
+        <Box />
+        {formatNumber($locals.slotCount)}<span class="sr-only">Slots Available</span>
+      </li></Tooltip.Trigger
+    >
+    <Tooltip.Content>Slots Available</Tooltip.Content>
+  </Tooltip.Root>
 </ul>

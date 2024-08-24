@@ -16,6 +16,17 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [9.0.0](https://github.com/tim784/ropes/commits/v9.0.0) - 2024-08-24
+
+### Added
+
+- Most buttons that only displayed an icon now have a tooltip that describes
+  their function.
+
+### Fixed
+
+- The Scroll to Top button no longer blocks content underneath it.
+
 ## [8.0.0](https://github.com/tim784/ropes/commits/v8.0.0) - 2024-08-24
 
 ### Fixed

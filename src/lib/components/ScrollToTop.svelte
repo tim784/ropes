@@ -3,6 +3,7 @@
   import Button from './ui/Button.svelte';
   import ArrowUpToLine from 'lucide-svelte/icons/arrow-up-to-line';
   import { fly } from 'svelte/transition';
+  import * as Tooltip from '$components/ui/tooltip/index.js';
 
   export let thresholdYPixels: number = 100;
   let visible = false;
@@ -25,14 +26,23 @@
 </script>
 
 {#if visible}
-  <div class="fixed inset-x-0 bottom-0 scroll-to-top" transition:fly={{ y: 100 }}>
-    <div class="max-w-screen-3xl mx-auto w-full">
-      <div class="ml-auto w-max">
-        <Button on:click={scrollToTop} title="Scroll to Top" size="round-icon" class="border-2 me-4 mb-4">
+  <div
+    class="scroll-to-top fixed bottom-4 right-[calc(max((100%_-_2560px)_/_2,_0px)_+_16px)]"
+    transition:fly={{ y: 100 }}
+  >
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild let:builder>
+        <Button
+          on:click={scrollToTop}
+          size="round-icon"
+          class="border-2"
+          builders={[builder]}
+        >
           <ArrowUpToLine class="size-6" />
           <span class="sr-only">Scroll to top</span>
-        </Button>
-      </div>
-    </div>
+        </Button></Tooltip.Trigger
+      >
+      <Tooltip.Content>Scroll to top</Tooltip.Content>
+    </Tooltip.Root>
   </div>
 {/if}

@@ -4,6 +4,7 @@
   import Button from '$components/ui/Button.svelte';
   import * as DropdownMenu from '$components/ui/dropdown-menu';
   import { settings } from '$stores/settings';
+  import * as Tooltip from '$components/ui/tooltip/index.js';
 
   $: hasAlerts = $locals.alerts.length > 0;
   $: t = $settings.openNonRopesInNewTab ? { target: '_blank' } : {};
@@ -12,7 +13,14 @@
 <DropdownMenu.Root>
   <DropdownMenu.Trigger asChild let:builder>
     <Button builders={[builder]} variant="ghost" size="icon" class="relative">
-      <Rss />
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild let:builder={tooltipBuilder}>
+          <div use:tooltipBuilder.action {...tooltipBuilder}>
+            <Rss />
+          </div>
+        </Tooltip.Trigger>
+        <Tooltip.Content>Show Notifications</Tooltip.Content></Tooltip.Root
+      >
       <span class="sr-only">Notifications</span>
       {#if hasAlerts}
         <span
