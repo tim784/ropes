@@ -1,13 +1,10 @@
 <script lang="ts">
-  import type { Torrent } from '$gather/torrents';
+  import { type Torrent, groupTorrents } from '$lib/torrent';
   import type { Me } from '$gather/me';
-  import TorrentComponent from './Torrent.svelte';
-  import { getSfwTorrent } from '$lib/sfwMode';
-  import { settings } from '$stores/settings';
+  import TorrentGroup from './TorrentGroup.svelte';
   import { seenTorrents } from '$stores/seen';
   import { onDestroy, setContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
-  import Torrent from './Torrent.svelte';
 
   export let torrentsPromise: Promise<Torrent[]>;
   export let mePromise: Promise<Me>;
@@ -34,34 +31,6 @@
       window.scrollTo({ top: 0 });
     }
   })(torrentsPromise);
-
-  /**
-   * Group torrents by imageHref into an array of arrays of torrents. Torrents with
-   * null imageHref are grouped separately. The order of the torrents is preserved, except of course,
-   * for grouped torrents being consecutive.
-   *
-   * @param torrents The torrents to group
-   *
-   * @returns An array of arrays of torrents
-   */
-  function groupTorrents(torrents: Torrent[]): Torrent[][] {
-    const groups = new Map<string, Torrent[]>();
-    let nullKey = 0;
-
-    const getNullKey = () => {
-      return (nullKey++).toString();
-    };
-
-    for (const torrent of torrents) {
-      const key = torrent.imageHref ?? getNullKey();
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-      groups.get(key)?.push(torrent);
-    }
-
-    return [...groups.values()];
-  }
 
   // set up intersection observer for when torrents are in the viewport
   const intersectionObserver = new IntersectionObserver(
@@ -102,9 +71,9 @@
       {/each}
     {:then [torrents, me]}
       {@const groups = groupTorrents(torrents)}
-      {#each torrents as torrent (torrent.id)}
+      {#each groups as group (group[0].torrent.id)}
         <li>
-          <TorrentComponent torrent={$settings.sfwMode ? getSfwTorrent(torrent) : torrent} {me} />
+          <TorrentGroup {group} {me} />
         </li>
       {/each}
     {/await}

@@ -1,5 +1,5 @@
 import stockPhotos from '$src/stockPhotos.json';
-import { type Torrent } from '$gather/torrents';
+import { type Torrent } from './torrent';
 import { User } from './gather/user';
 
 const names = [

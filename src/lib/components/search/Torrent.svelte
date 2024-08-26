@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { DoubleseedState, FreeleechState, type Torrent } from '$gather/torrents';
+  import { type Torrent, DoubleseedState, FreeleechState } from '$lib/torrent';
   import TorrentMeta from './TorrentMeta.svelte';
   import Button from '$components/ui/Button.svelte';
   import type { Me } from '$gather/me';
@@ -17,11 +17,15 @@
   import { fade } from 'svelte/transition';
   import * as Dialog from '$components/ui/dialog';
   import { portal } from '$stores/portal';
+  import { createEventDispatcher } from 'svelte';
 
   const observer = getContext<IntersectionObserver>('intersectionObserver');
+  const dispatch = createEventDispatcher();
 
   export let torrent: Torrent;
   export let me: Me;
+  export let allVariations: string[];
+  export let thisVariation: string;
   // we don't want this to be reactive on seenTorrents. otherwise, everything
   // would be immediately called seen.
   let hasSeenAtLoad = get(seenTorrents).has(torrent.id);
@@ -52,6 +56,10 @@
     isPersonalDoubleseed = true;
   }
 
+  function changeVariation(variation: string) {
+    dispatch('changeVariation', variation);
+  }
+
   onMount(() => {
     observer.observe(el);
     return () => {
@@ -61,7 +69,7 @@
 </script>
 
 <div
-  class="group flex max-w-full flex-col items-center overflow-hidden rounded-lg bg-card border"
+  class="group flex max-w-full flex-col items-center overflow-hidden rounded-lg border bg-card"
   data-torrent-id={torrent.id}
   bind:this={el}
   transition:fade
@@ -97,6 +105,20 @@
       {isPersonalDoubleseed}
       {isPersonalFreeleech}
     />
+
+    {#if allVariations.length > 1}
+      <h4 class="sr-only text-sm text-muted-foreground">Variations</h4>
+      <div class="flex flex-wrap gap-2">
+        {#each allVariations as variation}
+          <Button
+            variant="outline"
+            size="sm"
+            class={`border-2 ${variation == thisVariation ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : 'border-transparent'}`}
+            on:click={() => changeVariation(variation)}>{variation}</Button
+          >
+        {/each}
+      </div>
+    {/if}
 
     <TorrentActions
       {torrent}

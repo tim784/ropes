@@ -1,54 +1,10 @@
 import { querySelector, querySelectorAll, removeNonNumericChars } from './util';
 import { parseEmpDate } from '../util';
 import { User } from './user';
-
-export enum InteractionState {
-  None,
-  Seeding, // the torrent has been downloaded and is being seeded
-  Snatched, // the torrent has been downloaded and is not being seeded
-  Leeching, // the torrent is downloading
-  Grabbed // the torrent file has been downloaded
-}
-
-export enum FreeleechState {
-  None,
-  Personal, // purchased with slot
-  Sitewide, // special site holiday or something
-  Unlimited // free forever if >30GB (or purchased by uploader)
-}
-
-export enum DoubleseedState {
-  None,
-  Personal, // purchased with slot
-  Sitewide // special site holiday or something, never seen this
-}
-
-export type Torrent = {
-  id: string;
-  name: string;
-  pageHref: string;
-  imageHref: string | null;
-  downloadHref: string | null;
-  freeleechHref: string | null;
-  doubleseedHref: string | null;
-  uploadDateTime: Date;
-  size: string;
-  snatches: number;
-  seeders: number;
-  leechers: number;
-  uploader: User | null;
-  isWarned: boolean;
-  freeleechState: FreeleechState;
-  doubleseedState: DoubleseedState;
-  interactionState: InteractionState;
-  tags: string[] | null;
-  isBookmarked: boolean;
-};
+import { DoubleseedState, FreeleechState, InteractionState, type Torrent } from '../torrent';
 
 type TorrentElement = Element;
 type TorrentNameColumnElement = Element;
-
-const domParser = new DOMParser();
 
 function getNthColumnText(torrentElement: TorrentElement, n: number): string {
   return querySelector(`td:nth-of-type(${n})`, torrentElement)!.textContent!.trim();

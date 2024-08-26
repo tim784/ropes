@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Torrent } from '$gather/torrents';
+  import { type Torrent } from '$lib/torrent';
   import BaseToast from './BaseToast.svelte';
 
   export let torrent: Torrent;

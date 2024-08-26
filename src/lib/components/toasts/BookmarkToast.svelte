@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Torrent } from '$gather/torrents';
+  import { type Torrent } from '$lib/torrent';
   import type { Action as BookmarkAction } from '$api/bookmark';
   import TorrentToast from './TorrentToast.svelte';
 

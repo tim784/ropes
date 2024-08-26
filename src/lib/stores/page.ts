@@ -1,5 +1,6 @@
 import { writable, get } from 'svelte/store';
-import { type Torrent, getTorrents } from '$gather/torrents';
+import { getTorrents } from '$gather/torrents';
+import { type Torrent } from '$lib/torrent';
 import { type Search, getSearch } from '$gather/search';
 import { type Pagination, getPagination } from '$gather/pagination';
 import { getMe, type Me } from '$gather/me';

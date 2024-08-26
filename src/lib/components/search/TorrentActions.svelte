@@ -1,6 +1,6 @@
 <script lang="ts">
   import { locals } from '$src/lib/stores/locals';
-  import { type Torrent } from '$gather/torrents';
+  import { type Torrent } from '$lib/torrent';
   import type { Me } from '$gather/me';
   import { toasts } from '$stores/toasts';
   import DoubleUp from '$icons/DoubleUp.svelte';
@@ -49,7 +49,11 @@
 
   <DropdownMenu.Root>
     <DropdownMenu.Trigger asChild let:builder>
-      <Button builders={[builder]} class="rounded-none rounded-e-lg px-2" aria-label="Torrent Actions">
+      <Button
+        builders={[builder]}
+        class="rounded-none rounded-e-lg px-2"
+        aria-label="Torrent Actions"
+      >
         <EllipsisVertical class="size-6" /></Button
       >
     </DropdownMenu.Trigger>

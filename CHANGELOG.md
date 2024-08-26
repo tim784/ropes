@@ -16,6 +16,14 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [10.0.0](https://github.com/tim784/ropes/commits/v10.0.0) - 2024-08-26
+
+### Added
+
+- Torrent variations (e.g., 720p and 1080p) are now grouped. This means that if
+  a torrent has multiple variations, then buttons for each will be displayed on
+  a single torrent card. See the details of the group algorihm [here].
+
 ## [9.0.0](https://github.com/tim784/ropes/commits/v9.0.0) - 2024-08-24
 
 ### Added

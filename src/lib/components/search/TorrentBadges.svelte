@@ -1,10 +1,5 @@
 <script lang="ts">
-  import {
-    DoubleseedState,
-    FreeleechState,
-    InteractionState,
-    type Torrent
-  } from '$gather/torrents';
+  import { type Torrent, DoubleseedState, FreeleechState, InteractionState } from '$lib/torrent';
   import { Badge, type Size } from '$components/ui/badge';
 
   export let torrent: Torrent;
