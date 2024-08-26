@@ -20,9 +20,15 @@ The types of changes are:
 
 ### Added
 
-- Torrent variations (e.g., 720p and 1080p) are now grouped. This means that if
-  a torrent has multiple variations, then buttons for each will be displayed on
-  a single torrent card. See the details of the group algorihm [here].
+- Torrent variations are now grouped (such as resolution, encoding, container).
+  This means that if a torrent has multiple variations, then buttons for each
+  will be displayed on a single torrent card. See the details of the group
+  algorihm
+  [here](https://github.com/tim784/ropes/blob/8cdc4afc110110958482926f04433d4724d98827/src/lib/torrent.ts#L219).
+
+### Fixed
+
+- The Settings modal's close button now always works.
 
 ## [9.0.0](https://github.com/tim784/ropes/commits/v9.0.0) - 2024-08-24
 

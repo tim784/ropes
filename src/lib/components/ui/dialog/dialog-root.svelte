@@ -3,8 +3,10 @@
   import { portal } from '$stores/portal';
 
   type $$Props = DialogPrimitive.Props;
+
+  export let open = false;
 </script>
 
-<DialogPrimitive.Root portal={$portal} {...$$restProps}>
+<DialogPrimitive.Root portal={$portal} {...$$restProps} bind:open>
   <slot />
 </DialogPrimitive.Root>
