@@ -12,6 +12,9 @@
     "forumHref": "/forum/thread/143907"
   },
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "vite --open",
     "build": "vite build",
