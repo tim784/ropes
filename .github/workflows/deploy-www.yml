@@ -40,6 +40,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           cache: 'npm'
+          node-version: '>=22.0.0'
 
       - name: Install Dependencies
         run: npm install
