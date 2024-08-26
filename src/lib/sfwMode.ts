@@ -159,7 +159,7 @@ export function getSfwTorrent(ref: Torrent): Torrent {
 
     name: getSfwName(),
 
-    tags: ref.tags.map(getSfwTag),
+    tags: ref.tags?.map(getSfwTag) ?? null,
 
     uploader: ref.uploader ? User.fromNameAndHref(getSfwUsername(), ref.uploader.href) : null,
 

@@ -3,6 +3,8 @@
   import type { Me } from '$gather/me';
   import TorrentComponent from './Torrent.svelte';
   import type { ComponentEvents } from 'svelte';
+  import { settings } from '$stores/settings';
+  import { getSfwTorrent } from '$lib/sfwMode';
 
   export let group: TorrentInGroup[];
   export let me: Me;
@@ -11,7 +13,7 @@
   $: if (group.length === 0) {
     throw new Error('TorrentGroup should be created with at least one torrent');
   }
-  $: torrent = group[index].torrent;
+  $: torrent = $settings.sfwMode ? getSfwTorrent(group[index].torrent) : group[index].torrent;
   $: thisVariation = group[index].variationString;
   $: allVariations = group.map((t) => t.variationString);
 
