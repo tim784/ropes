@@ -139,7 +139,11 @@
               </Button>
             {/if}
           {:else}
-            <Button size="sm" class="font-bold" variant="outline" disabled>
+            <Button
+              size="sm"
+              class="cursor-default border-2 border-primary font-bold hover:bg-background active:border-primary active:bg-background"
+              variant="outline"
+            >
               {pageItem.number}
             </Button>
           {/if}
