@@ -47,36 +47,41 @@ const tokenPattern = /[a-z0-9\.\-]+/gim;
 const variationTokenPatterns = [
   // resolution
   // standard heights, optional p or i suffix
-  /^(?:120|144|240|360|480|720|1080|2160|4320)(?:p|i)?$/i,
+  /^(?:120|144|240|360|480|720|1080|2160|4320|8640)(?:p|i)?$/i,
   // arbirartry heights, but must have p or i suffix to avoid matching years or
   // other numbers
   /^\d{3,4}(?:p|i)$/i,
   // 2k, 4k, 8K, 16k(?), etc
-  /^\dk$/i,
+  /^\d{1,2}k$/i,
   // sd, hd, uhd
   /^(?:s|h|uh)d$/i,
 
   // VR tags
   // psvr, gearvr, oculus, go, vive, rift
-  /^(?:(?:ps|gear)vr)|oculus|go|vive|rift$/i,
-
-  // request
-  // req, request
-  /^req(?:uest)?$/i,
+  /^(?:(?:(?:ps|gear)vr)|oculus|go|vive|rift)$/i,
 
   // encoders
   // x264, h265, h.265, etc
   /^[xh]\.?26[45]$/i,
   // hevc, avc
-  /^hevc|avc$/i,
-  /^re(?:-)?encode$/i,
+  /^(?:hevc|avc)$/i,
 
   // containers (that might themselves be encoders too)
-  /^mp4|mkv|avi|mov|wmv|flv|webm|mpeg|mpg|vob|divx|xvid$/i
+  /^(?:mp4|mkv|avi|mov|wmv|flv|webm|mpeg|mpg|vob|divx|xvid)$/i
 ];
 
+const ignoredTokenPatterns = [/^req(?:uest)?$/i, /^re(?:-)?encode$/i, /^ai$/i, /^upscale$/i];
+
+function matchesPatterns(s: string, patterns: RegExp[]): boolean {
+  return patterns.some((pattern) => pattern.test(s));
+}
+
 function isVariationToken(token: string): boolean {
-  return variationTokenPatterns.some((pattern) => pattern.test(token));
+  return matchesPatterns(token, variationTokenPatterns);
+}
+
+function isIgnoredToken(token: string): boolean {
+  return matchesPatterns(token, ignoredTokenPatterns);
 }
 
 function tokenize(s: string): Set<string> {
@@ -167,7 +172,7 @@ export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
 
         // don't need caseInsensitiveDifference here, our regexes are case-insensitive
         const difference = torrent.tokens.difference(groupTorrent.tokens);
-        if (![...difference].every(isVariationToken)) {
+        if (![...difference].every((token) => isVariationToken(token) || isIgnoredToken(token))) {
           isSimilarToGroup = false;
           break;
         }

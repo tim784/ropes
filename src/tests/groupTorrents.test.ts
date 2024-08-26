@@ -83,7 +83,7 @@ test.each([
       { name: 'SLROriginals - GFE: Retreat - Angelina Moon (GearVR)', variationString: 'GearVR' }
     ]
   ],
-  
+
   [
     [
       {
@@ -153,12 +153,32 @@ test.each([
     [
       {
         name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p, x265 reencode',
-        variationString: '1080p x265 reencode'
+        variationString: '1080p x265'
       },
       {
         name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p',
         variationString: '1080p'
       }
+    ]
+  ],
+
+  [
+    [
+      {
+        name: 'Slammed brides Goes Wet, Nuria Millan 6on1, ATM, Balls Deep, DAP, Extreme Deepthroat, Rough Sex, Big Gapes, ButtRose, Pee Drink/Shower, Cum in Mouth, Swallow GIO2797 [720p]',
+        variationString: '720p'
+      },
+      {
+        name: 'Slammed brides Goes Wet, Nuria Millan 6on1, ATM, Balls Deep, DAP, Extreme Deepthroat, Rough Sex, Big Gapes, ButtRose, Pee Drink/Shower, Cum in Mouth, Swallow GIO2797 [1080p]',
+        variationString: '1080p'
+      }
+    ]
+  ],
+
+  [
+    [
+      { name: '[REQ] Flesh Hunter 1 (2002) 1080p (AI Upscale + QTGMC)', variationString: '1080p' },
+      { name: '[REQ] Flesh Hunter 1 (2002) 720p (AI Upscale + QTGMC)', variationString: '720p' }
     ]
   ]
 ] as { name: string; variationString: string }[][][])(
