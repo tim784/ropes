@@ -113,7 +113,7 @@
           <Button
             variant="outline"
             size="sm"
-            class={`border-2 ${variation == thisVariation ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : 'border-transparent'}`}
+            class={`border-2 ${variation == thisVariation ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : ''}`}
             on:click={() => changeVariation(variation)}>{variation}</Button
           >
         {/each}
