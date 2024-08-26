@@ -41,7 +41,7 @@ function expectGroupsEqual(actual: TorrentInGroup[][], expected: Torrent[][]) {
   expect(actualNames).toEqual(expectedNames);
 }
 
-function expectUniqueTokenStringEqual(actual: TorrentInGroup[][], expected: string[][]) {
+function expectvariationStringEqual(actual: TorrentInGroup[][], expected: string[][]) {
   for (let groupIdx = 0; groupIdx < actual.length; groupIdx++) {
     for (let torrentIdx = 0; torrentIdx < actual[groupIdx].length; torrentIdx++) {
       expect(actual[groupIdx][torrentIdx].variationString).toBe(expected[groupIdx][torrentIdx]);
@@ -57,15 +57,15 @@ test.each([
     [
       {
         name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (Oculus 8K)',
-        uniqueTokenString: 'Oculus 8K'
+        variationString: 'Oculus 8K'
       },
       {
         name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (GearVR)',
-        uniqueTokenString: 'GearVR'
+        variationString: 'GearVR'
       },
       {
         name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (Oculus, Go 4K)',
-        uniqueTokenString: 'Oculus Go 4K'
+        variationString: 'Oculus Go 4K'
       }
     ]
   ],
@@ -74,64 +74,60 @@ test.each([
     [
       {
         name: 'SLROriginals - GFE: Retreat - Angelina Moon (Oculus 8K)',
-        uniqueTokenString: 'Oculus 8K'
+        variationString: 'Oculus 8K'
       },
       {
         name: 'SLROriginals - GFE: Retreat - Angelina Moon (Oculus, Go 4K)',
-        uniqueTokenString: 'Oculus Go 4K'
+        variationString: 'Oculus Go 4K'
       },
-      { name: 'SLROriginals - GFE: Retreat - Angelina Moon (GearVR)', uniqueTokenString: 'GearVR' }
+      { name: 'SLROriginals - GFE: Retreat - Angelina Moon (GearVR)', variationString: 'GearVR' }
     ]
   ],
-
-  // note that Oculus does _not_ show up in the uniqueTokenStrings here because
-  // it is shared by all torrents.
+  
   [
     [
       {
         name: '[WankzVR] Reflex Action - Coco Lovelock (Oculus/Vive) 4K H.265 2300P',
-        uniqueTokenString: 'Vive 4K H.265 2300P'
+        variationString: 'Oculus Vive 4K H.265 2300P'
       },
-      { name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus 7K)', uniqueTokenString: '7K' },
+      { name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus 7K)', variationString: 'Oculus 7K' },
       {
         name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus, Go 4K)',
-        uniqueTokenString: 'Go 4K'
+        variationString: 'Oculus Go 4K'
       }
     ]
   ],
 
-  // ditto for this one
   [
     [
       {
         name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 8K)',
-        uniqueTokenString: '8K'
+        variationString: 'Oculus 8K'
       },
       {
         name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 6K)',
-        uniqueTokenString: '6K'
+        variationString: 'Oculus 6K'
       },
       {
         name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus, Go 4K)',
-        uniqueTokenString: 'Go 4K'
+        variationString: 'Oculus Go 4K'
       }
     ]
   ],
 
-  // and ditto
   [
     [
       {
         name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus 8K)',
-        uniqueTokenString: '8K'
+        variationString: 'Oculus 8K'
       },
       {
         name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus 6K)',
-        uniqueTokenString: '6K'
+        variationString: 'Oculus 6K'
       },
       {
         name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus, Go 4K)',
-        uniqueTokenString: 'Go 4K'
+        variationString: 'Oculus Go 4K'
       }
     ]
   ],
@@ -140,27 +136,56 @@ test.each([
     [
       {
         name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (Oculus 8K, UHD)',
-        uniqueTokenString: 'Oculus 8K UHD'
+        variationString: 'Oculus 8K UHD'
       },
       {
         name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (Oculus 8K)',
-        uniqueTokenString: 'Oculus 8K'
+        variationString: 'Oculus 8K'
       },
       {
         name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (PSVR, GearVR)',
-        uniqueTokenString: 'PSVR GearVR'
+        variationString: 'PSVR GearVR'
+      }
+    ]
+  ],
+
+  [
+    [
+      {
+        name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p, x265 reencode',
+        variationString: '1080p x265 reencode'
+      },
+      {
+        name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p',
+        variationString: '1080p'
       }
     ]
   ]
-] as { name: string; uniqueTokenString: string }[][][])(
+] as { name: string; variationString: string }[][][])(
   'should group similar torrents %s',
   (testCase) => {
     const torrents = testCase.map((tc) => tc.name).map(tt);
     const groups = groupTorrents(torrents);
     expectGroupsEqual(groups, [torrents]);
-    expectUniqueTokenStringEqual(groups, [testCase.map((tc) => tc.uniqueTokenString)]);
+    expectvariationStringEqual(groups, [testCase.map((tc) => tc.variationString)]);
   }
 );
+
+test.each([
+  [
+    [
+      '[ULTRAFILMS.COM] Image siterip , 626 sets [2021, 2022, 2023]',
+      '[ULTRAFILMS.COM] Image siterip , 406 sets [2019, 2020]'
+    ]
+  ]
+])('should not group dissimilar torrents %s', (testCase) => {
+  const torrents = testCase.map(tt);
+  const groups = groupTorrents(torrents);
+  expectGroupsEqual(
+    groups,
+    torrents.map((t) => [t])
+  );
+});
 
 test('should order properly', (t) => {
   const groupATorrent1 = tt(

@@ -16,6 +16,12 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [11.0.0](https://github.com/tim784/ropes/commits/v11.0.0) - 2024-08-26
+
+### Changed
+
+- Torrent grouping is now more robust against some edge cases.
+
 ## [10.0.0](https://github.com/tim784/ropes/commits/v10.0.0) - 2024-08-26
 
 ### Added
@@ -23,8 +29,8 @@ The types of changes are:
 - Torrent variations are now grouped (such as resolution, encoding, container).
   This means that if a torrent has multiple variations, then buttons for each
   will be displayed on a single torrent card. See the details of the group
-  algorihm
-  [here](https://github.com/tim784/ropes/blob/8cdc4afc110110958482926f04433d4724d98827/src/lib/torrent.ts#L219).
+  algorithm
+  [here](https://github.com/tim784/ropes/blob/master/src/lib/torrent.ts).
 
 ### Fixed
 
