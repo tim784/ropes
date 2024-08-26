@@ -24,8 +24,9 @@
 
   export let torrent: Torrent;
   export let me: Me;
-  export let allVariations: string[];
+  export let allVariations: {str: string, index: number}[];
   export let thisVariation: string;
+  export let thisIndex: number;
   // we don't want this to be reactive on seenTorrents. otherwise, everything
   // would be immediately called seen.
   let hasSeenAtLoad = get(seenTorrents).has(torrent.id);
@@ -56,8 +57,9 @@
     isPersonalDoubleseed = true;
   }
 
-  function changeVariation(variation: string) {
-    dispatch('changeVariation', variation);
+  function changeVariation(index: number) {
+    if (index === thisIndex) return;
+    dispatch('changeVariation', index);
   }
 
   onMount(() => {
@@ -113,8 +115,8 @@
           <Button
             variant="outline"
             size="sm"
-            class={`border-2 ${variation == thisVariation ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : ''}`}
-            on:click={() => changeVariation(variation)}>{variation}</Button
+            class={`border-2 ${variation.index == thisIndex ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : ''}`}
+            on:click={() => changeVariation(variation.index)}>{variation}</Button
           >
         {/each}
       </div>

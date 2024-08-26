@@ -197,6 +197,12 @@ test.each([
       '[ULTRAFILMS.COM] Image siterip , 626 sets [2021, 2022, 2023]',
       '[ULTRAFILMS.COM] Image siterip , 406 sets [2019, 2020]'
     ]
+  ],
+  [
+    [
+      'Sirina news Amateur Pack',
+      'Sirina news Amateur Pack Part 2'
+    ]
   ]
 ])('should not group dissimilar torrents %s', (testCase) => {
   const torrents = testCase.map(tt);

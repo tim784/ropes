@@ -15,12 +15,14 @@
   }
   $: torrent = $settings.sfwMode ? getSfwTorrent(group[index].torrent) : group[index].torrent;
   $: thisVariation = group[index].variationString;
-  $: allVariations = group.map((t) => t.variationString);
+  $: allVariations = group.map((t, index) => ({str: t.variationString, index}));
 
   function handleChangeVariation(event: ComponentEvents<TorrentComponent>['changeVariation']) {
-    const newIndex = allVariations.indexOf(event.detail);
-    if (newIndex !== -1) {
+    const newIndex = event.detail;
+    if (newIndex >= 0 && newIndex < group.length) {
       index = newIndex;
+    } else {
+      console.error('Invalid index', newIndex);
     }
   }
 </script>
@@ -32,5 +34,6 @@
     on:changeVariation={handleChangeVariation}
     bind:allVariations
     bind:thisVariation
+    bind:thisIndex={index}
   />
 </div>
