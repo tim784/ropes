@@ -21,6 +21,8 @@ The types of changes are:
 ### Changed
 
 - Torrent grouping is now more robust against some edge cases.
+- The "See Tags" button got some additional styles for consistency with other
+  popovers.
 
 ### Fixed
 

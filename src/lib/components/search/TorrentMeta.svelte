@@ -136,8 +136,10 @@
             <Popover.Trigger asChild let:builder
               ><Link builders={[builder]} class="text-md">See tags</Link></Popover.Trigger
             >
-            <Popover.Content class="z-20 max-h-96 min-w-96 overflow-y-scroll">
-              <div class="flex flex-wrap gap-x-[2ch]">
+            <Popover.Content class="z-20 max-h-96 min-w-96 overflow-y-scroll p-1">
+              <p class="px-2 py-1.5 text-sm font-semibold">Tags</p>
+              <div class="-mx-1 my-1 h-px bg-muted" />
+              <div class="flex flex-wrap gap-x-[2ch] px-2 pb-2">
                 {#each torrent.tags.sort() as tag}
                   <div class="font-mono">
                     {#if $settings.spaMode}<Link

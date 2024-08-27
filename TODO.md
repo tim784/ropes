@@ -9,5 +9,3 @@
 
 - add feature cards to www page. the original forum post is uneditable and only
   mentions a subset of the features.
-
-- style See Tags popover similar to other popovers
