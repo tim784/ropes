@@ -1,10 +1,10 @@
 <script lang="ts">
   import { type Torrent, groupTorrents } from '$lib/torrent';
   import type { Me } from '$gather/me';
-  import TorrentGroup from './TorrentGroup.svelte';
   import { seenTorrents } from '$stores/seen';
   import { onDestroy, setContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
+  import TorrentComponent from './Torrent.svelte';
 
   export let torrentsPromise: Promise<Torrent[]>;
   export let mePromise: Promise<Me>;
@@ -73,7 +73,7 @@
       {@const groups = groupTorrents(torrents)}
       {#each groups as group (group[0].torrent.id)}
         <li>
-          <TorrentGroup {group} {me} />
+          <TorrentComponent {group} {me} />
         </li>
       {/each}
     {/await}

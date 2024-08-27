@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Torrent, DoubleseedState, FreeleechState } from '$lib/torrent';
+  import { DoubleseedState, FreeleechState } from '$lib/torrent';
   import TorrentMeta from './TorrentMeta.svelte';
   import Button from '$components/ui/Button.svelte';
   import type { Me } from '$gather/me';
@@ -17,49 +17,67 @@
   import { fade } from 'svelte/transition';
   import * as Dialog from '$components/ui/dialog';
   import { portal } from '$stores/portal';
-  import { createEventDispatcher } from 'svelte';
+  import { type TorrentInGroup } from '$lib/torrent';
+  import { settings } from '$stores/settings';
+  import { getSfwTorrent } from '$lib/sfwMode';
 
   const observer = getContext<IntersectionObserver>('intersectionObserver');
-  const dispatch = createEventDispatcher();
 
-  export let torrent: Torrent;
+  export let group: TorrentInGroup[];
   export let me: Me;
-  export let allVariations: {str: string, index: number}[];
-  export let thisVariation: string;
-  export let thisIndex: number;
+  let groupIndex: number = 0;
+  let localStates = group.map((t) => ({
+    isBookmarked: t.torrent.isBookmarked,
+    isPersonalFreeleech: t.torrent.freeleechState === FreeleechState.Personal,
+    isPersonalDoubleseed: t.torrent.doubleseedState === DoubleseedState.Personal
+  }));
+  $: localState = localStates[groupIndex];
+
+  $: if (group.length === 0) {
+    throw new Error('TorrentGroup should be created with at least one torrent');
+  }
+  $: torrent = $settings.sfwMode
+    ? getSfwTorrent(group[groupIndex].torrent)
+    : group[groupIndex].torrent;
+
   // we don't want this to be reactive on seenTorrents. otherwise, everything
   // would be immediately called seen.
-  let hasSeenAtLoad = get(seenTorrents).has(torrent.id);
+  const seenTorrentsOnLoad = get(seenTorrents);
+  $: hasSeenAtLoad = seenTorrentsOnLoad.has(torrent.id);
 
   let el: HTMLElement;
 
   // these are _local_ state. the user can do these things without reloading the page
-  let isBookmarked = torrent.isBookmarked;
-  let isPersonalFreeleech = torrent.freeleechState === FreeleechState.Personal;
-  let isPersonalDoubleseed = torrent.doubleseedState === DoubleseedState.Personal;
+  // $: isBookmarked = torrent.isBookmarked;
+  // $: isPersonalFreeleech = torrent.freeleechState === FreeleechState.Personal;
+  // $: isPersonalDoubleseed = torrent.doubleseedState === DoubleseedState.Personal;
 
   async function toggleBookmark() {
-    const action: BookmarkAction = isBookmarked ? 'remove' : 'add';
+    const action: BookmarkAction = localState.isBookmarked ? 'remove' : 'add';
     await bookmark(action, torrent.id, me.authKey);
-    isBookmarked = !isBookmarked;
+    localState.isBookmarked = !localState.isBookmarked;
     toasts.add(BookmarkToast, { action, torrent });
   }
 
   async function purchaseFreeleech() {
     locals.useSlot();
     toasts.add(SlotUsedToast, { slotType: 'freeleech', torrent });
-    isPersonalFreeleech = true;
+    localState.isPersonalFreeleech = true;
   }
 
   async function purchaseDoubleseed() {
     locals.useSlot();
     toasts.add(SlotUsedToast, { slotType: 'doubleseed', torrent });
-    isPersonalDoubleseed = true;
+    localState.isPersonalDoubleseed = true;
   }
 
-  function changeVariation(index: number) {
-    if (index === thisIndex) return;
-    dispatch('changeVariation', index);
+  function changeIndex(index: number) {
+    if (index === groupIndex) return;
+    if (index < 0 || index >= group.length) {
+      console.error('Invalid index', index);
+      return;
+    }
+    groupIndex = index;
   }
 
   onMount(() => {
@@ -103,20 +121,20 @@
     <TorrentMeta
       {torrent}
       hasSeen={hasSeenAtLoad}
-      {isBookmarked}
-      {isPersonalDoubleseed}
-      {isPersonalFreeleech}
+      isBookmarked={localState.isBookmarked}
+      isPersonalFreeleech={localState.isPersonalFreeleech}
+      isPersonalDoubleseed={localState.isPersonalDoubleseed}
     />
 
-    {#if allVariations.length > 1}
-      <h4 class="sr-only text-sm text-muted-foreground">Variations</h4>
+    {#if group.length > 1}
+      <h4 class="sr-only text-sm text-muted-foreground">Variants</h4>
       <div class="flex flex-wrap gap-2">
-        {#each allVariations as variation}
+        {#each group as groupItem, index (index)}
           <Button
             variant="outline"
             size="sm"
-            class={`border-2 ${variation.index == thisIndex ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : ''}`}
-            on:click={() => changeVariation(variation.index)}>{variation}</Button
+            class={`border-2 ${index === groupIndex ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : ''}`}
+            on:click={() => changeIndex(index)}>{groupItem.variantString}</Button
           >
         {/each}
       </div>
@@ -125,9 +143,9 @@
     <TorrentActions
       {torrent}
       {me}
-      {isPersonalFreeleech}
-      {isPersonalDoubleseed}
-      {isBookmarked}
+      isBookmarked={localState.isBookmarked}
+      isPersonalFreeleech={localState.isPersonalFreeleech}
+      isPersonalDoubleseed={localState.isPersonalDoubleseed}
       on:bookmarkToggle={toggleBookmark}
       on:purchaseFreeleech={purchaseFreeleech}
       on:purchaseDoubleseed={purchaseDoubleseed}

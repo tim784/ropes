@@ -11,7 +11,7 @@ import { expect, test } from 'vitest';
 /**
  * Make a test torrent with a given name.
  */
-function tt(name: string): Torrent {
+function makeTestTorrent(name: string): Torrent {
   return {
     id: '1',
     name,
@@ -35,16 +35,41 @@ function tt(name: string): Torrent {
   };
 }
 
+function getPermutations<T>(arr: T[]): T[][] {
+  if (arr.length === 0) return [[]];
+
+  const [first, ...rest] = arr;
+  const withoutFirst = getPermutations(rest);
+  const withFirst: T[][] = [];
+
+  withoutFirst.forEach((subPerm) => {
+    for (let i = 0; i <= subPerm.length; i++) {
+      const permWithFirst = [...subPerm.slice(0, i), first, ...subPerm.slice(i)];
+      withFirst.push(permWithFirst);
+    }
+  });
+
+  return withFirst;
+}
+
+function expectGroupCountEqualOrderInsensitive(names: string[], expectedGroupCount: number) {
+  for (const perm of getPermutations(names)) {
+    const torrents = perm.map(makeTestTorrent);
+    const groups = groupTorrents(torrents);
+    expect(groups.length).toBe(expectedGroupCount);
+  }
+}
+
 function expectGroupsEqual(actual: TorrentInGroup[][], expected: Torrent[][]) {
   const actualNames = actual.map((g) => g.map((t) => t.torrent.name));
   const expectedNames = expected.map((g) => g.map((t) => t.name));
   expect(actualNames).toEqual(expectedNames);
 }
 
-function expectvariationStringEqual(actual: TorrentInGroup[][], expected: string[][]) {
+function expectvariantStringEqual(actual: TorrentInGroup[][], expected: string[][]) {
   for (let groupIdx = 0; groupIdx < actual.length; groupIdx++) {
     for (let torrentIdx = 0; torrentIdx < actual[groupIdx].length; torrentIdx++) {
-      expect(actual[groupIdx][torrentIdx].variationString).toBe(expected[groupIdx][torrentIdx]);
+      expect(actual[groupIdx][torrentIdx].variantString).toBe(expected[groupIdx][torrentIdx]);
     }
   }
 }
@@ -52,201 +77,185 @@ function expectvariationStringEqual(actual: TorrentInGroup[][], expected: string
 // these cases are real life examples of that _weren't_ grouped correctly during
 // development, but were later fixed. any further counterexamples should be
 // added here and fixed in the implementation.
-test.each([
+test.for([
   [
-    [
-      {
-        name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (Oculus 8K)',
-        variationString: 'Oculus 8K'
-      },
-      {
-        name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (GearVR)',
-        variationString: 'GearVR'
-      },
-      {
-        name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (Oculus, Go 4K)',
-        variationString: 'Oculus Go 4K'
-      }
-    ]
+    {
+      name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (Oculus 8K)',
+      variantString: 'Oculus 8K'
+    },
+    {
+      name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (GearVR)',
+      variantString: 'GearVR'
+    },
+    {
+      name: 'RealJamVR - Ebony Temptress Maid - Kona Jade (Oculus, Go 4K)',
+      variantString: 'Oculus Go 4K'
+    }
   ],
 
   [
-    [
-      {
-        name: 'SLROriginals - GFE: Retreat - Angelina Moon (Oculus 8K)',
-        variationString: 'Oculus 8K'
-      },
-      {
-        name: 'SLROriginals - GFE: Retreat - Angelina Moon (Oculus, Go 4K)',
-        variationString: 'Oculus Go 4K'
-      },
-      { name: 'SLROriginals - GFE: Retreat - Angelina Moon (GearVR)', variationString: 'GearVR' }
-    ]
+    {
+      name: 'SLROriginals - GFE: Retreat - Angelina Moon (Oculus 8K)',
+      variantString: 'Oculus 8K'
+    },
+    {
+      name: 'SLROriginals - GFE: Retreat - Angelina Moon (Oculus, Go 4K)',
+      variantString: 'Oculus Go 4K'
+    },
+    { name: 'SLROriginals - GFE: Retreat - Angelina Moon (GearVR)', variantString: 'GearVR' }
   ],
 
   [
-    [
-      {
-        name: '[WankzVR] Reflex Action - Coco Lovelock (Oculus/Vive) 4K H.265 2300P',
-        variationString: 'Oculus Vive 4K H.265 2300P'
-      },
-      { name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus 7K)', variationString: 'Oculus 7K' },
-      {
-        name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus, Go 4K)',
-        variationString: 'Oculus Go 4K'
-      }
-    ]
+    {
+      name: '[WankzVR] Reflex Action - Coco Lovelock (Oculus/Vive) 4K H.265 2300P',
+      variantString: 'Oculus Vive 4K H.265 2300P'
+    },
+    { name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus 7K)', variantString: 'Oculus 7K' },
+    {
+      name: 'WankzVR - Reflex Action - Coco Lovelock (Oculus, Go 4K)',
+      variantString: 'Oculus Go 4K'
+    }
   ],
 
   [
-    [
-      {
-        name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 8K)',
-        variationString: 'Oculus 8K'
-      },
-      {
-        name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 6K)',
-        variationString: 'Oculus 6K'
-      },
-      {
-        name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus, Go 4K)',
-        variationString: 'Oculus Go 4K'
-      }
-    ]
+    {
+      name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 8K)',
+      variantString: 'Oculus 8K'
+    },
+    {
+      name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 6K)',
+      variantString: 'Oculus 6K'
+    },
+    {
+      name: 'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus, Go 4K)',
+      variantString: 'Oculus Go 4K'
+    }
   ],
 
   [
-    [
-      {
-        name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus 8K)',
-        variationString: 'Oculus 8K'
-      },
-      {
-        name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus 6K)',
-        variationString: 'Oculus 6K'
-      },
-      {
-        name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus, Go 4K)',
-        variationString: 'Oculus Go 4K'
-      }
-    ]
+    {
+      name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus 8K)',
+      variantString: 'Oculus 8K'
+    },
+    {
+      name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus 6K)',
+      variantString: 'Oculus 6K'
+    },
+    {
+      name: 'VRConk - Overwatch: Mei (A Porn Parody) - Leana Lovings (Oculus, Go 4K)',
+      variantString: 'Oculus Go 4K'
+    }
   ],
 
   [
-    [
-      {
-        name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (Oculus 8K, UHD)',
-        variationString: 'Oculus 8K UHD'
-      },
-      {
-        name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (Oculus 8K)',
-        variationString: 'Oculus 8K'
-      },
-      {
-        name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (PSVR, GearVR)',
-        variationString: 'PSVR GearVR'
-      }
-    ]
+    {
+      name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (Oculus 8K, UHD)',
+      variantString: 'Oculus 8K UHD'
+    },
+    {
+      name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (Oculus 8K)',
+      variantString: 'Oculus 8K'
+    },
+    {
+      name: 'FuckPassVR - Side Squeeze in Cali - Sofi Vega (PSVR, GearVR)',
+      variantString: 'PSVR GearVR'
+    }
   ],
 
   [
-    [
-      {
-        name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p, x265 reencode',
-        variationString: '1080p x265'
-      },
-      {
-        name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p',
-        variationString: '1080p'
-      }
-    ]
+    {
+      name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p, x265 reencode',
+      variantString: '1080p x265'
+    },
+    {
+      name: '[XXXJobInterviews] Isabel Love - Double Penetration (2024-01-19) 1080p',
+      variantString: '1080p'
+    }
   ],
 
   [
-    [
-      {
-        name: 'Slammed brides Goes Wet, Nuria Millan 6on1, ATM, Balls Deep, DAP, Extreme Deepthroat, Rough Sex, Big Gapes, ButtRose, Pee Drink/Shower, Cum in Mouth, Swallow GIO2797 [720p]',
-        variationString: '720p'
-      },
-      {
-        name: 'Slammed brides Goes Wet, Nuria Millan 6on1, ATM, Balls Deep, DAP, Extreme Deepthroat, Rough Sex, Big Gapes, ButtRose, Pee Drink/Shower, Cum in Mouth, Swallow GIO2797 [1080p]',
-        variationString: '1080p'
-      }
-    ]
+    {
+      name: 'Slammed brides Goes Wet, Nuria Millan 6on1, ATM, Balls Deep, DAP, Extreme Deepthroat, Rough Sex, Big Gapes, ButtRose, Pee Drink/Shower, Cum in Mouth, Swallow GIO2797 [720p]',
+      variantString: '720p'
+    },
+    {
+      name: 'Slammed brides Goes Wet, Nuria Millan 6on1, ATM, Balls Deep, DAP, Extreme Deepthroat, Rough Sex, Big Gapes, ButtRose, Pee Drink/Shower, Cum in Mouth, Swallow GIO2797 [1080p]',
+      variantString: '1080p'
+    }
   ],
 
   [
-    [
-      { name: '[REQ] Flesh Hunter 1 (2002) 1080p (AI Upscale + QTGMC)', variationString: '1080p' },
-      { name: '[REQ] Flesh Hunter 1 (2002) 720p (AI Upscale + QTGMC)', variationString: '720p' }
-    ]
+    { name: '[REQ] Flesh Hunter 1 (2002) 1080p (AI Upscale + QTGMC)', variantString: '1080p' },
+    { name: '[REQ] Flesh Hunter 1 (2002) 720p (AI Upscale + QTGMC)', variantString: '720p' }
+  ],
+
+  [
+    {name: 'Same name', variantString: ''},
+    {name: 'Same name', variantString: ''},
   ]
-] as { name: string; variationString: string }[][][])(
+] as { name: string; variantString: string }[][])(
   'should group similar torrents %s',
   (testCase) => {
-    const torrents = testCase.map((tc) => tc.name).map(tt);
+    const torrents = testCase.map((tc) => tc.name).map(makeTestTorrent);
     const groups = groupTorrents(torrents);
     expectGroupsEqual(groups, [torrents]);
-    expectvariationStringEqual(groups, [testCase.map((tc) => tc.variationString)]);
+    expectvariantStringEqual(groups, [testCase.map((tc) => tc.variantString)]);
+    expectGroupCountEqualOrderInsensitive(testCase.map((tc) => tc.name), 1);
   }
 );
 
-test.each([
+test.for([
   [
-    [
-      '[ULTRAFILMS.COM] Image siterip , 626 sets [2021, 2022, 2023]',
-      '[ULTRAFILMS.COM] Image siterip , 406 sets [2019, 2020]'
-    ]
+    '[ULTRAFILMS.COM] Image siterip , 626 sets [2021, 2022, 2023]',
+    '[ULTRAFILMS.COM] Image siterip , 406 sets [2019, 2020]'
   ],
-  [
-    [
-      'Sirina news Amateur Pack',
-      'Sirina news Amateur Pack Part 2'
-    ]
-  ]
-])('should not group dissimilar torrents %s', (testCase) => {
-  const torrents = testCase.map(tt);
+  ['Sirina news Amateur Pack', 'Sirina news Amateur Pack Part 2']
+])('should not group dissimilar torrents %s', (names) => {
+  const torrents = names.map(makeTestTorrent);
   const groups = groupTorrents(torrents);
   expectGroupsEqual(
     groups,
     torrents.map((t) => [t])
   );
+  expectGroupCountEqualOrderInsensitive(names, names.length);
 });
 
 test('should order properly', (t) => {
-  const groupATorrent1 = tt(
+  const groupATorrent1 = makeTestTorrent(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 8K)'
   );
-  const groupATorrent2 = tt(
+  const groupATorrent2 = makeTestTorrent(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 6K)'
   );
-  const groupATorrent3 = tt(
+  const groupATorrent3 = makeTestTorrent(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus, Go 4K)'
   );
 
-  const groupBTorrent1 = tt(
+  const groupBTorrent1 = makeTestTorrent(
     '[BradMontana] Alicia Ribeiro - Black girl from Rio de Janeiro enjoyed sitting on a dick 2024 [1080p]'
   );
 
-  const groupCTorrent1 = tt('CzechVR 716 - Summer Anal - Daruma Rai (Oculus, Go 4K)');
-  const groupCTorrent2 = tt('CzechVR 716 - Summer Anal - Daruma Rai (GearVR)');
+  const groupCTorrent1 = makeTestTorrent('CzechVR 716 - Summer Anal - Daruma Rai (Oculus, Go 4K)');
+  const groupCTorrent2 = makeTestTorrent('CzechVR 716 - Summer Anal - Daruma Rai (GearVR)');
 
-  const groupDTorrent1 = tt(
+  const groupDTorrent1 = makeTestTorrent(
     '[TabooHeat] Lory Lace in Horny Step Aunt Vol 2 (Part 2-3) (2023) [720p]'
   );
-  const groupDTorrent2 = tt(
+  const groupDTorrent2 = makeTestTorrent(
     '[TabooHeat] Lory Lace in Horny Step Aunt Vol 2 (Part 2-3) (2023) [1080p]'
   );
-  const groupDTorrent3 = tt(
+  const groupDTorrent3 = makeTestTorrent(
     '[TabooHeat] Lory Lace in Horny Step Aunt Vol 2 (Part 2-3) (2023) [2160p]'
   );
 
-  const groupETorrent1 = tt('Visiting My Anal In-Laws 2160p WEB-DL MP4-XXXTC');
+  const groupETorrent1 = makeTestTorrent('Visiting My Anal In-Laws 2160p WEB-DL MP4-XXXTC');
 
-  const groupFTorrent1 = tt('[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [2160p]');
-  const groupFTorrent2 = tt('[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [1080p]');
+  const groupFTorrent1 = makeTestTorrent('[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [2160p]');
+  const groupFTorrent2 = makeTestTorrent('[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [1080p]');
 
-  const groupHTorrent1 = tt('[Brazzers] Ivy Maddox - Anal For Ivy - 2024-08-25 - 1080p');
+  const groupHTorrent1 = makeTestTorrent(
+    '[Brazzers] Ivy Maddox - Anal For Ivy - 2024-08-25 - 1080p'
+  );
 
   // same as above, but subsequent group members may be out of order
   const torrents = [

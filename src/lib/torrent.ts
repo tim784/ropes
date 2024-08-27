@@ -44,7 +44,7 @@ export type Torrent = {
 };
 
 const tokenPattern = /[a-z0-9\.\-]+/gim;
-const variationTokenPatterns = [
+const variantTokenPatterns = [
   // resolution
   // standard heights, optional p or i suffix
   /^(?:120|144|240|360|480|720|1080|2160|4320|8640)(?:p|i)?$/i,
@@ -76,8 +76,8 @@ function matchesPatterns(s: string, patterns: RegExp[]): boolean {
   return patterns.some((pattern) => pattern.test(s));
 }
 
-function isVariationToken(token: string): boolean {
-  return matchesPatterns(token, variationTokenPatterns);
+function isVariantToken(token: string): boolean {
+  return matchesPatterns(token, variantTokenPatterns);
 }
 
 function isIgnoredToken(token: string): boolean {
@@ -100,7 +100,7 @@ type TokenizedTorrent = {
 
 export type TorrentInGroup = {
   torrent: Torrent;
-  variationString: string;
+  variantString: string;
 };
 
 function caseInsensitiveIntersection(a: Set<string>, b: Set<string>): Set<string> {
@@ -114,13 +114,6 @@ function caseInsensitiveIntersection(a: Set<string>, b: Set<string>): Set<string
   }
 
   return intersection;
-}
-
-function toTorrentInGroup(group: TokenizedTorrent[]): TorrentInGroup[] {
-  return group.map((t) => ({
-    torrent: t.torrent,
-    variationString: [...tokenize(t.torrent.name)].filter(isVariationToken).join(' ')
-  }));
 }
 
 /**
@@ -138,7 +131,7 @@ function toTorrentInGroup(group: TokenizedTorrent[]): TorrentInGroup[] {
  *    difference, and 3) right difference. Reject the torrent if any of the
  *    following are true:
  *    - The intersection is an empty set
- *    - The difference has tokens that are not a "variation" tokens (resolution,
+ *    - The difference has tokens that are not a "variant" tokens (resolution,
  *      encoder, container, VR tag, etc)
  *
  *    Otherwise, add the torrent to the group.
@@ -163,16 +156,25 @@ export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
     for (const group of groups) {
       let isSimilarToGroup = true;
       for (const groupTorrent of group) {
-        // const intersection = torrent.tokens.intersection(groupTorrent.tokens);
-        const intersection = caseInsensitiveIntersection(torrent.tokens, groupTorrent.tokens);
-        if (intersection.size === 0) {
+        const commonTokens = caseInsensitiveIntersection(torrent.tokens, groupTorrent.tokens);
+        if (commonTokens.size === 0) {
           isSimilarToGroup = false;
           break;
         }
 
-        // don't need caseInsensitiveDifference here, our regexes are case-insensitive
-        const difference = torrent.tokens.difference(groupTorrent.tokens);
-        if (![...difference].every((token) => isVariationToken(token) || isIgnoredToken(token))) {
+        // check both the "left" and "right" difference between the two
+        // torrents. "left" and "right" refer to the either left or right subregions
+        // in a venn diagram of the two torrents' tokens.
+        //
+        // don't need case-insensitivity here, our regexes have case-insensitive
+        // flag
+        const leftDifferenceTokens = torrent.tokens.difference(groupTorrent.tokens);
+        const rightDifferenceTokens = groupTorrent.tokens.difference(torrent.tokens);
+        if (
+          [...leftDifferenceTokens, ...rightDifferenceTokens].some(
+            (token) => !isVariantToken(token) && !isIgnoredToken(token)
+          )
+        ) {
           isSimilarToGroup = false;
           break;
         }
@@ -190,12 +192,27 @@ export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
     }
   }
 
+  // Name the TokenizedTorrent by its variant tokens, if it has any. If there
+  // are no variant tokens, such as when the torrents all have the same name or
+  // only ignored tokens are varied, name the TokenizedTorrent "Variant <n>",
+  // where n is a counter.
+  let variantCounter = 1;
+  function nameVariant(t: TokenizedTorrent): string {
+    const defaultVariantString = [...tokenize(t.torrent.name)].filter(isVariantToken).join(' ');
+    if (defaultVariantString !== '') {
+      return defaultVariantString;
+    }
+    return `Variant ${variantCounter++}`;
+  }
+
   // convert the groups to TorrentInGroup objects. TorrentInGroup is a Torrent
-  // with a variationString.
+  // with a variantString.
   return groups.map((group) =>
-    group.map((t) => ({
-      torrent: t.torrent,
-      variationString: [...tokenize(t.torrent.name)].filter(isVariationToken).join(' ')
-    }))
+    group.map((t) => {
+      return {
+        torrent: t.torrent,
+        variantString: nameVariant(t)
+      };
+    })
   );
 }
