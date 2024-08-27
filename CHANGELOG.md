@@ -16,6 +16,13 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-08-27
+
+### Fixed
+
+- Components that use a "portal" (a way to render a component outside of its
+  parent) now work properly through loads and unloads of Ropes.
+
 ## [11.0.0](https://github.com/tim784/ropes/commits/v11.0.0) - 2024-08-27
 
 ### Changed

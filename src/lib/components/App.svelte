@@ -3,22 +3,14 @@
   import { addAppStylesheet } from '$actions/addAppStylesheet';
   import { sfwTitleSwap } from '$actions/sfwTitleSwap';
   import { darkMode } from '$actions/darkMode';
+  import { addPortal } from '$actions/addPortal';
   import { theme } from '$actions/theme';
   import { cleanseEmpornium } from '$actions/cleanseEmpornium';
   import { page, isSearchPage } from '$stores/page';
   import Search from './Search.svelte';
   import ToastContainer from './ToastContainer.svelte';
-  import { makeAppIdentifier } from '$lib/constants';
-  import { onMount } from 'svelte';
   import ScrollToTop from './ScrollToTop.svelte';
   import { enabled } from '$stores/enabled';
-  import { portal } from '$stores/portal';
-
-  let portalElement: HTMLDivElement;
-
-  onMount(() => {
-    portal.set(portalElement);
-  });
 </script>
 
 {#if $enabled}
@@ -28,6 +20,7 @@
     use:sfwTitleSwap
     use:darkMode
     use:theme
+    use:addPortal
     class="min-h-dvh bg-background text-foreground antialiased transition-colors duration-300"
   >
     <header class="sticky top-0 z-30">
@@ -40,7 +33,6 @@
       {/if}
     </main>
 
-    <div bind:this={portalElement} id={makeAppIdentifier('portal')} />
     <ToastContainer />
     <ScrollToTop />
   </div>
