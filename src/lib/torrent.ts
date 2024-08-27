@@ -116,6 +116,10 @@ function caseInsensitiveIntersection(a: Set<string>, b: Set<string>): Set<string
   return intersection;
 }
 
+export function makeDefaultVariantString(i: number) {
+  return `Variant ${i}`;
+}
+
 /**
  * Break down an array of torrents into groups of similar torrents, based on
  * their names.
@@ -202,7 +206,7 @@ export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
     if (defaultVariantString !== '') {
       return defaultVariantString;
     }
-    return `Variant ${variantCounter++}`;
+    return makeDefaultVariantString(variantCounter++);
   }
 
   // convert the groups to TorrentInGroup objects. TorrentInGroup is a Torrent

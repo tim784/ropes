@@ -4,7 +4,8 @@ import {
   type TorrentInGroup,
   DoubleseedState,
   InteractionState,
-  FreeleechState
+  FreeleechState,
+  makeDefaultVariantString
 } from '$lib/torrent';
 import { expect, test } from 'vitest';
 
@@ -66,7 +67,7 @@ function expectGroupsEqual(actual: TorrentInGroup[][], expected: Torrent[][]) {
   expect(actualNames).toEqual(expectedNames);
 }
 
-function expectvariantStringEqual(actual: TorrentInGroup[][], expected: string[][]) {
+function expectVariantStringEqual(actual: TorrentInGroup[][], expected: string[][]) {
   for (let groupIdx = 0; groupIdx < actual.length; groupIdx++) {
     for (let torrentIdx = 0; torrentIdx < actual[groupIdx].length; torrentIdx++) {
       expect(actual[groupIdx][torrentIdx].variantString).toBe(expected[groupIdx][torrentIdx]);
@@ -187,11 +188,6 @@ test.for([
   [
     { name: '[REQ] Flesh Hunter 1 (2002) 1080p (AI Upscale + QTGMC)', variantString: '1080p' },
     { name: '[REQ] Flesh Hunter 1 (2002) 720p (AI Upscale + QTGMC)', variantString: '720p' }
-  ],
-
-  [
-    {name: 'Same name', variantString: ''},
-    {name: 'Same name', variantString: ''},
   ]
 ] as { name: string; variantString: string }[][])(
   'should group similar torrents %s',
@@ -199,8 +195,11 @@ test.for([
     const torrents = testCase.map((tc) => tc.name).map(makeTestTorrent);
     const groups = groupTorrents(torrents);
     expectGroupsEqual(groups, [torrents]);
-    expectvariantStringEqual(groups, [testCase.map((tc) => tc.variantString)]);
-    expectGroupCountEqualOrderInsensitive(testCase.map((tc) => tc.name), 1);
+    expectVariantStringEqual(groups, [testCase.map((tc) => tc.variantString)]);
+    expectGroupCountEqualOrderInsensitive(
+      testCase.map((tc) => tc.name),
+      1
+    );
   }
 );
 
@@ -218,6 +217,23 @@ test.for([
     torrents.map((t) => [t])
   );
   expectGroupCountEqualOrderInsensitive(names, names.length);
+});
+
+test.for([
+  [
+    'Same name',
+    'Same name', // not a typo, same name repeated.
+    '[REQ] Same name',
+    '[Request] Same name',
+    '[reencode] Same name',
+    '[re-encode] Same name',
+    '[AI Upscale] Same name',
+  ]
+])('should use default variant string %s', (names) => {
+  const torrents = names.map(makeTestTorrent);
+  const groups = groupTorrents(torrents);
+  expectVariantStringEqual(groups, [names.map((_, i) => makeDefaultVariantString(i+1))]);
+  expectGroupCountEqualOrderInsensitive(names, 1);
 });
 
 test('should order properly', (t) => {
