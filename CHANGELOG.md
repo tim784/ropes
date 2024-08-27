@@ -22,6 +22,11 @@ The types of changes are:
 
 - Torrent grouping is now more robust against some edge cases.
 
+### Fixed
+
+- In the search form, the "Clear Tags" and "Clear All" buttons now actually
+  clear the tags instead of taking users to their default search.
+
 ## [10.0.0](https://github.com/tim784/ropes/commits/v10.0.0) - 2024-08-26
 
 ### Added

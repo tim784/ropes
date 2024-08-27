@@ -1,7 +1,12 @@
 import { writable } from 'svelte/store';
 import { isSearchPage, page, getSearchUrlOfFormData } from '$stores/page';
 import { TaglistTag } from '../tag';
-import { SORT_CRITERIA_NAME, SORT_ORDER_NAME, TAGLIST_NAME, SET_DEFAULT_NAME } from '../gather/search';
+import {
+  SORT_CRITERIA_NAME,
+  SORT_ORDER_NAME,
+  TAGLIST_NAME,
+  SET_DEFAULT_NAME
+} from '../gather/search';
 
 export type LocalFormData = {
   d: FormData;
@@ -88,9 +93,20 @@ function createLocalFormDataStore() {
 
   function clearTags() {
     update((localFormData) => {
-      localFormData.d.delete(TAGLIST_NAME);
+      // Empornium eccentricity:
+      // - If the taglist query param is not present, the default search is used
+      // - If present but empty, a blank search is used
+      // - If present and not empty, the taglist is used
+      localFormData.d.set(TAGLIST_NAME, '');
       return makeLocalFormData(localFormData.d);
     });
+  }
+
+  function clearAll() {
+    const formData = new FormData();
+    // ditto on taglist comment in clearTags
+    formData.set(TAGLIST_NAME, '');
+    set(makeLocalFormData(formData));
   }
 
   function setSortCriteria(sortCriteria: string) {
@@ -116,10 +132,6 @@ function createLocalFormDataStore() {
       }
       return makeLocalFormData(localFormData.d);
     });
-  }
-
-  function clearAll() {
-    set(makeLocalFormData(new FormData()));
   }
 
   return {
