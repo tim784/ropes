@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import Button from './ui/Button.svelte';
   import ArrowUpToLine from 'lucide-svelte/icons/arrow-up-to-line';
   import { fly } from 'svelte/transition';
@@ -7,23 +6,27 @@
 
   export let thresholdYPixels: number = 100;
   let visible = false;
+  let ticking = false;
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  onMount(() => {
-    const scrollHandler = () => {
-      visible = window.scrollY > thresholdYPixels;
-    };
-
-    window.addEventListener('scroll', scrollHandler);
-
-    return () => {
-      window.removeEventListener('scroll', scrollHandler);
-    };
-  });
+  // Updates throttled via `requestAnimationFrame`. See explanation of this
+  // technique at:
+  // https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event
+  function scrollHandler() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        visible = window.scrollY > thresholdYPixels;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
 </script>
+
+<svelte:window on:scroll={scrollHandler} />
 
 {#if visible}
   <div
@@ -32,12 +35,7 @@
   >
     <Tooltip.Root>
       <Tooltip.Trigger asChild let:builder>
-        <Button
-          on:click={scrollToTop}
-          size="round-icon"
-          class="border-2"
-          builders={[builder]}
-        >
+        <Button on:click={scrollToTop} size="round-icon" class="border-2" builders={[builder]}>
           <ArrowUpToLine class="size-6" />
           <span class="sr-only">Scroll to top</span>
         </Button></Tooltip.Trigger
