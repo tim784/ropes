@@ -7,7 +7,6 @@
    * <https://www.youtube.com/watch?v=EzWNBmjyv7Y> energy, possibly at my own
    * expense.
    */
-  import { onMount } from 'svelte';
   import { tagCache, type TagCache } from '$stores/tagCache';
   import { TaglistTag, type CacheTag } from '$lib/tag';
   import { fetchAutocompleteTags } from '$api/autocomplete';
@@ -140,22 +139,17 @@
     isPointerOverSuggestions = false;
   }
 
-  onMount(() => {
-    function handleKeybind(e: KeyboardEvent) {
-      if (e.key === 's' && e.altKey) {
-        if (inputElement) {
-          inputElement.focus();
-        }
-        e.preventDefault();
+  function handleSearchFocusKeybind(e: KeyboardEvent) {
+    if (e.key === 's' && e.altKey) {
+      if (inputElement) {
+        inputElement.focus();
       }
+      e.preventDefault();
     }
-    window.addEventListener('keydown', handleKeybind);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeybind);
-    };
-  });
+  }
 </script>
+
+<svelte:window on:keydown={handleSearchFocusKeybind} />
 
 <div class="space-y-4">
   <Command.Root loop={false} shouldFilter={false} state={inputState} class="group relative">
