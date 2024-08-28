@@ -20,8 +20,8 @@ The types of changes are:
 
 ### Fixed
 
-- Components that use a "portal" (a way to render a component outside of its
-  parent) now work properly through loads and unloads of Ropes.
+- Components that use a "portal" (a way to put elements in some other part of
+  the document) now work properly through loads and unloads of Ropes.
 
 ## [11.0.0](https://github.com/tim784/ropes/commits/v11.0.0) - 2024-08-27
 
