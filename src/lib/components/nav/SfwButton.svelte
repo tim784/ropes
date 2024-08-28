@@ -1,7 +1,6 @@
 <script lang="ts">
   import { settings } from '$stores/settings';
   import Button from "$components/ui/Button.svelte";
-  import { onMount } from 'svelte';
   import Kbd from '$components/ui/Kbd.svelte';
   $: buttonName = $settings.sfwMode ? 'Join Now' : 'SFW Mode';
 
@@ -17,14 +16,9 @@
     toggleSFWMode();
     e.preventDefault();
   }
-
-  onMount(() => {
-    document.addEventListener('keydown', handleSFWModeKeybindToggle);
-    return () => {
-      document.removeEventListener('keydown', handleSFWModeKeybindToggle);
-    };
-  });
 </script>
+
+<svelte:window on:keydown={handleSFWModeKeybindToggle} />
 
 <Button variant="destructive" class="font-bold" on:click={toggleSFWMode}>
   {buttonName} (<Kbd keys={["AltOrOption", "Z"]} />)
