@@ -32,10 +32,10 @@
 </script>
 
 <Dialog.Content
-  class="container prose prose-zinc max-h-[75dvh] max-w-2xl overflow-y-scroll p-0 dark:prose-invert sm:rounded-none md:w-auto"
+  class="container prose prose-zinc max-h-[75dvh] max-w-2xl overflow-y-scroll p-0 dark:prose-invert md:w-auto"
   transition={fade}
 >
-  <div class="sticky top-0 z-10 border-b bg-background/90 px-8 py-4 backdrop-blur">
+  <div class="sticky top-0 z-10 border-b bg-background px-8 py-4">
     <div class="flex items-baseline justify-between">
       <h2 class="m-0">{appTitle} Settings</h2>
 
