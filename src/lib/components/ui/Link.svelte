@@ -6,7 +6,7 @@
     variants: {
       variant: {
         default: 'text-primary active:text-primary/60',
-        foreground: 'text-foreground active:text-foreground/60',
+        foreground: 'text-foreground active:text-foreground/60 underline hover:text-foreground/80',
         secondary: 'text-secondary-foreground active:text-secondary/60',
         muted: 'text-muted active:text-muted/60',
         none: ''

@@ -1,4 +1,4 @@
-import { appTitle, makeAppIdentifier, appId } from './lib/constants';
+import { appTitle, makeAppIdentifier, appId } from '$lib/constants';
 import { determinePageType, PageType } from '$stores/page';
 import { enabled } from '$stores/enabled';
 import App from '$components/App.svelte';

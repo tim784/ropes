@@ -5,6 +5,7 @@
   import Paginator from './search/Paginator.svelte';
   import ThemeTest from '$components/ThemeTest.svelte';
   import HeaderBox from './search/HeaderBox.svelte';
+  import FilterSection from './search/FilterSection.svelte';
   import { formatNumber } from '../util';
   import { defaultPagination } from '$gather/pagination';
 
@@ -38,6 +39,8 @@
       <h2 class="inline font-bold">Results</h2>
       <span>({totalResultCount})</span>
     </div>
+
+    <FilterSection />
 
     <Paginator {page} />
 

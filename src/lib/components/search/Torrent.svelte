@@ -20,12 +20,16 @@
   import { type TorrentInGroup } from '$lib/torrent';
   import { settings } from '$stores/settings';
   import { getSfwTorrent } from '$lib/sfwMode';
+  import * as ButtonRadioGroup from '$components/ui/button-radio-group';
 
   const observer = getContext<IntersectionObserver>('intersectionObserver');
 
   export let group: TorrentInGroup[];
   export let me: Me;
-  let groupIndex: number = 0;
+
+  let groupIndexStr: string = '0';
+  $: groupIndex = parseInt(groupIndexStr);
+  
   let localStates = group.map((t) => ({
     isBookmarked: t.torrent.isBookmarked,
     isPersonalFreeleech: t.torrent.freeleechState === FreeleechState.Personal,
@@ -47,11 +51,6 @@
 
   let el: HTMLElement;
 
-  // these are _local_ state. the user can do these things without reloading the page
-  // $: isBookmarked = torrent.isBookmarked;
-  // $: isPersonalFreeleech = torrent.freeleechState === FreeleechState.Personal;
-  // $: isPersonalDoubleseed = torrent.doubleseedState === DoubleseedState.Personal;
-
   async function toggleBookmark() {
     const action: BookmarkAction = localState.isBookmarked ? 'remove' : 'add';
     await bookmark(action, torrent.id, me.authKey);
@@ -69,15 +68,6 @@
     locals.useSlot();
     toasts.add(SlotUsedToast, { slotType: 'doubleseed', torrent });
     localState.isPersonalDoubleseed = true;
-  }
-
-  function changeIndex(index: number) {
-    if (index === groupIndex) return;
-    if (index < 0 || index >= group.length) {
-      console.error('Invalid index', index);
-      return;
-    }
-    groupIndex = index;
   }
 
   onMount(() => {
@@ -128,16 +118,17 @@
 
     {#if group.length > 1}
       <h4 class="sr-only text-sm text-muted-foreground">Variants</h4>
-      <div class="flex flex-wrap gap-2">
-        {#each group as groupItem, index (index)}
-          <Button
-            variant="outline"
-            size="sm"
-            class={`border-2 ${index === groupIndex ? 'cursor-default border-primary hover:bg-background active:border-primary active:bg-background' : ''}`}
-            on:click={() => changeIndex(index)}>{groupItem.variantString}</Button
-          >
-        {/each}
-      </div>
+      <ButtonRadioGroup.Root bind:value={groupIndexStr} orientation="horizontal">
+        <ul class="flex flex-wrap gap-2">
+          {#each group as groupItem, index (index)}
+            <li>
+              <ButtonRadioGroup.Item value={index.toString()} size="sm" class="bg-card">
+                {groupItem.variantString}
+              </ButtonRadioGroup.Item>
+            </li>
+          {/each}
+        </ul>
+      </ButtonRadioGroup.Root>
     {/if}
 
     <TorrentActions

@@ -15,6 +15,7 @@
     "checkJs": true,
     "isolatedModules": true,
     "moduleDetection": "force",
+    "strict": true,
     "types": ["vitest/importMeta"],
     "baseUrl": ".",
     "paths": {

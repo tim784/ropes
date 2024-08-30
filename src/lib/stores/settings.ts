@@ -1,19 +1,18 @@
 import { makeAppIdentifier } from '$lib/constants';
 import { localStorageBacked } from './localStorageBacked';
 
-export type Theme =
-  | 'blue'
-  // | 'gray'
-  | 'green'
-  // | 'neutral'
-  | 'orange'
-  | 'red'
-  | 'rose'
-  // | 'slate'
-  // | 'stone'
-  | 'violet'
-  | 'yellow'
-  | 'zinc';
+export const themes = [
+  'zinc',
+  'red',
+  'orange',
+  'green',
+  'blue',
+  'rose',
+  'yellow',
+  'violet'
+] as const;
+
+export type Theme = (typeof themes)[number];
 
 export type Settings = {
   sfwMode: boolean;

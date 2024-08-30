@@ -65,6 +65,7 @@ export function localStorageBacked<T>(
     }
     try {
       localStorage.setItem(key, serialized);
+      // console.debug('write to local storage', key, serialized);
     } catch (e) {
       console.error(`Error setting item "${key}" in localStorage to:`, serialized, e);
     }

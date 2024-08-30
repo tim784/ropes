@@ -3,11 +3,11 @@
   import Link from '$components/ui/Link.svelte';
   import X from 'lucide-svelte/icons/x';
   import packageJson from '$src/../package.json';
-  import { settings } from '$stores/settings';
+  import { settings, themes } from '$stores/settings';
   import { seenTorrents } from '$stores/seen';
   import { tagCache } from '$stores/tagCache';
   import { notTags } from '$stores/notTags';
-  import { Switch } from '$lib/components/ui/switch';
+  import { Switch } from '$components/ui/switch';
   import { isSupportedPage, page } from '$stores/page';
   import ConfirmButton from '$components/ui/ConfirmButton.svelte';
   import { toasts } from '$stores/toasts';
@@ -15,7 +15,7 @@
   import { appTitle } from '$lib/constants';
   import * as Dialog from '$lib/components/ui/dialog';
   import { fade } from 'svelte/transition';
-  import ThemeButton from './ThemeButton.svelte';
+  import * as ButtonRadioGroup from '$components/ui/button-radio-group';
 
   export let closeFn: () => void;
 
@@ -29,43 +29,48 @@
 
   // on vite server, GM_info will not be available because we're not a userscript there.
   const version = ('GM_info' in globalThis && GM_info?.script?.version) || packageJson.version;
+
+  // let theme = $settings.theme;
+  // $: $settings.theme = theme;
 </script>
 
 <Dialog.Content
   class="container prose prose-zinc max-h-[75dvh] max-w-2xl overflow-y-scroll p-0 dark:prose-invert md:w-auto"
   transition={fade}
 >
-  <div class="sticky top-0 z-10 border-b bg-background px-8 py-4">
-    <div class="flex items-baseline justify-between">
-      <h2 class="m-0">{appTitle} Settings</h2>
+  <header
+    class="sticky top-0 z-10 flex items-baseline justify-between border-b bg-background px-8 py-4"
+  >
+    <h2 class="m-0">{appTitle} Settings</h2>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        class="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-        on:click={closeFn}><X /><span class="sr-only">Close</span></Button
-      >
-    </div>
-  </div>
+    <Button
+      variant="ghost"
+      size="icon"
+      type="button"
+      class="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      on:click={closeFn}><X /><span class="sr-only">Close</span></Button
+    >
+  </header>
 
   <ul class="mb-8 ml-8 mr-8 first:*:mt-0 last:*:mb-8 [&>li:first-child>h3]:mt-0">
     <li>
       <h3>Theme</h3>
-      <ul class="not-prose grid grid-cols-[repeat(auto-fill,_minmax(100px,_1fr))] gap-2">
-        <li><ThemeButton theme={'zinc'} /></li>
-        <!-- <li><ThemeButton theme={"slate"}/></li>
-        <li><ThemeButton theme={"stone"}/></li>
-        <li><ThemeButton theme={"gray"}/></li>
-        <li><ThemeButton theme={"neutral"}/></li> -->
-        <li><ThemeButton theme={'red'} /></li>
-        <li><ThemeButton theme={'orange'} /></li>
-        <li><ThemeButton theme={'green'} /></li>
-        <li><ThemeButton theme={'blue'} /></li>
-        <li><ThemeButton theme={'rose'} /></li>
-        <li><ThemeButton theme={'yellow'} /></li>
-        <li><ThemeButton theme={'violet'} /></li>
-      </ul>
+
+      <ButtonRadioGroup.Root bind:value={$settings.theme} orientation="horizontal">
+        <ul class="not-prose grid grid-cols-[repeat(auto-fill,_minmax(100px,_1fr))] gap-2">
+          {#each themes as theme}
+            <li>
+              <ButtonRadioGroup.Item
+                value={theme}
+                class={`w-full capitalize theme-${theme} ${$settings.darkMode ? 'dark' : ''}`}
+              >
+                <div class="me-2 size-4 rounded-full bg-primary text-primary-foreground" />
+                {theme}
+              </ButtonRadioGroup.Item>
+            </li>
+          {/each}
+        </ul>
+      </ButtonRadioGroup.Root>
     </li>
 
     <li>

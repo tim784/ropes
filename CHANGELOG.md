@@ -18,6 +18,15 @@ The types of changes are:
 
 ## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-08-27
 
+### Added
+
+- Torrents in search results can now be filtered by their tags. Filters have a
+  "Blocklist" and "Allowlist". A torrent will be excluded if any of its tags are
+  in the Blocklist, unless any of its tags are in the Allowlist.
+
+  Filters can have one level of inheritance. This allows users to have a "base"
+  filter, and then apply a more specific filter on top of that. 
+
 ### Fixed
 
 - Components that use a "portal" (a way to put elements in some other part of

@@ -5,6 +5,7 @@
   import { onDestroy, setContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
   import TorrentComponent from './Torrent.svelte';
+  import { filters } from '$stores/filters';
 
   export let torrentsPromise: Promise<Torrent[]>;
   export let mePromise: Promise<Me>;
@@ -61,7 +62,7 @@
 
 <div>
   <ol
-    class="relative grid md:grid-cols-[repeat(auto-fill,_minmax(var(--torrent-card-width),_1fr))] gap-4"
+    class="relative grid gap-4 md:grid-cols-[repeat(auto-fill,_minmax(var(--torrent-card-width),_1fr))]"
   >
     {#await dataPromise}
       {#each Array.from({ length: lastTorrentCount }) as _}
@@ -70,7 +71,7 @@
         </li>
       {/each}
     {:then [torrents, me]}
-      {@const groups = groupTorrents(torrents)}
+      {@const groups = groupTorrents(torrents.filter((t) => $filters.current.call(t)))}
       {#each groups as group (group[0].torrent.id)}
         <li>
           <TorrentComponent {group} {me} />

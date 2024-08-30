@@ -6,6 +6,9 @@
   import TextToast from './toasts/TextToast.svelte';
   import Button from '$components/ui/Button.svelte';
   import Link from '$components/ui/Link.svelte';
+  import * as ButtonRadioGroup from '$components/ui/button-radio-group';
+
+  let value: string;
 </script>
 
 <div class="flex flex-wrap p-4 *:p-4">
@@ -45,4 +48,17 @@
   <Link href="/torrents.php">/torrents.php</Link>
   <Link href="/torrents.php?id=123">/torrents.php?id=123</Link>
   <Link href="/torrents.php?action=advanced">/torrents.php?action=advanced</Link>
+
+  <ButtonRadioGroup.Root bind:value orientation="horizontal">
+    <ButtonRadioGroup.Item value="foo">Foo</ButtonRadioGroup.Item>
+    <ButtonRadioGroup.Item value="bar">Bar</ButtonRadioGroup.Item>
+    <ButtonRadioGroup.Item value="baz">Baz</ButtonRadioGroup.Item>
+  </ButtonRadioGroup.Root>
+
+  <ButtonRadioGroup.Root bind:value orientation="horizontal">
+    <ButtonRadioGroup.Item value="foo" variant="ghost">Foo</ButtonRadioGroup.Item>
+    <ButtonRadioGroup.Item value="bar" variant="ghost">Bar</ButtonRadioGroup.Item>
+    <ButtonRadioGroup.Item value="baz" variant="ghost">Baz</ButtonRadioGroup.Item>
+  </ButtonRadioGroup.Root>
 </div>
+

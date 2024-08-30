@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button from '$components/ui/Button.svelte';
-  import Settings from '../modals/Settings.svelte';
+  import Settings from '$components/modals/Settings.svelte';
   import * as Dialog from '$components/ui/dialog';
 
   let settingsDialogOpen: boolean = false;

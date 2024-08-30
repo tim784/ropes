@@ -51,7 +51,7 @@
   <TorrentBadges {torrent} {hasSeen} {isBookmarked} {isPersonalDoubleseed} {isPersonalFreeleech} />
 
   <div class="my-2">
-    <Link href={torrent.pageHref} class="underline hover:text-foreground/80" variant="foreground">
+    <Link href={torrent.pageHref} variant="foreground">
       <h3 class="inline text-xl font-bold tracking-tight">
         {torrent.name}
       </h3>

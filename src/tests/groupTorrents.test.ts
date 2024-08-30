@@ -2,37 +2,18 @@ import {
   type Torrent,
   groupTorrents,
   type TorrentInGroup,
-  DoubleseedState,
-  InteractionState,
-  FreeleechState,
   makeDefaultVariantString
 } from '$lib/torrent';
 import { expect, test } from 'vitest';
+import { makeTestTorrent } from './util';
 
 /**
  * Make a test torrent with a given name.
  */
-function makeTestTorrent(name: string): Torrent {
+function makeTestTorrentWithName(name: string): Torrent {
   return {
-    id: '1',
-    name,
-    pageHref: '/foo',
-    imageHref: '/image',
-    downloadHref: null,
-    freeleechHref: null,
-    doubleseedHref: null,
-    uploadDateTime: new Date(),
-    size: '1b',
-    snatches: 1,
-    seeders: 1,
-    leechers: 1,
-    uploader: null,
-    isWarned: false,
-    freeleechState: FreeleechState.None,
-    doubleseedState: DoubleseedState.None,
-    interactionState: InteractionState.None,
-    tags: null,
-    isBookmarked: false
+    ...makeTestTorrent(),
+    name
   };
 }
 
@@ -55,7 +36,7 @@ function getPermutations<T>(arr: T[]): T[][] {
 
 function expectGroupCountEqualOrderInsensitive(names: string[], expectedGroupCount: number) {
   for (const perm of getPermutations(names)) {
-    const torrents = perm.map(makeTestTorrent);
+    const torrents = perm.map(makeTestTorrentWithName);
     const groups = groupTorrents(torrents);
     expect(groups.length).toBe(expectedGroupCount);
   }
@@ -192,7 +173,7 @@ test.for([
 ] as { name: string; variantString: string }[][])(
   'should group similar torrents %s',
   (testCase) => {
-    const torrents = testCase.map((tc) => tc.name).map(makeTestTorrent);
+    const torrents = testCase.map((tc) => tc.name).map(makeTestTorrentWithName);
     const groups = groupTorrents(torrents);
     expectGroupsEqual(groups, [torrents]);
     expectVariantStringEqual(groups, [testCase.map((tc) => tc.variantString)]);
@@ -210,7 +191,7 @@ test.for([
   ],
   ['Sirina news Amateur Pack', 'Sirina news Amateur Pack Part 2']
 ])('should not group dissimilar torrents %s', (names) => {
-  const torrents = names.map(makeTestTorrent);
+  const torrents = names.map(makeTestTorrentWithName);
   const groups = groupTorrents(torrents);
   expectGroupsEqual(
     groups,
@@ -227,49 +208,55 @@ test.for([
     '[Request] Same name',
     '[reencode] Same name',
     '[re-encode] Same name',
-    '[AI Upscale] Same name',
+    '[AI Upscale] Same name'
   ]
 ])('should use default variant string %s', (names) => {
-  const torrents = names.map(makeTestTorrent);
+  const torrents = names.map(makeTestTorrentWithName);
   const groups = groupTorrents(torrents);
-  expectVariantStringEqual(groups, [names.map((_, i) => makeDefaultVariantString(i+1))]);
+  expectVariantStringEqual(groups, [names.map((_, i) => makeDefaultVariantString(i + 1))]);
   expectGroupCountEqualOrderInsensitive(names, 1);
 });
 
 test('should order properly', (t) => {
-  const groupATorrent1 = makeTestTorrent(
+  const groupATorrent1 = makeTestTorrentWithName(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 8K)'
   );
-  const groupATorrent2 = makeTestTorrent(
+  const groupATorrent2 = makeTestTorrentWithName(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 6K)'
   );
-  const groupATorrent3 = makeTestTorrent(
+  const groupATorrent3 = makeTestTorrentWithName(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus, Go 4K)'
   );
 
-  const groupBTorrent1 = makeTestTorrent(
+  const groupBTorrent1 = makeTestTorrentWithName(
     '[BradMontana] Alicia Ribeiro - Black girl from Rio de Janeiro enjoyed sitting on a dick 2024 [1080p]'
   );
 
-  const groupCTorrent1 = makeTestTorrent('CzechVR 716 - Summer Anal - Daruma Rai (Oculus, Go 4K)');
-  const groupCTorrent2 = makeTestTorrent('CzechVR 716 - Summer Anal - Daruma Rai (GearVR)');
+  const groupCTorrent1 = makeTestTorrentWithName(
+    'CzechVR 716 - Summer Anal - Daruma Rai (Oculus, Go 4K)'
+  );
+  const groupCTorrent2 = makeTestTorrentWithName('CzechVR 716 - Summer Anal - Daruma Rai (GearVR)');
 
-  const groupDTorrent1 = makeTestTorrent(
+  const groupDTorrent1 = makeTestTorrentWithName(
     '[TabooHeat] Lory Lace in Horny Step Aunt Vol 2 (Part 2-3) (2023) [720p]'
   );
-  const groupDTorrent2 = makeTestTorrent(
+  const groupDTorrent2 = makeTestTorrentWithName(
     '[TabooHeat] Lory Lace in Horny Step Aunt Vol 2 (Part 2-3) (2023) [1080p]'
   );
-  const groupDTorrent3 = makeTestTorrent(
+  const groupDTorrent3 = makeTestTorrentWithName(
     '[TabooHeat] Lory Lace in Horny Step Aunt Vol 2 (Part 2-3) (2023) [2160p]'
   );
 
-  const groupETorrent1 = makeTestTorrent('Visiting My Anal In-Laws 2160p WEB-DL MP4-XXXTC');
+  const groupETorrent1 = makeTestTorrentWithName('Visiting My Anal In-Laws 2160p WEB-DL MP4-XXXTC');
 
-  const groupFTorrent1 = makeTestTorrent('[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [2160p]');
-  const groupFTorrent2 = makeTestTorrent('[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [1080p]');
+  const groupFTorrent1 = makeTestTorrentWithName(
+    '[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [2160p]'
+  );
+  const groupFTorrent2 = makeTestTorrentWithName(
+    '[GotFilled] Megan Fiore - Pussy Gets Messy 2024 [1080p]'
+  );
 
-  const groupHTorrent1 = makeTestTorrent(
+  const groupHTorrent1 = makeTestTorrentWithName(
     '[Brazzers] Ivy Maddox - Anal For Ivy - 2024-08-25 - 1080p'
   );
 
