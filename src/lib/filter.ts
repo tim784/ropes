@@ -19,7 +19,7 @@ export class Filter {
     public parent: Filter | null = null,
 
     /** Something unchangeable */
-    readonly id: string = self.crypto.randomUUID()
+    readonly id: string = globalThis.crypto.randomUUID()
   ) {}
 
   static newRootFilter(): Filter {

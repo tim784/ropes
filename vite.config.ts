@@ -121,7 +121,10 @@ export default defineConfig(({ mode }) => {
     },
 
     test: {
-      include: ['src/**/*.{test,spec}.{js,ts}']
+      include: ['src/**/*.{test,spec}.{js,ts}'],
+      setupFiles: [
+        'src/tests/globalSetup.ts',
+      ]
     }
   };
 });

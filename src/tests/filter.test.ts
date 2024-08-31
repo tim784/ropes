@@ -29,7 +29,7 @@ const all = [tA, tB, tC, tAB, tAC, tBC, tABC];
 
 test.each([
   [makeTestFilter([], []), all],
-  [Filter.ROOT_FILTER, all],
+  [Filter.newRootFilter(), all],
   [makeTestFilter(['a'], []), [tB, tC, tBC]],
   [makeTestFilter(['b'], []), [tA, tC, tAC]],
   [makeTestFilter(['c'], []), [tA, tB, tAB]],
