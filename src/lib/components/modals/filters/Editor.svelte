@@ -12,14 +12,14 @@
   export let scrollingContainer: HTMLElement | null;
 
   const nameInputId = makeAppIdentifier('filter-name-input');
-  const denyTagsInputId = makeAppIdentifier('filter-deny-tags-input');
+  const blockTagsInputId = makeAppIdentifier('filter-block-tags-input');
   const allowTagsInputId = makeAppIdentifier('filter-allow-tags-input');
 
   let localName = filter.name;
-  let localDenyTagsValue = filter.denyTags.join(' ');
+  let localBlockTagsValue = filter.blockTags.join(' ');
   let localAllowTagsValue = filter.allowTags.join(' ');
 
-  $: localDenyTags = localDenyTagsValue.split(' ');
+  $: localBlockTags = localBlockTagsValue.split(' ');
   $: localAllowTags = localAllowTagsValue.split(' ');
 
   function arraysEqual(a: string[], b: string[]) {
@@ -30,10 +30,10 @@
     return true;
   }
 
-  function updateFilter(name: string, denyTags: string[], allowTags: string[]) {
+  function updateFilter(name: string, blockTags: string[], allowTags: string[]) {
     if (
       name === filter.name &&
-      arraysEqual(denyTags, filter.denyTags) &&
+      arraysEqual(blockTags, filter.blockTags) &&
       arraysEqual(allowTags, filter.allowTags)
     )
       return;
@@ -41,13 +41,13 @@
       const found = filterStore.root.findId(filter.id);
       if (!found) return filterStore;
       found.name = name;
-      found.denyTags = denyTags;
+      found.blockTags = blockTags;
       found.allowTags = allowTags;
       return filterStore;
     });
   }
 
-  $: updateFilter(localName, localDenyTags, localAllowTags);
+  $: updateFilter(localName, localBlockTags, localAllowTags);
 
   function deleteFilter() {
     filters.update((filterStore) => {
@@ -69,13 +69,13 @@
   <Label for={nameInputId}><h3 class="mt-0">Name</h3></Label>
   <Input id={nameInputId} bind:value={localName} type="text" minlength={5} />
 
-  <Label for={denyTagsInputId}><h3>Blocklist</h3></Label>
+  <Label for={blockTagsInputId}><h3>Blocklist</h3></Label>
   <p>Don't show torrents with these tags...</p>
   <Textarea
-    id={denyTagsInputId}
+    id={blockTagsInputId}
     class="font-mono"
     placeholder="bad.one bad.two bad.three"
-    bind:value={localDenyTagsValue}
+    bind:value={localBlockTagsValue}
   />
   <p class="mt-1 text-sm text-muted-foreground">Separate tags with spaces</p>
 

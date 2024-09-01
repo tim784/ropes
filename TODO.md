@@ -1,6 +1,6 @@
 # TODO
 
-- consider using filters from NSE, or write my own. doesn't look too hard.
+- changing filters should not cause torrents to be seen
 
 - maybe deprioritize the "Make Default" button. this feels like a rare thing and
   is destructive.
