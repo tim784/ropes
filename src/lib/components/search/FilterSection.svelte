@@ -3,13 +3,21 @@
   import { filters } from '$stores/filters';
   import Filters from '$components/modals/Filters.svelte';
   import * as Dialog from '$components/ui/dialog';
-  import * as ButtonRadioGroup from '$components/ui/button-radio-group';
+  import * as ButtonGroup from '$components/ui/button-group';
 
-  $: availableFilters = [...$filters.root.iter()];
+  let enabledFilterIds = $filters.filter((filter) => filter.enabled).map((filter) => filter.id);
+
+  function changeEnabled(filterIds: string[]) {
+    filters.update((filters) => {
+      filters.forEach((filter) => {
+        filter.enabled = filterIds.includes(filter.id);
+      });
+      return filters;
+    });
+  }
+  $: changeEnabled(enabledFilterIds);
 
   let filtersDialogOpen: boolean = false;
-  let currentFilterId: string = $filters.current.id;
-  $: filters.updateCurrentById(currentFilterId);
 
   const closeFiltersDialog = () => {
     filtersDialogOpen = false;
@@ -17,13 +25,18 @@
 </script>
 
 <section>
-  <ButtonRadioGroup.Root bind:value={currentFilterId} orientation="horizontal" class="inline">
+  <ButtonGroup.Root
+    type="multiple"
+    bind:value={enabledFilterIds}
+    orientation="horizontal"
+    class="inline"
+  >
     <ul class="inline-flex gap-4">
-      {#each availableFilters as filter}
+      {#each $filters as filter}
         <li>
-          <ButtonRadioGroup.Item value={filter.id} class="font-bold">
+          <ButtonGroup.Item value={filter.id} class="font-bold">
             {filter.name}
-          </ButtonRadioGroup.Item>
+          </ButtonGroup.Item>
         </li>
       {/each}
       <li>
@@ -36,5 +49,5 @@
         </Dialog.Root>
       </li>
     </ul>
-  </ButtonRadioGroup.Root>
+  </ButtonGroup.Root>
 </section>

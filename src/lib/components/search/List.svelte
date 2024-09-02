@@ -5,7 +5,7 @@
   import { onDestroy, setContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
   import TorrentComponent from './Torrent.svelte';
-  import { filters } from '$stores/filters';
+  import { curFilterGroup } from '$stores/filters';
 
   export let torrentsPromise: Promise<Torrent[]>;
   export let mePromise: Promise<Me>;
@@ -71,7 +71,7 @@
         </li>
       {/each}
     {:then [torrents, me]}
-      {@const groups = groupTorrents(torrents.filter((t) => $filters.current.call(t)))}
+      {@const groups = groupTorrents(torrents.filter((t) => $curFilterGroup.filter(t)))}
       {#each groups as group (group[0].torrent.id)}
         <li>
           <TorrentComponent {group} {me} />

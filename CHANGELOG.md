@@ -16,16 +16,21 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-08-27
+## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-09-01
 
 ### Added
 
-- Torrents in search results can now be filtered by their tags. Filters have a
-  "Blocklist" and "Allowlist". A torrent will be excluded if any of its tags are
-  in the Blocklist, unless any of its tags are in the Allowlist.
+- Torrents in search results can now be filtered by their tags. A filter has an
+  Exclude List and an Include List, both of which are optional.
 
-  Filters can have one level of inheritance. This allows users to have a "base"
-  filter, and then apply a more specific filter on top of that. 
+  - A torrent with at least one tag in the Exclude List will not be shown.
+  - A torrent with at least one tag in the Include List will be shown. Exclusion
+    happens before over inclusion.
+
+  Multiple filters can be toggled on, which combines their effects.
+
+  Filters are configured from the "Configure Filters" button at the top of the results
+  page.
 
 ### Fixed
 

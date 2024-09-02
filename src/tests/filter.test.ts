@@ -17,10 +17,7 @@ function makeTestFilterGroup(
   blockTags: Filter['blockTags'],
   allowTags: Filter['allowTags']
 ): FilterGroup {
-  return new FilterGroup(
-    allowTags === null ? null : new Set(allowTags),
-    blockTags === null ? null : new Set(blockTags)
-  );
+  return new FilterGroup(new Set(allowTags), new Set(blockTags));
 }
 
 const tA = makeTestTorrentWithTags(['a']);
@@ -34,34 +31,10 @@ const tABC = makeTestTorrentWithTags(['a', 'b', 'c']);
 const all = [tA, tB, tC, tAB, tAC, tBC, tABC];
 
 test.each([
-  // # block: null, allow: X
-
-  // block: null, allow: null
-  [makeTestFilterGroup(null, null), all],
-
-  // block: null, allow: 0
-  [makeTestFilterGroup(null, []), []],
-
-  // block: null, allow: 1
-  [makeTestFilterGroup(null, ['a']), [tA, tAB, tAC, tABC]],
-  [makeTestFilterGroup(null, ['b']), [tB, tAB, tBC, tABC]],
-  [makeTestFilterGroup(null, ['c']), [tC, tAC, tBC, tABC]],
-
-  // block: null, allow: 2
-  [makeTestFilterGroup(null, ['a', 'b']), [tA, tB, tAB, tAC, tBC, tABC]],
-  [makeTestFilterGroup(null, ['a', 'c']), [tA, tC, tAB, tAC, tBC, tABC]],
-  [makeTestFilterGroup(null, ['b', 'c']), [tB, tC, tAB, tAC, tBC, tABC]],
-
-  // block: null, allow: 3
-  [makeTestFilterGroup(null, ['a', 'b', 'c']), all],
-
   // # block: 0, allow: X
 
-  // block: 0, allow: null
-  [makeTestFilterGroup([], null), all],
-
   // block: 0, allow: 0
-  [makeTestFilterGroup([], []), []],
+  [makeTestFilterGroup([], []), all],
 
   // block: 0, allow: 1
   [makeTestFilterGroup([], ['a']), [tA, tAB, tAC, tABC]],
@@ -78,15 +51,10 @@ test.each([
 
   // # block: 1, allow: X
 
-  // block: 1, allow: null
-  [makeTestFilterGroup(['a'], null), [tB, tC, tBC]],
-  [makeTestFilterGroup(['b'], null), [tA, tC, tAC]],
-  [makeTestFilterGroup(['c'], null), [tA, tB, tAB]],
-
   // block: 1, allow: 0
-  [makeTestFilterGroup(['a'], []), []],
-  [makeTestFilterGroup(['b'], []), []],
-  [makeTestFilterGroup(['c'], []), []],
+  [makeTestFilterGroup(['a'], []), [tB, tC, tBC]],
+  [makeTestFilterGroup(['b'], []), [tA, tC, tAC]],
+  [makeTestFilterGroup(['c'], []), [tA, tB, tAB]],
 
   // block: 1, allow: 1
   [makeTestFilterGroup(['a'], ['b']), [tB, tBC]],
@@ -103,15 +71,10 @@ test.each([
 
   // # block: 2, allow: X
 
-  // block: 2, allow: null
-  [makeTestFilterGroup(['a', 'b'], null), [tC]],
-  [makeTestFilterGroup(['a', 'c'], null), [tB]],
-  [makeTestFilterGroup(['b', 'c'], null), [tA]],
-
   // block: 2, allow: 0
-  [makeTestFilterGroup(['a', 'b'], []), []],
-  [makeTestFilterGroup(['a', 'c'], []), []],
-  [makeTestFilterGroup(['b', 'c'], []), []],
+  [makeTestFilterGroup(['a', 'b'], []), [tC]],
+  [makeTestFilterGroup(['a', 'c'], []), [tB]],
+  [makeTestFilterGroup(['b', 'c'], []), [tA]],
 
   // block: 2, allow: 1
   [makeTestFilterGroup(['a', 'b'], ['c']), [tC]],
@@ -119,9 +82,6 @@ test.each([
   [makeTestFilterGroup(['b', 'c'], ['a']), [tA]],
 
   // # block: 3, allow: X
-
-  // block: 3, allow: null
-  [makeTestFilterGroup(['a', 'b', 'c'], null), []],
 
   // block: 3, allow: 0
   [makeTestFilterGroup(['a', 'b', 'c'], []), []]

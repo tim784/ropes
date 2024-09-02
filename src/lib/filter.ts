@@ -1,6 +1,6 @@
 import type { Torrent } from '$lib/torrent';
 
-export type FilterTags = string[] | null;
+export type FilterTags = string[];
 
 export type Filter = {
   name: string;
@@ -10,42 +10,28 @@ export type Filter = {
   enabled: boolean;
 };
 
-// if block is null, block nothing. if block is empty, block nothing. else, block only what is in block
-// if allow is null, allow everything. if allow is empty, allow everything. else, allow only what is in allow
+// if block is empty, block nothing. else, block only what is in block
+// if allow is empty, allow everything. else, allow only what is in allow
 
 export class FilterGroup {
   constructor(
-    public allowTags: Set<string> | null,
-    public blockTags: Set<string> | null
+    public allowTags: Set<string>,
+    public blockTags: Set<string>
   ) {}
 
   static fromFilters(filters: Filter[]): FilterGroup {
-    let allowTags: Set<string> | null = null;
-    let blockTags: Set<string> | null = null;
+    let allowTags: Set<string> = new Set();
+    let blockTags: Set<string> = new Set();
 
     for (const filter of filters) {
       if (!filter.enabled) {
         continue;
       }
-
-      if (filter.allowTags !== null) {
-        if (allowTags === null) {
-          allowTags = new Set(filter.allowTags);
-        } else {
-          for (const tag of filter.allowTags) {
-            allowTags.add(tag);
-          }
-        }
+      for (const tag of filter.allowTags) {
+        allowTags.add(tag);
       }
-
-      if (filter.blockTags !== null) {
-        if (blockTags === null) {
-          blockTags = new Set(filter.blockTags);
-        } else {
-          for (const tag of filter.blockTags) {
-            blockTags.add(tag);
-          }
-        }
+      for (const tag of filter.blockTags) {
+        blockTags.add(tag);
       }
     }
 
@@ -59,14 +45,10 @@ export class FilterGroup {
 
     const tags = new Set(torrent.tags);
 
-    if (this.blockTags !== null && tags.intersection(this.blockTags).size > 0) {
+    if (this.blockTags.size > 0 && tags.intersection(this.blockTags).size > 0) {
       return false;
     }
 
-    if (this.allowTags === null) {
-      return true;
-    }
-
-    return tags.intersection(this.allowTags).size > 0;
+    return this.allowTags.size === 0 || tags.intersection(this.allowTags).size > 0;
   }
 }

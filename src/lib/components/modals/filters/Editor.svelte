@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Filter } from '$lib/filter';
+  import { type Filter } from '$lib/filter';
   import { Textarea } from '$components/ui/textarea';
   import { Label } from '$components/ui/label';
   import { Input } from '$components/ui/input';
@@ -19,30 +19,15 @@
   let localBlockTagsValue = filter.blockTags.join(' ');
   let localAllowTagsValue = filter.allowTags.join(' ');
 
-  $: localBlockTags = localBlockTagsValue.split(' ');
-  $: localAllowTags = localAllowTagsValue.split(' ');
-
-  function arraysEqual(a: string[], b: string[]) {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) return false;
-    }
-    return true;
-  }
+  $: localBlockTags = localBlockTagsValue.split(/\s+/).filter((tag) => tag !== '');
+  $: localAllowTags = localAllowTagsValue.split(/\s+/).filter((tag) => tag !== '');
 
   function updateFilter(name: string, blockTags: string[], allowTags: string[]) {
-    if (
-      name === filter.name &&
-      arraysEqual(blockTags, filter.blockTags) &&
-      arraysEqual(allowTags, filter.allowTags)
-    )
-      return;
+    console.log('updating filter', name, blockTags, allowTags);
     filters.update((filterStore) => {
-      const found = filterStore.root.findId(filter.id);
-      if (!found) return filterStore;
-      found.name = name;
-      found.blockTags = blockTags;
-      found.allowTags = allowTags;
+      filter.name = name;
+      filter.blockTags = blockTags;
+      filter.allowTags = allowTags;
       return filterStore;
     });
   }
@@ -51,12 +36,7 @@
 
   function deleteFilter() {
     filters.update((filterStore) => {
-      const found = filterStore.root.findId(filter.id);
-      if (!found) return filterStore;
-      const parent = found.parent;
-      if (!parent) return filterStore;
-      parent.children = parent.children.filter((child) => child.id !== found.id);
-      return filterStore;
+      return filterStore.filter((f) => f.id !== filter.id);
     });
   }
 
@@ -69,34 +49,36 @@
   <Label for={nameInputId}><h3 class="mt-0">Name</h3></Label>
   <Input id={nameInputId} bind:value={localName} type="text" minlength={5} />
 
-  <Label for={blockTagsInputId}><h3>Blocklist</h3></Label>
-  <p>Don't show torrents with these tags...</p>
+  <Label for={blockTagsInputId}><h3>Exclude List (Optional)</h3></Label>
   <Textarea
     id={blockTagsInputId}
     class="font-mono"
     placeholder="bad.one bad.two bad.three"
     bind:value={localBlockTagsValue}
   />
-  <p class="mt-1 text-sm text-muted-foreground">Separate tags with spaces</p>
+  <p class="mt-1 text-sm text-muted-foreground">
+    If a torrent has a tag in this list, it will be excluded. Separate tags with spaces. If blank,
+    no torrents will be excluded.
+  </p>
 
-  <Label for={allowTagsInputId}><h3>Allowlist</h3></Label>
-  <p>Unless the torrent has these tags...</p>
+  <Label for={allowTagsInputId}><h3>Include List (Optional)</h3></Label>
   <Textarea
     id={allowTagsInputId}
     class="font-mono"
     placeholder="good.one good.two good.three"
     bind:value={localAllowTagsValue}
   />
-  <p class="mt-1 text-sm text-muted-foreground">Separate tags with spaces</p>
+  <p class="mt-1 text-sm text-muted-foreground">
+    If a torrent has a tag in this list, it will be included. Exclusion happens before inclusion.
+    Separate tags with spaces. If blank, all torrents will be included.
+  </p>
 
   <h3>Actions</h3>
   <ul>
     <li>
-      <ConfirmButton on:confirm={deleteFilter} disabled={filter.children.length > 0}>
+      <ConfirmButton on:confirm={deleteFilter}>
         <svelte:fragment slot="quiescent">Delete Filter</svelte:fragment>
       </ConfirmButton>
-      {#if filter.children.length > 0}
-        <p class="text-sm">Cannot delete this filter because it has children</p>
-      {/if}</li>
+    </li>
   </ul>
 </div>

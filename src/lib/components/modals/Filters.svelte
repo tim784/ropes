@@ -4,13 +4,13 @@
   import * as Dialog from '$components/ui/dialog';
   import { fade } from 'svelte/transition';
   import Editor from './filters/Editor.svelte';
-  import Tree from './filters/Tree.svelte';
+  import FilterList from './filters/FilterList.svelte';
   import { filters } from '$stores/filters';
 
   export let closeFn: () => void;
 
   let selectedFilterId: string | undefined = undefined;
-  $: selectedFilter = selectedFilterId ? $filters.root.findId(selectedFilterId) : null;
+  $: selectedFilter = $filters.find((filter) => filter.id === selectedFilterId);
 
   let editorContainer: HTMLElement | null = null;
 </script>
@@ -35,12 +35,12 @@
 
   <div class="grid grid-cols-[8fr_13fr] hyphens-auto">
     <aside class="h-[50dvh] overflow-x-hidden border-r">
-      <Tree bind:selectedFilterId />
+      <FilterList bind:selectedFilterId />
     </aside>
 
     <div class="h-[50dvh] overflow-y-scroll" bind:this={editorContainer}>
       {#if selectedFilter}
-        {#key selectedFilter.id}
+        {#key selectedFilterId}
           <Editor filter={selectedFilter} scrollingContainer={editorContainer} />
         {/key}
       {/if}
