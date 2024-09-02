@@ -31,7 +31,7 @@
     orientation="horizontal"
     class="inline"
   >
-    <ul class="inline-flex gap-4">
+    <ul class="inline-flex gap-4 flex-wrap">
       {#each $filters as filter}
         <li>
           <ButtonGroup.Item value={filter.id} class="font-bold">

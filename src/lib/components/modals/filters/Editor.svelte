@@ -23,7 +23,6 @@
   $: localAllowTags = localAllowTagsValue.split(/\s+/).filter((tag) => tag !== '');
 
   function updateFilter(name: string, blockTags: string[], allowTags: string[]) {
-    console.log('updating filter', name, blockTags, allowTags);
     filters.update((filterStore) => {
       filter.name = name;
       filter.blockTags = blockTags;

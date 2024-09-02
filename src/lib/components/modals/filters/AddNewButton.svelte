@@ -31,7 +31,6 @@
 
     filters.update((filters) => [...filters, newFilter]);
     dispatch('add', newFilter.id);
-    console.log('dispatched', newFilter.id);
   }
 </script>
 
