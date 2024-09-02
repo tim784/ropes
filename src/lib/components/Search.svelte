@@ -8,8 +8,13 @@
   import FilterSection from './search/FilterSection.svelte';
   import { formatNumber } from '../util';
   import { defaultPagination } from '$gather/pagination';
+  import { writable } from 'svelte/store';
+  import { setContext } from 'svelte';
+  import InlineSeparator from '$components/ui/InlineSeparator.svelte';
 
   export let page: Page<SearchPageData>;
+  const filteredCountStore = writable(0);
+  setContext('filteredCountStore', filteredCountStore);
 
   let curPagination = defaultPagination();
 
@@ -19,6 +24,8 @@
     });
   }
   $: totalResultCount = formatNumber(curPagination.totalResultCount);
+  $: start = formatNumber(curPagination.thisPageRange.start);
+  $: end = formatNumber(curPagination.thisPageRange.end);
 </script>
 
 <div class="relative flex flex-col items-start overflow-visible bg-inherit md:flex-row">
@@ -35,9 +42,13 @@
 
     <HeaderBox />
 
-    <div class="text-2xl">
-      <h2 class="inline font-bold">Results</h2>
-      <span>({totalResultCount})</span>
+    <div>
+      <h2 class="inline text-2xl font-bold">Results</h2>
+      <span class="text-xl">{start}–{end} of {totalResultCount}</span>
+      {#if $filteredCountStore > 0}
+        <InlineSeparator />
+        <span class="text-xl"> {formatNumber($filteredCountStore)} filtered</span>
+      {/if}
     </div>
 
     <FilterSection />

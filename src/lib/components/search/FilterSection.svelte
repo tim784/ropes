@@ -24,14 +24,9 @@
   };
 </script>
 
-<section>
-  <ButtonGroup.Root
-    type="multiple"
-    bind:value={enabledFilterIds}
-    orientation="horizontal"
-    class="inline"
-  >
-    <ul class="inline-flex gap-4 flex-wrap">
+<section class="flex flex-wrap items-center gap-4">
+  <ButtonGroup.Root type="multiple" bind:value={enabledFilterIds} orientation="horizontal">
+    <ul class="flex flex-wrap gap-4">
       {#each $filters as filter}
         <li>
           <ButtonGroup.Item value={filter.id} class="font-bold">
@@ -39,15 +34,12 @@
           </ButtonGroup.Item>
         </li>
       {/each}
-      <li>
-        <Dialog.Root bind:open={filtersDialogOpen}>
-          <Dialog.Trigger asChild let:builder>
-            <Button builders={[builder]} class="underline" variant="ghost">Configure Filters</Button
-            >
-          </Dialog.Trigger>
-          <Filters closeFn={closeFiltersDialog} />
-        </Dialog.Root>
-      </li>
     </ul>
   </ButtonGroup.Root>
+  <Dialog.Root bind:open={filtersDialogOpen}>
+    <Dialog.Trigger asChild let:builder>
+      <Button builders={[builder]} class="underline" variant="ghost">Configure Filters</Button>
+    </Dialog.Trigger>
+    <Filters closeFn={closeFiltersDialog} />
+  </Dialog.Root>
 </section>

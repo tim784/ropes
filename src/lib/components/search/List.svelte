@@ -2,19 +2,26 @@
   import { type Torrent, groupTorrents } from '$lib/torrent';
   import type { Me } from '$gather/me';
   import { seenTorrents } from '$stores/seen';
-  import { onDestroy, setContext } from 'svelte';
+  import { onDestroy, setContext, getContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
   import TorrentComponent from './Torrent.svelte';
   import { curFilterGroup } from '$stores/filters';
+  import { type Writable } from 'svelte/store';
 
   export let torrentsPromise: Promise<Torrent[]>;
   export let mePromise: Promise<Me>;
   let lastTorrentCount = 25;
+  let torrents: Torrent[] = [];
+  const filteredCountStore = getContext<Writable<number>>('filteredCountStore');
 
-  $: dataPromise = Promise.all([torrentsPromise, mePromise]).then(([torrents, me]) => {
-    lastTorrentCount = torrents.length;
+  $: filteredTorrents = torrents.filter((t) => $curFilterGroup.filter(t));
+  $: groupedTorrents = groupTorrents(filteredTorrents);
+  $: filteredCountStore.set(torrents.length - filteredTorrents.length);
 
-    return [torrents, me] as [Torrent[], Me];
+  $: dataPromise = Promise.all([torrentsPromise, mePromise]).then(([dataPromiseTorrents, me]) => {
+    lastTorrentCount = dataPromiseTorrents.length;
+    torrents = dataPromiseTorrents;
+    return me as Me;
   });
 
   // scroll when torrentsPromise changes. kinda an abuse of reactivity, but
@@ -70,9 +77,8 @@
           <TorrentSkeleton />
         </li>
       {/each}
-    {:then [torrents, me]}
-      {@const groups = groupTorrents(torrents.filter((t) => $curFilterGroup.filter(t)))}
-      {#each groups as group (group[0].torrent.id)}
+    {:then me}
+      {#each groupedTorrents as group (group[0].torrent.id)}
         <li>
           <TorrentComponent {group} {me} />
         </li>
