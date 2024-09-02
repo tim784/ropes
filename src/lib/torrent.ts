@@ -57,8 +57,10 @@ const variantTokenPatterns = [
   /^(?:s|h|uh)d$/i,
 
   // VR tags
-  // psvr, gearvr, oculus, go, vive, rift
-  /^(?:(?:(?:ps|gear)vr)|oculus|go|vive|rift)$/i,
+  //
+  // psvr, gearvr, oculus, go, vive, rift, apple vision pro (this is a hack, our
+  // implementation doesn't support multi-word tokens, fix this later)
+  /^(?:(?:(?:ps|gear)vr)|oculus|go|vive|rift|apple|vision|pro)$/i,
 
   // encoders
   // x264, h265, h.265, etc

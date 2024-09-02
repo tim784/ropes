@@ -7,6 +7,7 @@
   import { makeAppIdentifier } from '$lib/constants';
   import ConfirmButton from '$components/ui/ConfirmButton.svelte';
   import { onMount } from 'svelte';
+  import pDebounce from 'p-debounce';
 
   export let filter: Filter;
   export let scrollingContainer: HTMLElement | null;
@@ -23,6 +24,7 @@
   $: localAllowTags = localAllowTagsValue.split(/\s+/).filter((tag) => tag !== '');
 
   function updateFilter(name: string, blockTags: string[], allowTags: string[]) {
+    console.log('calling updateFilter', name, blockTags, allowTags);
     filters.update((filterStore) => {
       filter.name = name;
       filter.blockTags = blockTags;
@@ -31,7 +33,10 @@
     });
   }
 
-  $: updateFilter(localName, localBlockTags, localAllowTags);
+  const debounceDuration = 1000;
+  const updateFilterDebounced = pDebounce(updateFilter, debounceDuration);
+
+  $: updateFilterDebounced(localName, localBlockTags, localAllowTags);
 
   function deleteFilter() {
     filters.update((filterStore) => {

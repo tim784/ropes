@@ -169,6 +169,17 @@ test.for([
   [
     { name: '[REQ] Flesh Hunter 1 (2002) 1080p (AI Upscale + QTGMC)', variantString: '1080p' },
     { name: '[REQ] Flesh Hunter 1 (2002) 720p (AI Upscale + QTGMC)', variantString: '720p' }
+  ],
+
+  [
+    {
+      name: 'NaughtyAmerica3D - Naughty 4-some with bikini clad babes Ella Reese, Kayley Gunner, and Kendra Sunderland (Apple Vision Pro 1080p)',
+      variantString: 'Apple Vision Pro 1080p'
+    },
+    {
+      name: 'NaughtyAmerica3D - Naughty 4-some with bikini clad babes Ella Reese, Kayley Gunner, and Kendra Sunderland (Oculus 1080p)',
+      variantString: 'Oculus 1080p'
+    }
   ]
 ] as { name: string; variantString: string }[][])(
   'should group similar torrents %s',
