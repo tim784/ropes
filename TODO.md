@@ -36,3 +36,9 @@
 
 - add feature cards to www page. the original forum post is uneditable and only
   mentions a subset of the features.
+
+- fix architecture: we're doing all sorts of crazy shit all over like awaiting
+  promises, global stores, etc. i feel like the search page component should
+  make setcontext a store, and components just pull from it. flesh this idea
+  out. many components are dealing with app-wide concerns instead of
+  component-specific concerns.
