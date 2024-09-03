@@ -40,7 +40,7 @@
   {/if}
   <Dialog.Root bind:open={filtersDialogOpen}>
     <Dialog.Trigger asChild let:builder>
-      <Link builders={[builder]} class="underline">Configure Filters</Link>
+      <Link builders={[builder]}>Configure Filters</Link>
     </Dialog.Trigger>
     <Filters closeFn={closeFiltersDialog} />
   </Dialog.Root>
