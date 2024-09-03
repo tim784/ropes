@@ -14,13 +14,14 @@
   import { page } from '$stores/page';
 </script>
 
-<!-- because this form uses a get, it doesn't really need to be a form. in face,
+<!-- because this form uses a get, it doesn't really need to be a form. in fact,
 i kinda like the search button showing the url it'd navigate to in non-SPA mode
 -->
 <form class="w-full space-y-4 p-1 transition-colors">
   <TagsSection />
 
   <SortCriteria />
+
   <SortOrder />
 
   <MakeDefault />
