@@ -11,9 +11,9 @@
     variants: {
       variant: {
         outline:
-          'border-2 data-[state=checked]:cursor-default data-[state=checked]:border-primary data-[state=checked]:hover:bg-background data-[state=checked]:active:border-primary data-[state=checked]:active:bg-background',
+          'border-2 data-[state=checked]:cursor-default data-[state=checked]:border-primary data-[state=checked]:hover:bg-inherit data-[state=checked]:active:border-primary data-[state=checked]:active:bg-background',
         ghost:
-          'data-[state=checked]:cursor-default data-[state=checked]:bg-primary data-[state=checked]:hover:bg-primary data-[state=checked]:active:bg-primary data-[state=checked]:text-primary-foreground'
+          'data-[state=checked]:cursor-default data-[state=checked]:bg-primary data-[state=checked]:active:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:hover:bg-inherit'
       } as VariantRecord
     },
     defaultVariants: {
