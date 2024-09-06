@@ -1,12 +1,16 @@
 import { writable } from 'svelte/store';
 import { isSearchPage, page, getSearchUrlOfFormData } from '$stores/page';
 import { TaglistTag } from '../tag';
+import { SizeRange } from '../size';
 import {
   SORT_CRITERIA_NAME,
   SORT_ORDER_NAME,
   TAGLIST_NAME,
-  SET_DEFAULT_NAME
-} from '../gather/search';
+  SET_DEFAULT_NAME,
+  SIZE_MID_NAME,
+  SIZE_UNIT_NAME,
+  SIZE_RANGE_NAME,
+} from '$gather/search';
 
 export type LocalFormData = {
   d: FormData;
@@ -134,6 +138,25 @@ function createLocalFormDataStore() {
     });
   }
 
+  function setRange(range: SizeRange) {
+    const empSizeRange = range.toEmpSizeRange();
+    update((localFormData) => {
+      localFormData.d.set(SIZE_MID_NAME, empSizeRange[SIZE_MID_NAME] ?? '');
+      localFormData.d.set(SIZE_RANGE_NAME, empSizeRange[SIZE_RANGE_NAME] ?? '');
+      localFormData.d.set(SIZE_UNIT_NAME, empSizeRange[SIZE_UNIT_NAME] ?? '');
+      return makeLocalFormData(localFormData.d);
+    });
+  }
+
+  function clearRange() {
+    update((localFormData) => {
+      localFormData.d.delete(SIZE_MID_NAME);
+      localFormData.d.delete(SIZE_RANGE_NAME);
+      localFormData.d.delete(SIZE_UNIT_NAME);
+      return makeLocalFormData(localFormData.d);
+    });
+  }
+
   return {
     subscribe,
     set,
@@ -146,6 +169,8 @@ function createLocalFormDataStore() {
     setSortCriteria,
     setSortOrder,
     setMakeDefaultSearch,
+    setRange,
+    clearRange,
     clearAll
   };
 }

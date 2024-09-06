@@ -45,7 +45,9 @@ export type Checkbox = {
 
 export const SORT_CRITERIA_NAME = 'order_by';
 export const SORT_ORDER_NAME = 'order_way';
-export const SIZE_TYPE_NAME = 'sizetype';
+export const SIZE_MID_NAME = 'sizeall';
+export const SIZE_UNIT_NAME = 'sizetype';
+export const SIZE_RANGE_NAME = 'sizerange';
 export const TAGLIST_NAME = 'taglist';
 export const ONLY_FREELEECH_NAME = 'filter_freeleech';
 export const LIMIT_TO_ONE_HUNDRED_NAME = 'limit_matches';
@@ -114,12 +116,25 @@ function getCategoryCheckboxes(searchForm: SearchFormElement): Checkbox[] {
   });
 }
 
-// things we either:
-// - don't support (for now), or
-// - don't want to persist because these are usually one-time things
-//   (such as makedefault, setdefault).
-function getFilteredFormData(searchForm: SearchFormElement): FormData {
-  const formData = new FormData(searchForm);
+function getFilteredFormData(url: string, doc: Document): FormData {
+  const formData = new FormData();
+  for (const [key, value] of new URL(url).searchParams.entries()) {
+    formData.set(key, value);
+  }
+
+  // taglist is wierd: if its not in the url, it's the "default", which will be
+  // in the document. this kinda sucks because if the user changes the taglist
+  // value before ropes is loaded, then we'll think _that's_ the default, and
+  // not the actual default. but we can't really do anything about that, and its
+  // of little consequence.
+  if (!formData.has(TAGLIST_NAME)) {
+    const taglist = querySelector(`textarea[name="${TAGLIST_NAME}"]`, doc) as HTMLTextAreaElement;
+    if (taglist) {
+      formData.set(TAGLIST_NAME, taglist.value);
+    }
+  }
+
+  // remove things we don't support/persist
   formData.delete(ONLY_FREELEECH_NAME);
   formData.delete(LIMIT_TO_ONE_HUNDRED_NAME);
   formData.delete(TITLE_AND_DESCRIPTION_TERMS_NAME);
@@ -137,14 +152,14 @@ function getFilteredFormData(searchForm: SearchFormElement): FormData {
   return formData;
 }
 
-export function getSearch(doc: Document): Search {
+export function getSearch(doc: Document, url: string): Search {
   const searchForm = getSeachForm(doc);
-  const formData = getFilteredFormData(searchForm);
+  const formData = getFilteredFormData(url, doc);
 
   return {
     sortCriteria: getSelectOptions(searchForm, SORT_CRITERIA_NAME),
     sortOrders: getSelectOptions(searchForm, SORT_ORDER_NAME),
-    sizeTypes: getSelectOptions(searchForm, SIZE_TYPE_NAME),
+    sizeTypes: getSelectOptions(searchForm, SIZE_UNIT_NAME),
     onlyFreeleech: getCheckbox(searchForm, ONLY_FREELEECH_NAME),
     limitToOneHundred: getCheckbox(searchForm, LIMIT_TO_ONE_HUNDRED_NAME),
     categories: getCategoryCheckboxes(searchForm),

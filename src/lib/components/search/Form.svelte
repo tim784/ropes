@@ -4,6 +4,7 @@
   import TagsSection from './TagsSection.svelte';
   import SortCriteria from './SortCriteria.svelte';
   import SortOrder from './SortOrder.svelte';
+  import Size from './Size.svelte';
   import { settings } from '$stores/settings';
   import MakeDefault from './MakeDefault.svelte';
   import * as DropdownMenu from '$components/ui/dropdown-menu';
@@ -11,7 +12,20 @@
   import Search from 'lucide-svelte/icons/search';
   import UserSearch from 'lucide-svelte/icons/user-search';
   import Eraser from 'lucide-svelte/icons/eraser';
-  import { page } from '$stores/page';
+  import { page, isSearchPage } from '$stores/page';
+  import { setContext } from 'svelte';
+  import { writable, readonly } from 'svelte/store';
+  import { defaultSearch } from '$gather/search';
+
+  const searchStore = writable(defaultSearch());
+  page.subscribe((p) => {
+    if (isSearchPage(p)) {
+      p.dataPromise.then((data) => {
+        searchStore.set(data.search);
+      });
+    }
+  });
+  setContext('search', readonly(searchStore));
 </script>
 
 <!-- because this form uses a get, it doesn't really need to be a form. in fact,
@@ -23,6 +37,8 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
   <SortCriteria />
 
   <SortOrder />
+
+  <Size />
 
   <MakeDefault />
 

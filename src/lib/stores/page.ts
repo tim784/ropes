@@ -83,8 +83,8 @@ export interface SearchPageData extends SupportedPageData {
   latestForumPosts: LatestForumPost[];
 }
 
-function makeSearchPageData(doc: Document): SearchPageData {
-  const searchForm = getSearch(doc);
+function makeSearchPageData(doc: Document, url: string): SearchPageData {
+  const searchForm = getSearch(doc, url);
   return {
     type: PageType.Search,
     torrents: getTorrents(doc),
@@ -132,12 +132,12 @@ export function determinePageType(href: string = window.location.href): PageType
   return PageType.Unsupported;
 }
 
-function getPageData(doc: Document, type: PageType): PageData {
+function getPageData(doc: Document, type: PageType, url: string): PageData {
   // allow undefined type to be passed in for when we already know the type, but
   // we can always figure it out from the url.
   switch (type) {
     case PageType.Search:
-      return makeSearchPageData(doc);
+      return makeSearchPageData(doc, url);
     case PageType.Torrent:
       return makeTorrentPageData(doc);
     case PageType.Unsupported:
@@ -155,7 +155,7 @@ async function navigate(url: string, isBack: boolean = false): Promise<PageData>
   const doc = domParser.parseFromString(text, 'text/html');
   const pageType = determinePageType(url);
 
-  return getPageData(doc, pageType);
+  return getPageData(doc, pageType, url);
 }
 
 type HistoryState = {
@@ -175,7 +175,7 @@ function createPageStore() {
     // promise.
     {
       type: initialType,
-      dataPromise: Promise.resolve(getPageData(document, initialType)),
+      dataPromise: Promise.resolve(getPageData(document, initialType, window.location.href)),
       scrollY: 0
     }
   );
