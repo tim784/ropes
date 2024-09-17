@@ -4,7 +4,7 @@ import { settings } from '$stores/settings';
 
 export type ToastComponentData = {
   componentType: ComponentType;
-  props?: Record<string, any>;
+  props?: Record<string, unknown>;
 };
 
 const getNewId = () => new Date().getTime();

@@ -32,7 +32,7 @@ function makeTagCache(map?: TagMap): TagCache {
 function createMatchFn(tags: Map<string, number>): TagCache['match'] {
   return (partialTagName: string) => {
     if (partialTagName.length === 0) return [];
-    let needle = normalizeTag(partialTagName);
+    const needle = normalizeTag(partialTagName);
 
     // find all matches
     const matchingTags = Array.from(tags.entries())

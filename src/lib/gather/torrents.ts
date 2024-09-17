@@ -85,7 +85,7 @@ function getTorrentUploader(torrentElement: TorrentElement): User | null {
 }
 
 function getPageHref(nameColumn: TorrentNameColumnElement): string {
-  return querySelector(':scope > a', nameColumn)?.getAttribute('href')!;
+  return querySelector(':scope > a', nameColumn)?.getAttribute('href') as string;
 }
 
 function getDownloadHref(nameColumn: TorrentNameColumnElement): string | null {

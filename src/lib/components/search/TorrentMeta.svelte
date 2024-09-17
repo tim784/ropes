@@ -1,7 +1,6 @@
 <script lang="ts">
   import { type Torrent } from '$lib/torrent';
   import { formatNumber, getRelativeDifference } from '$lib/util';
-  // import { page, getSearchUrlOfFormData } from '$stores/page';
   import * as Popover from '$components/ui/popover/index.js';
   import Link from '$components/ui/Link.svelte';
   import ArrowDown from 'lucide-svelte/icons/arrow-down';

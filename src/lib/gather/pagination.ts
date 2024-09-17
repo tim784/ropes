@@ -47,9 +47,9 @@ function getPageFromUrl(url: string): number {
 
 // strange that this is placed in the search form, but whateva
 function getResultCount(doc: Document) {
-  let text = querySelector('.numsearchresults span', doc)!.textContent!;
-  let resultCountString = text.split(' ')[0];
-  let resultCount = Number(removeNonNumericChars(resultCountString));
+  const text = querySelector('.numsearchresults span', doc)!.textContent!;
+  const resultCountString = text.split(' ')[0];
+  const resultCount = Number(removeNonNumericChars(resultCountString));
   return resultCount;
 }
 
@@ -138,8 +138,8 @@ export function getPagination(doc: Document): Pagination {
     '.colhead > td:nth-child(5) > a:nth-child(1)',
     doc
   );
-  const href = sortableTableHeadingElement?.getAttribute('href')!;
-  const currentPage = getPageFromUrl(href);
+  const href = sortableTableHeadingElement?.getAttribute('href');
+  const currentPage = getPageFromUrl(href!);
 
   // totalPages: ditto, but on the link of .pager_last. if there is no .pager_last,
   // then its the same as currentPage
