@@ -19,15 +19,14 @@
   import { settings } from '$stores/settings';
   import { getSfwTorrent } from '$lib/sfwMode';
   import * as ButtonRadioGroup from '$components/ui/button-radio-group';
-  import { type BaseDataStore, type SearchDataStore } from '$stores/page';
-  import type { Writable } from 'svelte/store';
-  import { type Locals, type LocalsStore } from '$stores/locals';
+  import { type BaseDataStore } from '$stores/page';
+  import { type LocalsStore } from '$stores/locals';
+  import Link from '$components/ui/Link.svelte';
 
   const localsStore = getContext<LocalsStore>('localsStore');
   const baseDataStore = getContext<BaseDataStore>('baseDataStore');
 
   const observer = getContext<IntersectionObserver>('intersectionObserver');
-  const searchDataStore = getContext<SearchDataStore>('searchDataStore');
 
   export let group: TorrentInGroup[];
   $: me = $baseDataStore.me;
@@ -91,11 +90,13 @@
 >
   {#if torrent.imageHref !== null}
     <div class="relative w-full">
-      <img
-        class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
-        src={torrent.imageHref}
-        alt={torrent.name}
-      />
+      <Link href={torrent.pageHref} variant="none" class="block">
+        <img
+          class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
+          src={torrent.imageHref}
+          alt={torrent.name}
+        />
+      </Link>
       <Dialog.Root portal={$portal}>
         <Dialog.Trigger asChild let:builder>
           <Button

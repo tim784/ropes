@@ -16,6 +16,18 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [13.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-17
+
+### Added
+
+- Clicking on a torrent image now nagivates to that torrent's page. Expanding
+  the torrent image is still possible by clicking the icon in the top-right.
+
+### Changed
+
+- *(Not user-facing)* Refactored how page state is managed so that development
+  is easier.
+
 ## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-09-01
 
 ### Added
