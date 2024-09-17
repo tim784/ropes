@@ -8,12 +8,15 @@
   import { fetchAutocompleteTags } from '$api/autocomplete';
   import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
   import X from 'lucide-svelte/icons/x';
-  import { localFormData } from '$src/lib/stores/localFormData';
-  import LoadingSpinner from '../ui/LoadingSpinner.svelte';
-  import { getSfwTag } from '$src/lib/sfwMode';
-  import { TAGLIST_NAME } from '$src/lib/gather/search';
+  import LoadingSpinner from '$components/ui/LoadingSpinner.svelte';
+  import { getSfwTag } from '$lib/sfwMode';
+  import { TAGLIST_NAME } from '$gather/searchForm';
+  import { getContext } from 'svelte';
+  import type { LocalFormDataStore } from '$stores/localFormData';
 
-  $: tags = TaglistTag.validateSyntax($localFormData.d.get(TAGLIST_NAME)?.toString() || '');
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
+
+  $: tags = TaglistTag.validateSyntax($localFormDataStore.get(TAGLIST_NAME)?.toString() || '');
 
   async function validateExists(tag: TaglistTag) {
     if ($notTags.has(tag.name)) {
@@ -34,6 +37,30 @@
       }
     }
   }
+
+  function negateTag(tag: TaglistTag) {
+    localFormDataStore.update((formData) => {
+      const tags = TaglistTag.validateSyntax((formData.get(TAGLIST_NAME) as string) ?? '');
+
+      const index = tags.findIndex((t) => t.name === tag.name);
+
+      if (index !== -1) {
+        tags[index] = tags[index].negate();
+      }
+
+      formData.set(TAGLIST_NAME, TaglistTag.toTaglist(tags));
+      return formData;
+    });
+  }
+
+  function deleteTag(tag: TaglistTag) {
+    localFormDataStore.update((formData) => {
+      const tags = TaglistTag.validateSyntax((formData.get(TAGLIST_NAME) as string) ?? '');
+      const withoutTag = tags.filter((t) => t.name !== tag.name);
+      formData.set(TAGLIST_NAME, TaglistTag.toTaglist(withoutTag));
+      return formData;
+    });
+  }
 </script>
 
 <ol class="flex flex-col gap-2">
@@ -46,7 +73,7 @@
           variant="outline"
           class="h-6 w-[5ch] px-1 text-xs font-bold uppercase"
           on:click={(e) => {
-            localFormData.negateTag(tag);
+            negateTag(tag);
             e.preventDefault();
           }}
           aria-label="Negate Tag"
@@ -74,7 +101,7 @@
         size="round-icon-sm"
         aria-label="Delete Tag"
         on:click={(e) => {
-          localFormData.deleteTag(tag);
+          deleteTag(tag);
           e.preventDefault();
         }}
       >

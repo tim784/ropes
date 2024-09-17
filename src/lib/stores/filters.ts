@@ -1,21 +1,19 @@
 import { makeAppIdentifier } from '../constants';
 import { localStorageBacked } from './localStorageBacked';
-import { type Filter, FilterGroup } from '$lib/filter';
+import { type Filter, CombinedFilter } from '$lib/filter';
 import { derived } from 'svelte/store';
 
-export type FilterStore = Filter[];
-
-function defaultFilterStore(): FilterStore {
+function defaultFilters(): Filter[] {
   return [];
 }
 
 const key = makeAppIdentifier('filters');
 
-export const filters = localStorageBacked<FilterStore>(
+export const filterStore = localStorageBacked<Filter[]>(
   key,
-  defaultFilterStore,
+  defaultFilters,
   JSON.stringify,
   JSON.parse
 );
 
-export const curFilterGroup = derived(filters, ($filters) => FilterGroup.fromFilters($filters));
+export const combinedFilter = derived(filterStore, ($filters) => CombinedFilter.fromFilters($filters));

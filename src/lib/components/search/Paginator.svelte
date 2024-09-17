@@ -1,20 +1,18 @@
 <script lang="ts">
-  import {
-    type Page,
-    type SearchPageData,
-    getSearchUrlOfFormData,
-    page as pageStore
-  } from '$stores/page';
+  import { type PageDataStore, type SearchDataStore } from '$stores/page';
   import type { Pagination } from '$gather/pagination';
   import Button from '$components/ui/Button.svelte';
-  import type { Search } from '$src/lib/gather/search';
   import ChevronLeft from 'lucide-svelte/icons/chevron-left';
   import ChevronRight from 'lucide-svelte/icons/chevron-right';
   import { settings } from '$stores/settings';
-  import { cloneFormData } from '$src/lib/util';
   import Skeleton from '$components/ui/skeleton/skeleton.svelte';
+  import { getContext } from 'svelte';
 
-  export let page: Page<SearchPageData>;
+  const pageDataStore = getContext<PageDataStore>('pageDataStore');
+  const searchDataStore = getContext<SearchDataStore>('searchDataStore');
+
+  $: curUrl = new URL($pageDataStore.url);
+  $: pagination = $searchDataStore.pagination;
 
   type PageItem = {
     number: number;
@@ -66,21 +64,21 @@
     return pages;
   }
 
-  function urlForPage(pageNumber: number, search: Search): string {
-    let form = cloneFormData(search.formData);
-    form.set('page', pageNumber.toString());
-    return getSearchUrlOfFormData(form);
+  function urlForPage(pageNumber: number): string {
+    const newUrl = new URL(curUrl);
+    newUrl.searchParams.set('page', pageNumber.toString());
+    return newUrl.toString();
   }
 </script>
 
 <ul class="my-4 flex items-center justify-center gap-4">
-  {#await page.dataPromise}
+  {#if $pageDataStore.isLoading}
     {#each Array.from({ length: 5 }) as _}
       <li>
         <Skeleton class="h-8 w-8" />
       </li>
     {/each}
-  {:then { pagination, search }}
+  {:else}
     {@const pageRadius = makePageRadius(pagination)}
     <li>
       {#if pagination.currentPage !== 1}
@@ -90,7 +88,7 @@
             variant="outline"
             class="px-2"
             on:click={() => {
-              pageStore.navigateToSearch(undefined, pagination.currentPage - 1);
+              pageDataStore.navigate(urlForPage(pagination.currentPage - 1));
             }}
           >
             <ChevronLeft />
@@ -98,7 +96,7 @@
         {:else}
           <Button
             size="sm"
-            href={urlForPage(pagination.currentPage - 1, search)}
+            href={urlForPage(pagination.currentPage - 1)}
             variant="outline"
             class="px-2"
           >
@@ -115,6 +113,7 @@
       {#if pageItem === null}
         <li>...</li>
       {:else}
+        {@const url = urlForPage(pageItem.number)}
         <li>
           {#if !pageItem.isActive}
             {#if $settings.spaMode}
@@ -123,18 +122,13 @@
                 variant="outline"
                 class="font-bold"
                 on:click={() => {
-                  pageStore.navigateToSearch(undefined, pageItem.number);
+                  pageDataStore.navigate(url);
                 }}
               >
                 {pageItem.number}
               </Button>
             {:else}
-              <Button
-                size="sm"
-                class="font-bold"
-                href={urlForPage(pageItem.number, search)}
-                variant="outline"
-              >
+              <Button size="sm" class="font-bold" href={url} variant="outline">
                 {pageItem.number}
               </Button>
             {/if}
@@ -159,7 +153,7 @@
             variant="outline"
             class="px-2"
             on:click={() => {
-              pageStore.navigateToSearch(undefined, pagination.currentPage + 1);
+              pageDataStore.navigate(urlForPage(pagination.currentPage + 1));
             }}
           >
             <ChevronRight />
@@ -167,7 +161,7 @@
         {:else}
           <Button
             size="sm"
-            href={urlForPage(pagination.currentPage + 1, search)}
+            href={urlForPage(pagination.currentPage + 1)}
             variant="outline"
             class="px-2"
           >
@@ -180,5 +174,5 @@
         </Button>
       {/if}
     </li>
-  {/await}
+  {/if}
 </ul>

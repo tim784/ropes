@@ -1,44 +1,17 @@
 <script lang="ts">
+  import { type PageDataStore, type SearchDataStore, createSearchPageStore } from '$stores/page';
   import { type Torrent, groupTorrents } from '$lib/torrent';
   import type { Me } from '$gather/me';
   import { seenTorrents } from '$stores/seen';
   import { onDestroy, setContext, getContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';
   import TorrentComponent from './Torrent.svelte';
-  import { curFilterGroup } from '$stores/filters';
-  import { type Writable } from 'svelte/store';
+  import { type Readable} from 'svelte/store';
 
-  export let torrentsPromise: Promise<Torrent[]>;
-  export let mePromise: Promise<Me>;
-  let lastTorrentCount = 25;
-  let torrents: Torrent[] = [];
-  const filteredCountStore = getContext<Writable<number>>('filteredCountStore');
+  const pageDataStore = getContext<PageDataStore>('pageDataStore');
+  const filteredTorrentsStore = getContext<Readable<Torrent[]>>('filteredTorrentsStore');
 
-  $: filteredTorrents = torrents.filter((t) => $curFilterGroup.filter(t));
-  $: groupedTorrents = groupTorrents(filteredTorrents);
-  $: filteredCountStore.set(torrents.length - filteredTorrents.length);
-
-  $: dataPromise = Promise.all([torrentsPromise, mePromise]).then(([dataPromiseTorrents, me]) => {
-    lastTorrentCount = dataPromiseTorrents.length;
-    torrents = dataPromiseTorrents;
-    return me as Me;
-  });
-
-  // scroll when torrentsPromise changes. kinda an abuse of reactivity, but
-  // whatever.
-  $: ((dep: any) => {
-    // we could use $page.scrollY here, which possibly contains
-    // the last scroll position the user had if this is a back-navigation. but it
-    // doesn't really work because the layout (which affects scroll position)
-    // changes when torrents (and especially images) load. so, for now, just
-    // scroll to the top.
-
-    // also, don't do this in dev, its distracting when we're trying to work on
-    // a particular part of the page.
-    if (!import.meta.env.DEV) {
-      window.scrollTo({ top: 0 });
-    }
-  })(torrentsPromise);
+  $: groupedTorrents = groupTorrents($filteredTorrentsStore);
 
   // set up intersection observer for when torrents are in the viewport
   const intersectionObserver = new IntersectionObserver(
@@ -71,18 +44,18 @@
   <ol
     class="relative grid gap-4 md:grid-cols-[repeat(auto-fill,_minmax(var(--torrent-card-width),_1fr))]"
   >
-    {#await dataPromise}
-      {#each Array.from({ length: lastTorrentCount }) as _}
+    {#if $pageDataStore.isLoading}
+      {#each Array.from({ length: $filteredTorrentsStore.length }) as _}
         <li>
           <TorrentSkeleton />
         </li>
       {/each}
-    {:then me}
+    {:else}
       {#each groupedTorrents as group (group[0].torrent.id)}
         <li>
-          <TorrentComponent {group} {me} />
+          <TorrentComponent {group} />
         </li>
       {/each}
-    {/await}
+    {/if}
   </ol>
 </div>

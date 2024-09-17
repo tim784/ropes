@@ -1,31 +1,28 @@
 <script lang="ts">
-  import type { Page, SearchPageData } from '$stores/page';
+  import { type PageDataStore, type SearchDataStore, createSearchPageStore } from '$stores/page';
   import Form from './search/Form.svelte';
   import List from './search/List.svelte';
   import Paginator from './search/Paginator.svelte';
   import ThemeTest from '$components/ThemeTest.svelte';
   import HeaderBox from './search/HeaderBox.svelte';
   import FilterSection from './search/FilterSection.svelte';
-  import { formatNumber } from '../util';
-  import { defaultPagination } from '$gather/pagination';
-  import { writable } from 'svelte/store';
-  import { setContext } from 'svelte';
-  import InlineSeparator from '$components/ui/InlineSeparator.svelte';
+  import { setContext, getContext } from 'svelte';
+  import ResultsHeading from './search/ResultsHeading.svelte';
+  import { derived } from 'svelte/store';
+  import { combinedFilter } from '$stores/filters';
 
-  export let page: Page<SearchPageData>;
-  const filteredCountStore = writable(0);
-  setContext('filteredCountStore', filteredCountStore);
+  const pageDataStore = getContext<PageDataStore>('pageDataStore');
 
-  let curPagination = defaultPagination();
+  const searchDataStore = createSearchPageStore(pageDataStore);
+  setContext<SearchDataStore>('searchDataStore', searchDataStore);
 
-  $: {
-    page.dataPromise.then((p) => {
-      curPagination = p.pagination;
-    });
-  }
-  $: totalResultCount = formatNumber(curPagination.totalResultCount);
-  $: start = formatNumber(curPagination.thisPageRange.start);
-  $: end = formatNumber(curPagination.thisPageRange.end);
+  const filteredTorrentsStore = derived(
+    [searchDataStore, combinedFilter],
+    ([$searchData, $filter]) => {
+      return $searchData.torrents.filter((t) => $filter.filter(t));
+    }
+  );
+  setContext('filteredTorrentsStore', filteredTorrentsStore);
 </script>
 
 <div class="relative flex flex-col items-start overflow-visible bg-inherit md:flex-row">
@@ -42,25 +39,15 @@
 
     <HeaderBox />
 
-    <div>
-      <h2 class="inline text-2xl font-bold">Results</h2>
-      <span class="text-xl">{start}–{end} of {totalResultCount}</span>
-      {#if $filteredCountStore > 0}
-        <InlineSeparator />
-        <span class="text-xl"> {formatNumber($filteredCountStore)} filtered</span>
-      {/if}
-    </div>
+    <ResultsHeading />
 
     <FilterSection />
 
-    <Paginator {page} />
+    <Paginator />
 
-    <List
-      mePromise={page.dataPromise.then((p) => p.me)}
-      torrentsPromise={page.dataPromise.then((p) => p.torrents)}
-    />
+    <List />
 
-    <Paginator {page} />
+    <Paginator />
   </div>
 </div>
 

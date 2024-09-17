@@ -35,7 +35,6 @@
   ): Size | undefined {
     if (!shown) return undefined;
     const parsed = sizeSchema.safeParse({ value, unit: unit?.value }, { errorMap });
-    console.log('parsed', parsed);
     if (parsed.success) {
       inputElement?.setCustomValidity('');
       error = null;

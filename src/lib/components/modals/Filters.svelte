@@ -5,12 +5,12 @@
   import { fade } from 'svelte/transition';
   import Editor from './filters/Editor.svelte';
   import FilterList from './filters/FilterList.svelte';
-  import { filters } from '$stores/filters';
+  import { filterStore } from '$stores/filters';
 
   export let closeFn: () => void;
 
   let selectedFilterId: string | undefined = undefined;
-  $: selectedFilter = $filters.find((filter) => filter.id === selectedFilterId);
+  $: selectedFilter = $filterStore.find((filter) => filter.id === selectedFilterId);
 
   let editorContainer: HTMLElement | null = null;
 </script>

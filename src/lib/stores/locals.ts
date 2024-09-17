@@ -7,12 +7,12 @@
  * 2. Can be mutated (if appropriate). For example, we can decrement the slot
  *    count when one is used.
  */
-import { makeAppIdentifier } from '$src/lib/constants';
-import { isSupportedPage, page } from './page';
+import { makeAppIdentifier } from '$lib/constants';
 import { localStorageBacked } from './localStorageBacked';
 import { type Alert } from '$gather/me';
+import type { BaseDataStore } from './page';
 
-type Locals = {
+export type Locals = {
   inviteCount: number;
   creditCount: number;
   uploadedBytes: string;
@@ -40,30 +40,27 @@ function defaultLocals(): Locals {
 
 const key = makeAppIdentifier('locals');
 
-function createLocalsStore() {
+export function createLocalsStore(baseDataStore: BaseDataStore) {
   const store = localStorageBacked<Locals>(key, defaultLocals, JSON.stringify, (str) => ({
     ...defaultLocals(),
     ...JSON.parse(str)
   }));
   const { subscribe, update } = store;
 
-  page.subscribe(async (page) => {
-    if (isSupportedPage(page)) {
-      const data = await page.dataPromise;
-      const me = data.me;
-      update((stats) => ({
-        ...stats,
-        inviteCount: me.inviteCount,
-        creditCount: me.creditCount,
-        uploadedBytes: me.uploadedBytes,
-        downloadedBytes: me.downloadedBytes,
-        ratio: me.ratio,
-        slotCount: me.slotCount,
-        torrentsLeechingCount: me.torrentsLeechingCount,
-        torrentsSeedingCount: me.torrentsSeedingCount,
-        alerts: me.alerts
-      }));
-    }
+  baseDataStore.subscribe((baseData) => {
+    const me = baseData.me;
+    update((stats) => ({
+      ...stats,
+      inviteCount: me.inviteCount,
+      creditCount: me.creditCount,
+      uploadedBytes: me.uploadedBytes,
+      downloadedBytes: me.downloadedBytes,
+      ratio: me.ratio,
+      slotCount: me.slotCount,
+      torrentsLeechingCount: me.torrentsLeechingCount,
+      torrentsSeedingCount: me.torrentsSeedingCount,
+      alerts: me.alerts
+    }));
   });
 
   return {
@@ -85,8 +82,4 @@ function createLocalsStore() {
   };
 }
 
-/**
- * A store for updating stats, like credits/upload bytes/etc, that should be shared among different
- * browser tabs.
- */
-export const locals = createLocalsStore();
+export type LocalsStore = ReturnType<typeof createLocalsStore>;

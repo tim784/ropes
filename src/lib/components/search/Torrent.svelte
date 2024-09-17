@@ -2,12 +2,10 @@
   import { DoubleseedState, FreeleechState } from '$lib/torrent';
   import TorrentMeta from './TorrentMeta.svelte';
   import Button from '$components/ui/Button.svelte';
-  import type { Me } from '$gather/me';
   import TorrentActions from './TorrentActions.svelte';
   import { getContext, onMount } from 'svelte';
   import { bookmark, type Action as BookmarkAction } from '$api/bookmark';
   import { toasts } from '$stores/toasts';
-  import { locals } from '$stores/locals';
   import Maximize2 from 'lucide-svelte/icons/maximize-2';
   import TorrentImageExpand from '$components/modals/TorrentImageExpand.svelte';
   import { get } from 'svelte/store';
@@ -21,15 +19,22 @@
   import { settings } from '$stores/settings';
   import { getSfwTorrent } from '$lib/sfwMode';
   import * as ButtonRadioGroup from '$components/ui/button-radio-group';
+  import { type BaseDataStore, type SearchDataStore } from '$stores/page';
+  import type { Writable } from 'svelte/store';
+  import { type Locals, type LocalsStore } from '$stores/locals';
+
+  const localsStore = getContext<LocalsStore>('localsStore');
+  const baseDataStore = getContext<BaseDataStore>('baseDataStore');
 
   const observer = getContext<IntersectionObserver>('intersectionObserver');
+  const searchDataStore = getContext<SearchDataStore>('searchDataStore');
 
   export let group: TorrentInGroup[];
-  export let me: Me;
+  $: me = $baseDataStore.me;
 
   let groupIndexStr: string = '0';
   $: groupIndex = parseInt(groupIndexStr);
-  
+
   let localStates = group.map((t) => ({
     isBookmarked: t.torrent.isBookmarked,
     isPersonalFreeleech: t.torrent.freeleechState === FreeleechState.Personal,
@@ -59,13 +64,13 @@
   }
 
   async function purchaseFreeleech() {
-    locals.useSlot();
+    localsStore.useSlot();
     toasts.add(SlotUsedToast, { slotType: 'freeleech', torrent });
     localState.isPersonalFreeleech = true;
   }
 
   async function purchaseDoubleseed() {
-    locals.useSlot();
+    localsStore.useSlot();
     toasts.add(SlotUsedToast, { slotType: 'doubleseed', torrent });
     localState.isPersonalDoubleseed = true;
   }

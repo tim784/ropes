@@ -16,17 +16,22 @@
   import * as Command from '$components/ui/command';
   import { createState } from 'cmdk-sv';
   import { settings } from '$stores/settings';
-  import { localFormData } from '$src/lib/stores/localFormData';
   import LoadingSpinner from '$components/ui/LoadingSpinner.svelte';
   import { wipe } from '$lib/transition';
-  import { TAGLIST_NAME } from '$src/lib/gather/search';
+  import { TAGLIST_NAME } from '$gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
+  import { getContext } from 'svelte';
+  import { type LocalFormDataStore, urlFromFormData } from '$stores/localFormData';
+  import type { PageDataStore } from '$stores/page';
+
+  const pageDataStore = getContext<PageDataStore>('pageDataStore');
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
 
   const tagsElementId = makeAppIdentifier('tags-entry');
 
   const inputState = createState();
 
-  $: tags = TaglistTag.validateSyntax($localFormData.d.get(TAGLIST_NAME)?.toString() || '');
+  $: tags = TaglistTag.validateSyntax($localFormDataStore.get(TAGLIST_NAME)?.toString() || '');
 
   let inputHasFocus = false;
   let escapedOut = false;
@@ -104,7 +109,20 @@
 
   function addSuggestionToTags(suggestionName: string) {
     const suggestionTaglistTag = new TaglistTag(negationChar, suggestionName);
-    localFormData.addTag(suggestionTaglistTag);
+    // localFormData.addTag(suggestionTaglistTag);
+
+    const taglist = $localFormDataStore.get(TAGLIST_NAME);
+    let newTaglist;
+    if (taglist) {
+      newTaglist = `${taglist} ${suggestionTaglistTag.toString()}`;
+    } else {
+      newTaglist = suggestionTaglistTag.toString();
+    }
+    localFormDataStore.update((formData) => {
+      formData.set(TAGLIST_NAME, newTaglist);
+      return formData;
+    });
+
     resetInput();
     hasJustEnteredTag = true;
   }
@@ -127,7 +145,7 @@
       if (selectedSuggestionName) {
         addSuggestionToTags(selectedSuggestionName);
       } else if (emptyInput) {
-        $localFormData.submit();
+        pageDataStore.navigate(urlFromFormData($localFormDataStore));
         inputElement.blur();
       }
       e.preventDefault();

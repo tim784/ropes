@@ -10,16 +10,13 @@ export type Filter = {
   enabled: boolean;
 };
 
-// if block is empty, block nothing. else, block only what is in block
-// if allow is empty, allow everything. else, allow only what is in allow
-
-export class FilterGroup {
+export class CombinedFilter {
   constructor(
     public allowTags: Set<string>,
     public blockTags: Set<string>
   ) {}
 
-  static fromFilters(filters: Filter[]): FilterGroup {
+  static fromFilters(filters: Filter[]): CombinedFilter {
     let allowTags: Set<string> = new Set();
     let blockTags: Set<string> = new Set();
 
@@ -35,7 +32,7 @@ export class FilterGroup {
       }
     }
 
-    return new FilterGroup(allowTags, blockTags);
+    return new CombinedFilter(allowTags, blockTags);
   }
 
   filter(torrent: Torrent): boolean {

@@ -3,7 +3,7 @@
   import { Textarea } from '$components/ui/textarea';
   import { Label } from '$components/ui/label';
   import { Input } from '$components/ui/input';
-  import { filters } from '$src/lib/stores/filters';
+  import { filterStore } from '$src/lib/stores/filters';
   import { makeAppIdentifier } from '$lib/constants';
   import ConfirmButton from '$components/ui/ConfirmButton.svelte';
   import { onMount } from 'svelte';
@@ -24,8 +24,7 @@
   $: localAllowTags = localAllowTagsValue.split(/\s+/).filter((tag) => tag !== '');
 
   function updateFilter(name: string, blockTags: string[], allowTags: string[]) {
-    console.log('calling updateFilter', name, blockTags, allowTags);
-    filters.update((filterStore) => {
+    filterStore.update((filterStore) => {
       filter.name = name;
       filter.blockTags = blockTags;
       filter.allowTags = allowTags;
@@ -39,7 +38,7 @@
   $: updateFilterDebounced(localName, localBlockTags, localAllowTags);
 
   function deleteFilter() {
-    filters.update((filterStore) => {
+    filterStore.update((filterStore) => {
       return filterStore.filter((f) => f.id !== filter.id);
     });
   }

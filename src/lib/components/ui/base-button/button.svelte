@@ -2,7 +2,7 @@
   import { Button as ButtonPrimitive } from 'bits-ui';
   import { type Events, type Props } from './index.js';
   import { settings } from '$stores/settings';
-  import { determinePageType, PageType } from '$src/lib/stores/page.js';
+  import { determinePageType, PageType } from '$lib/pageType.js';
 
   type $$Props = Props;
   type $$Events = Events;

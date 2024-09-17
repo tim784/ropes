@@ -1,6 +1,7 @@
 import type { Action } from 'svelte/action';
 import { appId } from '$lib/constants';
-import { page } from '$stores/page';
+import { type PageDataStore } from '$stores/page';
+import { get } from 'svelte/store';
 
 function isNotOurs(element: Element) {
   return element.closest(`#${appId}`) === null;
@@ -78,7 +79,10 @@ function clearElementStyle(element: HTMLElement) {
   } as ClearedStyleElement;
 }
 
-export const cleanseEmpornium: Action = () => {
+export const cleanseEmpornium: Action<HTMLElement, { pageDataStore: PageDataStore }> = (
+  node,
+  { pageDataStore }
+) => {
   const elements: HiddenElement[] = getOtherElements().map(hideElement);
   const styleSheets: DisabledStylesheet[] = getOtherStyleSheets().map(disableStyleSheet);
   const rootStyleElement = clearElementStyle(document.documentElement);
@@ -104,7 +108,7 @@ export const cleanseEmpornium: Action = () => {
 
   return {
     destroy() {
-      if (page.isDomDirty()) {
+      if (get(pageDataStore).isDirty) {
         location.reload();
       } else {
         elements.forEach(({ element, oldDisplayValue }) => {

@@ -1,17 +1,21 @@
 <script lang="ts">
-  import { localFormData } from '$src/lib/stores/localFormData';
   import * as Select from '$components/ui/select';
   import { type Selected } from 'bits-ui';
-  import { page, isSearchPage } from '$stores/page';
-  import { SORT_CRITERIA_NAME, type Option } from '$src/lib/gather/search';
+  import { type SearchDataStore } from '$stores/page';
+  import { SORT_CRITERIA_NAME, type Option } from '$gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
+  import { getContext } from 'svelte';
+  import type { Writable } from 'svelte/store';
+
+  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
+  const searchDataStore = getContext<SearchDataStore>('searchDataStore');
 
   const sortCriteriaId = makeAppIdentifier('sort-criterion');
 
   const defaultCriterionValue = 'time';
 
   let selected: Selected<string>;
-  let sortCriteria: Option[] = [];
+  let sortCriteria: Option[] = $searchDataStore.searchForm.sortCriteria;
 
   function makeSelectedFromFormData(formData: FormData, sortCriteria: Option[]) {
     const value = formData.get(SORT_CRITERIA_NAME)?.toString() ?? defaultCriterionValue;
@@ -23,23 +27,20 @@
     } as Selected<string>;
   }
 
-  // set initial value and sort criteria
-  if (isSearchPage($page)) {
-    $page.dataPromise.then((data) => {
-      const pageSearchForm = data.search;
-      sortCriteria = pageSearchForm.sortCriteria;
-      selected = makeSelectedFromFormData(pageSearchForm.formData, sortCriteria);
-    });
-  }
-  $: selected = makeSelectedFromFormData($localFormData.d, sortCriteria);
+  $: selected = makeSelectedFromFormData($localFormDataStore, sortCriteria);
 
   // and when user selects, also set form data
   function onSelectedChange(selected: Selected<string> | undefined) {
-    if (selected) localFormData.setSortCriteria(selected.value);
+    if (selected) {
+      localFormDataStore.update((formData) => {
+        formData.set(SORT_CRITERIA_NAME, selected.value);
+        return formData;
+      });
+    }
   }
 </script>
 
-<label class="mb-2 block font-bold text-xl" for={sortCriteriaId}>Sort Criteria</label>
+<label class="mb-2 block text-xl font-bold" for={sortCriteriaId}>Sort Criteria</label>
 
 <Select.Root {selected} {onSelectedChange} name={SORT_CRITERIA_NAME}>
   <Select.Trigger id={sortCriteriaId}>

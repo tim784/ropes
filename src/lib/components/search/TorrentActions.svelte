@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { locals } from '$src/lib/stores/locals';
   import { type Torrent } from '$lib/torrent';
   import type { Me } from '$gather/me';
   import { toasts } from '$stores/toasts';
@@ -14,12 +13,16 @@
   import EllipsisVertical from 'lucide-svelte/icons/ellipsis-vertical';
   import Heart from 'lucide-svelte/icons/heart';
   import ThankToast from '$components/toasts/ThankToast.svelte';
+  import { getContext } from 'svelte';
+  import { type LocalsStore } from '$stores/locals';
 
   export let torrent: Torrent;
   export let me: Me;
   export let isBookmarked: boolean;
   export let isPersonalFreeleech;
   export let isPersonalDoubleseed;
+
+  const localsStore = getContext<LocalsStore>('localsStore');
 
   let hasThanked = false;
 
@@ -74,7 +77,7 @@
           </DropdownMenu.Item>
         {/if}
 
-        {#if $locals.slotCount > 0}
+        {#if $localsStore.slotCount > 0}
           {#if torrent.freeleechHref && !isPersonalFreeleech}
             <DropdownMenu.Item
               href={torrent.freeleechHref}

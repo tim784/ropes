@@ -2,17 +2,17 @@ import { querySelector, querySelectorAll, removeNonNumericChars } from './util';
 
 type SearchFormElement = HTMLFormElement;
 
-export type Search = {
+export type SearchForm = {
   sortCriteria: Option[];
   sortOrders: Option[];
   sizeTypes: Option[];
   onlyFreeleech: Checkbox;
   limitToOneHundred: Checkbox;
   categories: Checkbox[];
-  formData: FormData;
+  // formData: FormData;
 };
 
-export function defaultSearch(): Search {
+export function defaultSearch(): SearchForm {
   return {
     sortCriteria: [],
     sortOrders: [],
@@ -28,7 +28,7 @@ export function defaultSearch(): Search {
       name: ''
     },
     categories: [],
-    formData: new FormData()
+    // formData: new FormData()
   };
 }
 
@@ -152,9 +152,9 @@ function getFilteredFormData(url: string, doc: Document): FormData {
   return formData;
 }
 
-export function getSearch(doc: Document, url: string): Search {
+export function getSearchForm(doc: Document): SearchForm {
   const searchForm = getSeachForm(doc);
-  const formData = getFilteredFormData(url, doc);
+  // const formData = getFilteredFormData(url, doc);
 
   return {
     sortCriteria: getSelectOptions(searchForm, SORT_CRITERIA_NAME),
@@ -163,6 +163,6 @@ export function getSearch(doc: Document, url: string): Search {
     onlyFreeleech: getCheckbox(searchForm, ONLY_FREELEECH_NAME),
     limitToOneHundred: getCheckbox(searchForm, LIMIT_TO_ONE_HUNDRED_NAME),
     categories: getCategoryCheckboxes(searchForm),
-    formData
+    // formData
   };
 }

@@ -1,24 +1,24 @@
 <script lang="ts">
   import { Textarea } from '$components/ui/textarea';
   import { settings } from '$stores/settings';
-  import { localFormData } from '$src/lib/stores/localFormData';
   import { getSfwTag } from '$src/lib/sfwMode';
   import Link from '$components/ui/Link.svelte';
-  import { TAGLIST_NAME } from '$src/lib/gather/search';
-  import { onMount } from 'svelte';
+  import { TAGLIST_NAME } from '$src/lib/gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
+  import { getContext } from 'svelte';
+  import type { LocalFormDataStore } from '$stores/localFormData';
+
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
 
   const textAreaId = makeAppIdentifier('tags-entry');
 
-  let value = $localFormData.d.get(TAGLIST_NAME)?.toString() || '';
+  let value = $localFormDataStore.get(TAGLIST_NAME)?.toString() || '';
 
-  $: localFormData.setTaglist(value);
-
-  onMount(() => {
-    return localFormData.subscribe((v) => {
-      value = v.d.get(TAGLIST_NAME)?.toString() || '';
-    });
+  $: localFormDataStore.update((formData) => {
+    formData.set(TAGLIST_NAME, value);
+    return formData;
   });
+
 </script>
 
 <div class="space-y-2">

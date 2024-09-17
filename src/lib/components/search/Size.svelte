@@ -3,13 +3,13 @@
   import { SizeRange, type Size, unitValues, getUnitPower, bytesToUnit } from '$lib/size';
   import { getContext } from 'svelte';
   import { type Readable } from 'svelte/store';
-  import { type Search, SIZE_MID_NAME, SIZE_UNIT_NAME, SIZE_RANGE_NAME } from '$gather/search';
+  import { type SearchForm, SIZE_MID_NAME, SIZE_UNIT_NAME, SIZE_RANGE_NAME } from '$src/lib/gather/searchForm';
   import { localFormData } from '$stores/localFormData';
 
-  const search = getContext<Readable<Search>>('search');
+  const search = getContext<Readable<SearchForm>>('search');
   let error: string | null = null;
 
-  function getPageSizeRange(search: Search): SizeRange | undefined | null {
+  function getPageSizeRange(search: SearchForm): SizeRange | undefined | null {
     const mid = search.formData.get(SIZE_MID_NAME)?.toString();
     const range = search.formData.get(SIZE_RANGE_NAME)?.toString();
     const unit = search.formData.get(SIZE_UNIT_NAME)?.toString();
@@ -30,9 +30,9 @@
   let minSize: Size | undefined;
   let maxSize: Size | undefined;
 
-  $: console.log('minSize', minSize, 'maxSize', maxSize);
   $: sizeRange = parseSize(minSize, maxSize);
   $: if (sizeRange) {
+    console.log(sizeRange);
     localFormData.setRange(sizeRange);
   } else {
     localFormData.clearRange();

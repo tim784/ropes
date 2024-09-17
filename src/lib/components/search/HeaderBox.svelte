@@ -1,17 +1,12 @@
 <script lang="ts">
-  import { page, isSearchPage } from '$stores/page';
   import { settings } from '$stores/settings';
   import PostCarousel from '$components/search/PostCarousel.svelte';
   import Stats from '$components/nav/Stats.svelte';
-  import type { LatestForumPost } from '$gather/latestForumPosts';
+  import { type SearchDataStore } from '$stores/page';
+  import { getContext } from 'svelte';
 
-  let posts: LatestForumPost[] = [];
-
-  $: if (isSearchPage($page)) {
-    $page.dataPromise.then((data) => {
-      posts = data.latestForumPosts;
-    });
-  }
+  const searchDataStore = getContext<SearchDataStore>('searchDataStore');
+  $: posts = $searchDataStore.latestForumPosts;
 </script>
 
 <div

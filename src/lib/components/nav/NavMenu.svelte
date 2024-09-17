@@ -10,19 +10,13 @@
   import LogOut from 'lucide-svelte/icons/log-out';
   import Inbox from 'lucide-svelte/icons/inbox';
   import FileUp from 'lucide-svelte/icons/file-up';
-  import { getDefaultEmporniumNavigation } from '$gather/emporniumNavigation';
-  import { isSupportedPage, page } from '$stores/page';
   import { settings } from '$stores/settings';
+  import { type BaseDataStore } from '$stores/page';
+  import { getContext } from 'svelte';
 
-  let nav = getDefaultEmporniumNavigation();
-  $: {
-    const page = $page;
-    if (isSupportedPage(page)) {
-      page.dataPromise.then((data) => {
-        nav = data.navigation;
-      });
-    }
-  }
+  const baseDataStore = getContext<BaseDataStore>('baseDataStore');
+
+  $: nav = $baseDataStore.navigation;
 
   $: t = $settings.openNonRopesInNewTab ? { target: '_blank' } : {};
 </script>

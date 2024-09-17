@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { SIZE_MID_NAME, SIZE_UNIT_NAME, SIZE_RANGE_NAME } from '$gather/search';
 
-// dude, i suck at this. this file is a mess. 
+// dude, i suck at this. this file is a mess.
 
 export const unitValues = ['b', 'kb', 'mb', 'gb', 'tb'] as const;
 export type UnitValue = (typeof unitValues)[number];
@@ -22,8 +22,7 @@ export function isUnitValue(value: string): value is UnitValue {
 export type Size = {
   value: number;
   unit: UnitValue;
-};  
-
+};
 
 export function bytesToUnit(bytes: number, unit: UnitValue): number {
   const power = unitValues.indexOf(unit);
@@ -42,10 +41,8 @@ const noScientificNotationNumericStrings = z.string().refine((s) => {
 const noBinaryHexNumericStrings = z.string().refine((s) => {
   return !/[+-]?0[bx]/i.test(s);
 });
-const noUnconventionalNumericStrings = z.string().refine((s) => {
-  // no scientific notation or binary/hex literals (0b, 0x)
-  return !/[+-]?\d+\.?\d*e[+-]?\d+/i.test(s) && !/[+-]?0[bx]/i.test(s);
-});
+const noUnconventionalNumericStrings =
+  noScientificNotationNumericStrings.and(noBinaryHexNumericStrings);
 
 /**
  * An unparsed EmpSizeRange. This represents raw data from the URL, which may be
@@ -57,6 +54,28 @@ const empSizeRangeSchema = z.object({
   [SIZE_UNIT_NAME]: z.string().optional()
 });
 export type EmpSizeRange = z.infer<typeof empSizeRangeSchema>;
+
+/*
+
+ */
+
+const newEmpSizeRangeSchema = empSizeRangeSchema.transform((params, ctx) => {
+  // MID
+  // - empty or undefined means this range has no effect (all torrents returned)
+  // - if unparseable/bogus mid, its a null range in which no torrents match
+  const mid = params[SIZE_MID_NAME];
+  const midParsedRet = z.string().min(1)
+    .pipe(z.coerce.number().safe().nonnegative())
+    .safeParse(mid);
+  if (!midParsedRet.success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'invalid mid'
+    });
+    return z.NEVER;
+  }
+  const midParsed = midParsedRet.data;
+});
 
 // all this shit is kinda dumb, and we're doing crazy parsing on stuff that
 // shouldn't really be mucked with (its in the URL, the site won't generate
@@ -144,13 +163,11 @@ export class SizeRange {
   /**
    * Creates a SizeRange from an EmpSizeRange.
    *
-   * If `params.sizeall` is empty or undefined, returns undefined, which
-   * signifies that the range has no effect (all torrents returned). If it's
-   * anything unparseable/bogus, returns null, which signifies that no torrents
-   * match will match.
+   * This should never fail. This is data from emp (or the user's interaction on
+   * emp) over which we have no control.
    */
   static fromEmpSizeRange(params: EmpSizeRange): SizeRange | undefined | null {
-    const parsed = empSizeRangeParsedSchema.parse(params);
+    const parsed = empSizeRangeParsedSchema.safeParse(params);
     if (parsed === undefined || parsed === null) {
       return parsed;
     }
@@ -169,10 +186,10 @@ export class SizeRange {
     });
   }
 
-  static fromSizes(min: Size|undefined, max: Size|undefined): SizeRange {
-    min = min ?? { value: SizeRange.DEFAULT_MIN_BYTES / Math.pow(1024,1), unit: 'kb' };
-    max = max ?? { value: SizeRange.DEFAULT_MAX_BYTES / Math.pow(1024,4), unit: 'tb' };
-    
+  static fromSizes(min: Size | undefined, max: Size | undefined): SizeRange {
+    min = min ?? { value: SizeRange.DEFAULT_MIN_BYTES / Math.pow(1024, 1), unit: 'kb' };
+    max = max ?? { value: SizeRange.DEFAULT_MAX_BYTES / Math.pow(1024, 4), unit: 'tb' };
+
     const largerUnit = unitValues[Math.max(getUnitPower(min.unit), getUnitPower(max.unit))];
     return new SizeRange(
       unitToBytes(min.value, min.unit),
@@ -214,5 +231,12 @@ export class SizeRange {
       value: bytesToUnit(this.maxBytes, this.outputUnit),
       unit: this.outputUnit
     };
+  }
+
+  bytesEquals(other: unknown): boolean {
+    if (!(other instanceof SizeRange)) {
+      return false;
+    }
+    return this.minBytes === other.minBytes && this.maxBytes === other.maxBytes;
   }
 }

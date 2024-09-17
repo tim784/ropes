@@ -1,178 +1,41 @@
 import { writable } from 'svelte/store';
-import { isSearchPage, page, getSearchUrlOfFormData } from '$stores/page';
-import { TaglistTag } from '../tag';
-import { SizeRange } from '../size';
 import {
   SORT_CRITERIA_NAME,
   SORT_ORDER_NAME,
   TAGLIST_NAME,
-  SET_DEFAULT_NAME,
-  SIZE_MID_NAME,
-  SIZE_UNIT_NAME,
-  SIZE_RANGE_NAME,
-} from '$gather/search';
+  SET_DEFAULT_NAME
+} from '$gather/searchForm';
 
-export type LocalFormData = {
-  d: FormData;
-  submit: () => void;
-  getUrl: () => string;
-};
+// these are the only keys we support provide controls on the form for
+// currently. ignore the others.
+const keepKeys = [SORT_CRITERIA_NAME, SORT_ORDER_NAME, TAGLIST_NAME, SET_DEFAULT_NAME];
 
-function makeLocalFormData(formData: FormData): LocalFormData {
-  return {
-    d: formData,
-    submit: () => page.navigateToSearch(formData),
-    getUrl: () => getSearchUrlOfFormData(formData)
-  };
-}
-
-/**
- * Create a store for local search form data. This is different than
- * $page.dataPromise.searchForm, which does not change. This store, however, is
- * updated by local user interactions with the displayed search form.
- *
- * @returns a writable store for local search form data
- */
-function createLocalFormDataStore() {
-  const store = writable(makeLocalFormData(new FormData()));
-  const { subscribe, set, update } = store;
-
-  // always get values from the page store
-  page.subscribe((p) => {
-    if (isSearchPage(p)) {
-      p.dataPromise.then((data) => {
-        set(makeLocalFormData(data.search.formData));
-      });
+function formDataFromUrl(initialUrl: string) {
+  const formData = new FormData();
+  for (const [key, value] of new URL(initialUrl).searchParams.entries()) {
+    if (keepKeys.includes(key)) {
+      formData.set(key, value);
     }
-  });
-
-  /** This will error if syntax is valid, so only call from paths that ensure it. */
-  function getTags(taglist: string) {
-    return TaglistTag.validateSyntax(taglist);
   }
-
-  function addTag(tag: TaglistTag) {
-    update((localFormData) => {
-      const taglist = localFormData.d.get(TAGLIST_NAME);
-      if (taglist) {
-        localFormData.d.set(TAGLIST_NAME, `${taglist} ${tag.toString()}`);
-      } else {
-        localFormData.d.set(TAGLIST_NAME, tag.toString());
-      }
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function negateTag(tag: TaglistTag) {
-    const tagName = tag.name;
-    update((localFormData) => {
-      const tags = getTags((localFormData.d.get(TAGLIST_NAME) as string) ?? '');
-
-      const index = tags.findIndex((t) => t.name === tagName);
-
-      if (index !== -1) {
-        tags[index] = tags[index].negate();
-      }
-
-      localFormData.d.set(TAGLIST_NAME, TaglistTag.toTaglist(tags));
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function deleteTag(tag: TaglistTag) {
-    update((localFormData) => {
-      const tags = getTags((localFormData.d.get(TAGLIST_NAME) as string) ?? '');
-      const without = tags.filter((t) => !t.equals(tag));
-      localFormData.d.set(TAGLIST_NAME, TaglistTag.toTaglist(without));
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function setTaglist(taglist: string) {
-    update((localFormData) => {
-      localFormData.d.set(TAGLIST_NAME, taglist);
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function clearTags() {
-    update((localFormData) => {
-      // Empornium eccentricity:
-      // - If the taglist query param is not present, the default search is used
-      // - If present but empty, a blank search is used
-      // - If present and not empty, the taglist is used
-      localFormData.d.set(TAGLIST_NAME, '');
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function clearAll() {
-    const formData = new FormData();
-    // ditto on taglist comment in clearTags
-    formData.set(TAGLIST_NAME, '');
-    set(makeLocalFormData(formData));
-  }
-
-  function setSortCriteria(sortCriteria: string) {
-    update((localFormData) => {
-      localFormData.d.set(SORT_CRITERIA_NAME, sortCriteria);
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function setSortOrder(sortOrder: string) {
-    update((localFormData) => {
-      localFormData.d.set(SORT_ORDER_NAME, sortOrder);
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function setMakeDefaultSearch(on: boolean) {
-    update((localFormData) => {
-      if (on) {
-        localFormData.d.set(SET_DEFAULT_NAME, 'Make Default');
-      } else {
-        localFormData.d.delete(SET_DEFAULT_NAME);
-      }
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function setRange(range: SizeRange) {
-    const empSizeRange = range.toEmpSizeRange();
-    update((localFormData) => {
-      localFormData.d.set(SIZE_MID_NAME, empSizeRange[SIZE_MID_NAME] ?? '');
-      localFormData.d.set(SIZE_RANGE_NAME, empSizeRange[SIZE_RANGE_NAME] ?? '');
-      localFormData.d.set(SIZE_UNIT_NAME, empSizeRange[SIZE_UNIT_NAME] ?? '');
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  function clearRange() {
-    update((localFormData) => {
-      localFormData.d.delete(SIZE_MID_NAME);
-      localFormData.d.delete(SIZE_RANGE_NAME);
-      localFormData.d.delete(SIZE_UNIT_NAME);
-      return makeLocalFormData(localFormData.d);
-    });
-  }
-
-  return {
-    subscribe,
-    set,
-    update,
-    addTag,
-    setTaglist,
-    negateTag,
-    deleteTag,
-    clearTags,
-    setSortCriteria,
-    setSortOrder,
-    setMakeDefaultSearch,
-    setRange,
-    clearRange,
-    clearAll
-  };
+  return formData;
 }
 
-export const localFormData = createLocalFormDataStore();
+export function urlFromFormData(formData: FormData): string {
+  const url = new URL('/torrents.php', window.location.href);
+  for (const [key, value] of formData.entries()) {
+    if (!(typeof value === 'string')) {
+      continue;
+    }
+    url.searchParams.set(key, value as string);
+  }
+  return url.toString();
+}
+
+export function createLocalFormDataStore(initialUrl: string) {
+  const initialFormData = formDataFromUrl(initialUrl);
+  const store = writable(initialFormData);
+
+  return store;
+}
+
+export type LocalFormDataStore = ReturnType<typeof createLocalFormDataStore>;

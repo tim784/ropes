@@ -1,12 +1,15 @@
 <script lang="ts">
   import Rss from 'lucide-svelte/icons/rss';
-  import { locals } from '$stores/locals';
   import Button from '$components/ui/Button.svelte';
   import * as DropdownMenu from '$components/ui/dropdown-menu';
   import { settings } from '$stores/settings';
   import * as Tooltip from '$components/ui/tooltip/index.js';
+  import { getContext } from 'svelte';
+  import {type LocalsStore} from '$stores/locals';
 
-  $: hasAlerts = $locals.alerts.length > 0;
+  const localsStore = getContext<LocalsStore>('localsStore');
+
+  $: hasAlerts = $localsStore.alerts.length > 0;
   $: t = $settings.openNonRopesInNewTab ? { target: '_blank' } : {};
 </script>
 
@@ -40,7 +43,7 @@
       {#if !hasAlerts}
         <DropdownMenu.Item disabled>All caught up!</DropdownMenu.Item>
       {:else}
-        {#each $locals.alerts as alert}
+        {#each $localsStore.alerts as alert}
           <DropdownMenu.Item href={alert.href} {...t}>{alert.label}</DropdownMenu.Item>
         {/each}
       {/if}

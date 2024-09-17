@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import { makeTestTorrent } from './util';
 import { type Torrent } from '$lib/torrent';
-import { type Filter, FilterGroup } from '$lib/filter';
+import { type Filter, CombinedFilter } from '$lib/filter';
 
 /**
  * Make a test torrent with a given name.
@@ -16,8 +16,8 @@ function makeTestTorrentWithTags(tags: string[]): Torrent {
 function makeTestFilterGroup(
   blockTags: Filter['blockTags'],
   allowTags: Filter['allowTags']
-): FilterGroup {
-  return new FilterGroup(new Set(allowTags), new Set(blockTags));
+): CombinedFilter {
+  return new CombinedFilter(new Set(allowTags), new Set(blockTags));
 }
 
 const tA = makeTestTorrentWithTags(['a']);

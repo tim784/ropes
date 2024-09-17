@@ -1,10 +1,10 @@
 <script lang="ts">
   import Button from '$components/ui/Button.svelte';
-  import { localFormData } from '$stores/localFormData';
+  import { createLocalFormDataStore, urlFromFormData } from '$stores/localFormData';
   import TagsSection from './TagsSection.svelte';
   import SortCriteria from './SortCriteria.svelte';
   import SortOrder from './SortOrder.svelte';
-  import Size from './Size.svelte';
+  // import Size from './Size.svelte';
   import { settings } from '$stores/settings';
   import MakeDefault from './MakeDefault.svelte';
   import * as DropdownMenu from '$components/ui/dropdown-menu';
@@ -12,25 +12,38 @@
   import Search from 'lucide-svelte/icons/search';
   import UserSearch from 'lucide-svelte/icons/user-search';
   import Eraser from 'lucide-svelte/icons/eraser';
-  import { page, isSearchPage } from '$stores/page';
-  import { setContext } from 'svelte';
-  import { writable, readonly } from 'svelte/store';
-  import { defaultSearch } from '$gather/search';
+  import { type PageDataStore } from '$stores/page';
+  import { getContext, setContext } from 'svelte';
+  import {
+    TAGLIST_NAME,
+  } from '$gather/searchForm';
 
-  const searchStore = writable(defaultSearch());
-  page.subscribe((p) => {
-    if (isSearchPage(p)) {
-      p.dataPromise.then((data) => {
-        searchStore.set(data.search);
-      });
-    }
-  });
-  setContext('search', readonly(searchStore));
+  const pageDataStore = getContext<PageDataStore>('pageDataStore');
+  const localFormDataStore = createLocalFormDataStore($pageDataStore.url);
+  setContext('localFormDataStore', localFormDataStore);
+  const defaultSearchUrl = '/torrents.php';
+
+  $: urlForForm = urlFromFormData($localFormDataStore);
+
+  function clearTags() {
+    localFormDataStore.update((formData) => {
+      formData.delete(TAGLIST_NAME);
+      return formData;
+    });
+  }
+
+  function clearAll() {
+    const clearedFormData = new FormData();
+
+    // if taglist isn't present, emp returns the user's default search, which
+    // not what we want. here we say want want a truly empty search by setting
+    // it to an empty string
+    clearedFormData.set(TAGLIST_NAME, '');
+
+    localFormDataStore.set(clearedFormData);
+  }
 </script>
 
-<!-- because this form uses a get, it doesn't really need to be a form. in fact,
-i kinda like the search button showing the url it'd navigate to in non-SPA mode
--->
 <form class="w-full space-y-4 p-1 transition-colors">
   <TagsSection />
 
@@ -38,7 +51,7 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
 
   <SortOrder />
 
-  <Size />
+  <!-- <Size /> -->
 
   <MakeDefault />
 
@@ -46,13 +59,13 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
     {#if $settings.spaMode}
       <Button
         type="button"
-        on:click={$localFormData.submit}
+        on:click={() => pageDataStore.navigate(urlForForm)}
         class="rounded-e-none rounded-s-lg border-e-2 text-xl font-bold"
         size="lg"><Search class="me-2" />Search</Button
       >
     {:else}
       <Button
-        href={$localFormData.getUrl()}
+        href={urlForForm}
         class="rounded-e-none rounded-s-lg border-e-2 text-xl font-bold"
         size="lg"><Search class="me-2" />Search</Button
       >
@@ -72,18 +85,18 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
           {#if $settings.spaMode}
             <DropdownMenu.Item
               on:click={() => {
-                page.navigateToSearch(new FormData());
+                pageDataStore.navigate(defaultSearchUrl);
               }}><UserSearch class="me-2" />Go to Default Search</DropdownMenu.Item
             >
           {:else}
-            <DropdownMenu.Item href="/torrents.php"
+            <DropdownMenu.Item href={defaultSearchUrl}
               ><UserSearch class="me-2" />Go to Default Search</DropdownMenu.Item
             >
           {/if}
-          <DropdownMenu.Item on:click={localFormData.clearTags}
+          <DropdownMenu.Item on:click={clearTags}
             ><Eraser class="me-2" />Clear Tags</DropdownMenu.Item
           >
-          <DropdownMenu.Item on:click={localFormData.clearAll}
+          <DropdownMenu.Item on:click={clearAll}
             ><Eraser class="me-2 fill-foreground/50" />Clear All</DropdownMenu.Item
           >
         </DropdownMenu.Group>
@@ -93,5 +106,5 @@ i kinda like the search button showing the url it'd navigate to in non-SPA mode
 </form>
 
 {#if import.meta.env.DEV}
-  <p class="break-all font-mono">{$localFormData.getUrl()}</p>
+  <p class="break-all font-mono">{urlForForm}</p>
 {/if}

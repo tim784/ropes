@@ -1,21 +1,30 @@
 <script lang="ts">
-  import { localFormData } from '$src/lib/stores/localFormData';
   import { makeAppIdentifier } from '$lib/constants';
   import { Switch } from '$lib/components/ui/switch';
-  import { SET_DEFAULT_NAME } from '$gather/search';
+  import { SET_DEFAULT_NAME } from '$src/lib/gather/searchForm';
+  import type { Writable } from 'svelte/store';
+  import { getContext } from 'svelte';
 
+  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
   const makeDefaultId = makeAppIdentifier('make-default');
   const makeDefaultLabelId = makeAppIdentifier('make-default-label');
 
   let checked: boolean = false;
 
-  // reset whenever page changes. this is a destructive action. users should
-  // always opt-in, regardless of formData
-  $: checked = $localFormData.d.get(SET_DEFAULT_NAME) !== null;
+  $: checked = $localFormDataStore.get(SET_DEFAULT_NAME) !== null;
 
   // when user selects, also set form data
   function onCheckedChange(selected: boolean | undefined) {
-    if (selected !== undefined) localFormData.setMakeDefaultSearch(selected);
+    if (selected !== undefined) {
+      localFormDataStore.update((formData) => {
+        if (selected) {
+          formData.set(SET_DEFAULT_NAME, '');
+        } else {
+          formData.delete(SET_DEFAULT_NAME);
+        }
+        return formData;
+      });
+    }
   }
 </script>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import Link from '$components/ui/Link.svelte';
   import Plus from 'lucide-svelte/icons/plus';
-  import { filters } from '$stores/filters';
+  import { filterStore } from '$stores/filters';
   import { type Filter } from '$lib/filter';
   import { createEventDispatcher } from 'svelte';
 
@@ -10,7 +10,7 @@
   const newFilterPrefix = 'New Filter';
 
   function getNextNewFilterName() {
-    const existingNames = new Set($filters.map((filter: Filter) => filter.name));
+    const existingNames = new Set($filterStore.map((filter: Filter) => filter.name));
 
     if (!existingNames.has(newFilterPrefix)) return newFilterPrefix;
 
@@ -29,7 +29,7 @@
       enabled: false
     } as Filter;
 
-    filters.update((filters) => [...filters, newFilter]);
+    filterStore.update((filters) => [...filters, newFilter]);
     dispatch('add', newFilter.id);
   }
 </script>

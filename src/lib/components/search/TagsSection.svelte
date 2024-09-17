@@ -6,11 +6,13 @@
   import ManualTaglist from './ManualTaglist.svelte';
   import * as Popover from '$src/lib/components/ui/popover/index.js';
   import Info from 'lucide-svelte/icons/info';
-  import { localFormData } from '$src/lib/stores/localFormData';
   import { Switch } from '$lib/components/ui/switch';
-  import { TAGLIST_NAME } from '$src/lib/gather/search';
+  import { TAGLIST_NAME } from '$src/lib/gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
+  import { getContext } from 'svelte';
+  import type { Writable } from 'svelte/store';
 
+  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
   const tagsElementId = makeAppIdentifier('tags-entry');
   const richTagsSwitchId = makeAppIdentifier('rich-tag-toggle');
   const richTagsSwitchLabelId = makeAppIdentifier('rich-tag-toggle-label');
@@ -18,7 +20,7 @@
   let tagsInvalidReason: null | string = null;
   let useRichTagMode = $settings.preferRichTagMode;
 
-  $: taglist = $localFormData.d.get(TAGLIST_NAME)?.toString() || '';
+  $: taglist = $localFormDataStore.get(TAGLIST_NAME)?.toString() || '';
   $: tagsInvalidReason = validateSyntax(taglist);
   $: canUseRichTagMode = !tagsInvalidReason;
 
@@ -63,12 +65,7 @@
     {#if tagsInvalidReason}
       <Popover.Root>
         <Popover.Trigger asChild let:builder>
-          <Button
-            builders={[builder]}
-            type="button"
-            variant="ghost"
-            size="icon"
-          >
+          <Button builders={[builder]} type="button" variant="ghost" size="icon">
             <Info class="size-5 text-warning" />
             <span class="sr-only">Show Rich Tag Mode Errors</span>
           </Button>

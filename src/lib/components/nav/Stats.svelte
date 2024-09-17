@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { locals } from '$src/lib/stores/locals';
   import { cn } from '$lib/components/shadcn-utils.js';
   import Box from 'lucide-svelte/icons/box';
   import CloudDownload from 'lucide-svelte/icons/cloud-download';
@@ -11,6 +10,11 @@
   import UserPlus from 'lucide-svelte/icons/user-plus';
   import { formatNumber } from '$src/lib/util';
   import * as Tooltip from '$components/ui/tooltip/index.js';
+  import { getContext } from 'svelte';
+  import type { Writable } from 'svelte/store';
+  import {type Locals, type LocalsStore} from '$stores/locals';
+
+  const localsStore = getContext<LocalsStore>('localsStore');
 
   let className: (typeof $$props)['class'] = undefined;
   export { className as class };
@@ -25,11 +29,11 @@
   <!-- i feel like its not useful to be tracking this if you don't have any. i'm
   not even sure how you get them, and people shouldn't be reminded to ask about
   them (e.g. via forum, etc) -->
-  {#if $locals.inviteCount > 0}
+  {#if $localsStore.inviteCount > 0}
     <Tooltip.Root>
       <Tooltip.Trigger asChild let:builder>
         <li use:builder.action {...builder}>
-          <UserPlus />{$locals.inviteCount}<span class="sr-only">Invites Available</span>
+          <UserPlus />{$localsStore.inviteCount}<span class="sr-only">Invites Available</span>
         </li></Tooltip.Trigger
       >
       <Tooltip.Content>Invites Available</Tooltip.Content>
@@ -39,7 +43,7 @@
   <Tooltip.Root>
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
-        <FileUp />{formatNumber($locals.torrentsSeedingCount)}<span class="sr-only"
+        <FileUp />{formatNumber($localsStore.torrentsSeedingCount)}<span class="sr-only"
           >Torrents Seeding</span
         >
       </li></Tooltip.Trigger
@@ -51,7 +55,7 @@
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
         <FileDown />
-        {formatNumber($locals.torrentsLeechingCount)}<span class="sr-only">Torrents Leeching</span>
+        {formatNumber($localsStore.torrentsLeechingCount)}<span class="sr-only">Torrents Leeching</span>
       </li></Tooltip.Trigger
     >
     <Tooltip.Content>Torrents Leeching</Tooltip.Content>
@@ -61,7 +65,7 @@
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
         <CloudUpload />
-        {$locals.uploadedBytes}<span class="sr-only">Upload Amount</span>
+        {$localsStore.uploadedBytes}<span class="sr-only">Upload Amount</span>
       </li></Tooltip.Trigger
     >
     <Tooltip.Content>Upload Amount</Tooltip.Content>
@@ -71,7 +75,7 @@
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
         <CloudDownload />
-        {$locals.downloadedBytes}<span class="sr-only">Download Amount</span>
+        {$localsStore.downloadedBytes}<span class="sr-only">Download Amount</span>
       </li></Tooltip.Trigger
     >
     <Tooltip.Content>Download Amount</Tooltip.Content>
@@ -81,7 +85,7 @@
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
         <Ratio />
-        {$locals.ratio}<span class="sr-only">Ratio</span>
+        {$localsStore.ratio}<span class="sr-only">Ratio</span>
       </li></Tooltip.Trigger
     >
     <Tooltip.Content>Ratio</Tooltip.Content>
@@ -91,7 +95,7 @@
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
         <Coins />
-        {formatNumber($locals.creditCount)}<span class="sr-only">Credit Balance</span>
+        {formatNumber($localsStore.creditCount)}<span class="sr-only">Credit Balance</span>
       </li></Tooltip.Trigger
     >
     <Tooltip.Content>Credit Balance</Tooltip.Content>
@@ -101,7 +105,7 @@
     <Tooltip.Trigger asChild let:builder>
       <li use:builder.action {...builder}>
         <Box />
-        {formatNumber($locals.slotCount)}<span class="sr-only">Slots Available</span>
+        {formatNumber($localsStore.slotCount)}<span class="sr-only">Slots Available</span>
       </li></Tooltip.Trigger
     >
     <Tooltip.Content>Slots Available</Tooltip.Content>

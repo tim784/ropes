@@ -1,17 +1,21 @@
 <script lang="ts">
   import { type Torrent } from '$lib/torrent';
   import { formatNumber, getRelativeDifference } from '$lib/util';
-  import { page, getSearchUrlOfFormData } from '$stores/page';
+  // import { page, getSearchUrlOfFormData } from '$stores/page';
   import * as Popover from '$components/ui/popover/index.js';
   import Link from '$components/ui/Link.svelte';
   import ArrowDown from 'lucide-svelte/icons/arrow-down';
   import ArrowUp from 'lucide-svelte/icons/arrow-up';
   import FileCheck from 'lucide-svelte/icons/file-check';
   import TorrentBadges from '$components/search/TorrentBadges.svelte';
-  import { TAGLIST_NAME } from '$gather/search';
+  import { TAGLIST_NAME } from '$src/lib/gather/searchForm';
   import { settings } from '$stores/settings';
   import * as Tooltip from '$components/ui/tooltip/index.js';
   import InlineSeparator from '$components/ui/InlineSeparator.svelte';
+  import { getContext } from 'svelte';
+  import { type PageDataStore } from '$src/lib/stores/page';
+
+  const pageDataStore = getContext<PageDataStore>('pageDataStore');
 
   export let torrent: Torrent;
   export let hasSeen: boolean;
@@ -34,16 +38,14 @@
   $: relativeDateTime = getRelativeDifference(torrent.uploadDateTime);
   $: isoDateTime = torrent.uploadDateTime.toISOString();
 
-  function searchTag(tag: string) {
-    const formData = new FormData();
-    formData.append(TAGLIST_NAME, tag);
-    page.navigateToSearch(formData);
+  function searchTagUrl(tag: string) {
+    const tagUrl = new URL(`/torrents.php`, window.location.href);
+    tagUrl.searchParams.append(TAGLIST_NAME, tag);
+    return tagUrl.toString();
   }
 
-  function searchTagUrl(tag: string) {
-    const formData = new FormData();
-    formData.append(TAGLIST_NAME, tag);
-    return getSearchUrlOfFormData(formData);
+  function searchTag(tag: string) {
+    pageDataStore.navigate(searchTagUrl(tag));
   }
 </script>
 

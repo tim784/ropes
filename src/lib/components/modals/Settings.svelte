@@ -8,7 +8,6 @@
   import { tagCache } from '$stores/tagCache';
   import { notTags } from '$stores/notTags';
   import { Switch } from '$components/ui/switch';
-  import { isSupportedPage, page } from '$stores/page';
   import ConfirmButton from '$components/ui/ConfirmButton.svelte';
   import { toasts } from '$stores/toasts';
   import TextToast from '../toasts/TextToast.svelte';
@@ -16,16 +15,12 @@
   import * as Dialog from '$lib/components/ui/dialog';
   import { fade } from 'svelte/transition';
   import * as ButtonRadioGroup from '$components/ui/button-radio-group';
+  import { type BaseDataStore } from '$stores/page';
+  import { getContext } from 'svelte';
+
+  const baseDataStore = getContext<BaseDataStore>('baseDataStore');
 
   export let closeFn: () => void;
-
-  let settingsUrl = '/';
-  $: {
-    const curPage = $page;
-    if (isSupportedPage(curPage)) {
-      curPage.dataPromise.then((data) => (settingsUrl = data.navigation.settingsUrl));
-    }
-  }
 
   // on vite server, GM_info will not be available because we're not a userscript there.
   const version = ('GM_info' in globalThis && GM_info?.script?.version) || packageJson.version;
@@ -99,7 +94,8 @@
         <Switch bind:checked={$settings.showLatestForumThreads} />
       </div>
       <p>
-        Note that you must have <Link href={`${settingsUrl}#latest_forum_topics`}
+        Note that you must have <Link
+          href={`${$baseDataStore.navigation.settingsUrl}#latest_forum_topics`}
           >forum topics selected in your settings</Link
         > for these to show up at all.
       </p>

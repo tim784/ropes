@@ -1,12 +1,7 @@
 import { appTitle, makeAppIdentifier, appId } from '$lib/constants';
-import { determinePageType, PageType } from '$stores/page';
+import { isSupportedPageType } from '$lib/pageType';
 import { enabled } from '$stores/enabled';
 import App from '$components/App.svelte';
-
-function pageTypeIsSupported() {
-  // Flesh out more page types when we implement them
-  return determinePageType() === PageType.Search;
-}
 
 function placeLoadButton() {
   const enableButtonId = makeAppIdentifier('enable-button');
@@ -35,12 +30,10 @@ function placeLoadButton() {
 function createEntrypointDiv() {
   const entrypointDiv = document.createElement('div');
   entrypointDiv.id = appId;
-  // document.body.appendChild(entrypointDiv);
-  // return entrypointDiv.attachShadow({ mode: 'open' });
   return document.body.appendChild(entrypointDiv);
 }
 
-if (pageTypeIsSupported()) {
+if (isSupportedPageType()) {
   placeLoadButton();
 
   new App({
