@@ -29,7 +29,7 @@ export function createPageDataStore() {
 
   history.replaceState({}, '', originalUrl);
 
-  async function navigate(url: string) {
+  async function navigate(url: string, isBack: boolean = false) {
     update((page) => ({
       ...page,
       isLoading: true
@@ -39,7 +39,10 @@ export function createPageDataStore() {
     const text = await response.text();
     const doc = domParser.parseFromString(text, 'text/html');
     const isDirty = url !== originalUrl;
-    history.pushState({}, '', url);
+
+    if (!isBack) {
+      history.pushState({}, '', url);
+    }
 
     set({
       url,

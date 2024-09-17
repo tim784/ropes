@@ -56,7 +56,6 @@
   <Textarea
     id={blockTagsInputId}
     class="font-mono"
-    placeholder="bad.one bad.two bad.three"
     bind:value={localBlockTagsValue}
   />
   <p class="mt-1 text-sm text-muted-foreground">
@@ -68,7 +67,6 @@
   <Textarea
     id={allowTagsInputId}
     class="font-mono"
-    placeholder="good.one good.two good.three"
     bind:value={localAllowTagsValue}
   />
   <p class="mt-1 text-sm text-muted-foreground">

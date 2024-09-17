@@ -32,7 +32,6 @@
 
   $: sizeRange = parseSize(minSize, maxSize);
   $: if (sizeRange) {
-    console.log(sizeRange);
     localFormData.setRange(sizeRange);
   } else {
     localFormData.clearRange();

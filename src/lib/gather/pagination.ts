@@ -38,17 +38,6 @@ export type Pagination = {
   totalResultCount: number;
 };
 
-export function defaultPagination(): Pagination {
-  return {
-    resultsPerPage: 0,
-    resultsOnThisPage: 0,
-    thisPageRange: { start: 0, end: 0 },
-    currentPage: 1,
-    totalPages: 1,
-    totalResultCount: 0
-  };
-}
-
 function getPageFromUrl(url: string): number {
   const urlObj = new URL(url, window.location.href);
   const search = urlObj.searchParams;

@@ -153,39 +153,3 @@ export function getEmporiumNavigation(document: Document): EmporniumNavigation {
     slotMachineUrl: '/bonus.php?action=slot'
   };
 }
-
-export function getDefaultEmporniumNavigation(): EmporniumNavigation {
-  return {
-    seedingUrl: '',
-    leechingUrl: '',
-    tokenHistoryUrl: '',
-    bookmarksUrl: '',
-    myRequestsUrl: '',
-    notificationsUrl: '',
-    friendsUrl: '',
-    myDonationsUrl: '',
-    invitesUrl: '',
-    uploadsUrl: '',
-    inboxUrl: '',
-    staffInboxUrl: '',
-    subscriptionsUrl: '',
-    postHistoryUrl: '',
-    commentHistoryUrl: '',
-    sandboxUrl: '',
-    userUrl: '',
-    settingsUrl: '',
-    securityUrl: '',
-    logoutToken: '',
-    tagsUrl: '',
-    requestsUrl: '',
-    collagesUrl: '',
-    forumsUrl: '',
-    chatUrl: '',
-    top10Url: '',
-    rulesUrl: '',
-    helpUrl: '',
-    uploadUrl: '',
-    bonusShopUrl: '',
-    slotMachineUrl: ''
-  };
-}
