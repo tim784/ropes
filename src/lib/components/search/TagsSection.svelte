@@ -4,15 +4,15 @@
   import { TaglistTag, ParseError } from '$lib/tag';
   import Button from '$components/ui/Button.svelte';
   import ManualTaglist from './ManualTaglist.svelte';
-  import * as Popover from '$src/lib/components/ui/popover/index.js';
+  import * as Popover from '$components/ui/popover/index.js';
   import Info from 'lucide-svelte/icons/info';
   import { Switch } from '$lib/components/ui/switch';
-  import { TAGLIST_NAME } from '$src/lib/gather/searchForm';
+  import { TAGLIST_NAME } from '$gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
   import { getContext } from 'svelte';
-  import type { Writable } from 'svelte/store';
+  import { type LocalFormDataStore } from '$stores/localFormData';
 
-  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
   const tagsElementId = makeAppIdentifier('tags-entry');
   const richTagsSwitchId = makeAppIdentifier('rich-tag-toggle');
   const richTagsSwitchLabelId = makeAppIdentifier('rich-tag-toggle-label');

@@ -1,4 +1,4 @@
-import { querySelector, querySelectorAll, removeNonNumericChars } from './util';
+import { querySelector, querySelectorAll } from './util';
 
 type SearchFormElement = HTMLFormElement;
 
@@ -9,28 +9,8 @@ export type SearchForm = {
   onlyFreeleech: Checkbox;
   limitToOneHundred: Checkbox;
   categories: Checkbox[];
-  // formData: FormData;
+  taglistValue: string;
 };
-
-export function defaultSearch(): SearchForm {
-  return {
-    sortCriteria: [],
-    sortOrders: [],
-    sizeTypes: [],
-    onlyFreeleech: {
-      label: '',
-      value: '',
-      name: ''
-    },
-    limitToOneHundred: {
-      label: '',
-      value: '',
-      name: ''
-    },
-    categories: [],
-    // formData: new FormData()
-  };
-}
 
 export type Option = {
   value: string;
@@ -116,45 +96,16 @@ function getCategoryCheckboxes(searchForm: SearchFormElement): Checkbox[] {
   });
 }
 
-function getFilteredFormData(url: string, doc: Document): FormData {
-  const formData = new FormData();
-  for (const [key, value] of new URL(url).searchParams.entries()) {
-    formData.set(key, value);
-  }
-
-  // taglist is wierd: if its not in the url, it's the "default", which will be
-  // in the document. this kinda sucks because if the user changes the taglist
-  // value before ropes is loaded, then we'll think _that's_ the default, and
-  // not the actual default. but we can't really do anything about that, and its
-  // of little consequence.
-  if (!formData.has(TAGLIST_NAME)) {
-    const taglist = querySelector(`textarea[name="${TAGLIST_NAME}"]`, doc) as HTMLTextAreaElement;
-    if (taglist) {
-      formData.set(TAGLIST_NAME, taglist.value);
-    }
-  }
-
-  // remove things we don't support/persist
-  formData.delete(ONLY_FREELEECH_NAME);
-  formData.delete(LIMIT_TO_ONE_HUNDRED_NAME);
-  formData.delete(TITLE_AND_DESCRIPTION_TERMS_NAME);
-  formData.delete(TITLE_TERMS_NAME);
-  formData.delete(SET_DEFAULT_NAME);
-  formData.delete(CLEAR_DEFAULT_NAME);
-
-  // remove all category filters
-  for (const key of formData.keys()) {
-    if (key.startsWith(FILTER_CATEGORY_NAME_PREFIX)) {
-      formData.delete(key);
-    }
-  }
-
-  return formData;
+function getTaglistValue(searchForm: SearchFormElement): string {
+  const taglist = querySelector(
+    `textarea[name="${TAGLIST_NAME}"]`,
+    searchForm
+  ) as HTMLTextAreaElement | null;
+  return taglist?.value ?? '';
 }
 
 export function getSearchForm(doc: Document): SearchForm {
   const searchForm = getSeachForm(doc);
-  // const formData = getFilteredFormData(url, doc);
 
   return {
     sortCriteria: getSelectOptions(searchForm, SORT_CRITERIA_NAME),
@@ -163,6 +114,6 @@ export function getSearchForm(doc: Document): SearchForm {
     onlyFreeleech: getCheckbox(searchForm, ONLY_FREELEECH_NAME),
     limitToOneHundred: getCheckbox(searchForm, LIMIT_TO_ONE_HUNDRED_NAME),
     categories: getCategoryCheckboxes(searchForm),
-    // formData
+    taglistValue: getTaglistValue(searchForm)
   };
 }

@@ -1,10 +1,12 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import {
   SORT_CRITERIA_NAME,
   SORT_ORDER_NAME,
   TAGLIST_NAME,
   SET_DEFAULT_NAME
 } from '$gather/searchForm';
+import { type PageDataStore } from '$stores/page';
+import { querySelector } from '$gather/util';
 
 // these are the only keys we support provide controls on the form for
 // currently. ignore the others.
@@ -31,8 +33,20 @@ export function urlFromFormData(formData: FormData): string {
   return url.toString();
 }
 
-export function createLocalFormDataStore(initialUrl: string) {
+export function createLocalFormDataStore(initialUrl: string, searchFormTaglistValue: string) {
   const initialFormData = formDataFromUrl(initialUrl);
+
+  // emp does something surprising with taglist:
+  //
+  // - if the taglist key is present in the query params, those are the tags
+  //   (even if empty)
+  //
+  // - if not present in the query params, the taglist is the user's default
+  //   tags
+  if (!initialFormData.has(TAGLIST_NAME)) {
+    initialFormData.set(TAGLIST_NAME, searchFormTaglistValue);
+  }
+
   const store = writable(initialFormData);
 
   return store;

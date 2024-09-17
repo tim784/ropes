@@ -2,10 +2,10 @@
   import { makeAppIdentifier } from '$lib/constants';
   import { Switch } from '$lib/components/ui/switch';
   import { SET_DEFAULT_NAME } from '$src/lib/gather/searchForm';
-  import type { Writable } from 'svelte/store';
   import { getContext } from 'svelte';
+  import { type LocalFormDataStore } from '$stores/localFormData';
 
-  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
   const makeDefaultId = makeAppIdentifier('make-default');
   const makeDefaultLabelId = makeAppIdentifier('make-default-label');
 

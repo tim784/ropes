@@ -3,11 +3,11 @@
   import { type Selected } from 'bits-ui';
   import * as Select from '$components/ui/select';
   import { makeAppIdentifier } from '$lib/constants';
-  import type { Writable } from 'svelte/store';
   import { getContext } from 'svelte';
   import { type SearchDataStore } from '$stores/page';
+  import { type LocalFormDataStore } from '$stores/localFormData';
 
-  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
   const searchDataStore = getContext<SearchDataStore>('searchDataStore');
 
   const sortOrderId = makeAppIdentifier('sort-order');

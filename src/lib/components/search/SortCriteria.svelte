@@ -5,9 +5,9 @@
   import { SORT_CRITERIA_NAME, type Option } from '$gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
   import { getContext } from 'svelte';
-  import type { Writable } from 'svelte/store';
+  import { type LocalFormDataStore } from '$stores/localFormData';
 
-  const localFormDataStore = getContext<Writable<FormData>>('localFormDataStore');
+  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
   const searchDataStore = getContext<SearchDataStore>('searchDataStore');
 
   const sortCriteriaId = makeAppIdentifier('sort-criterion');

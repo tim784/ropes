@@ -33,11 +33,18 @@
     }
   }
 
+  // handle back navigation
+  function popstateHandler(event: PopStateEvent) {
+    pageDataStore.navigate(window.location.href);
+  }
+
   $: contentComponent = getContentComponent($pageDataStore);
 
   // scroll to the top of the page when the page changes
   pageDataStore.subscribe(() => window.scrollTo({ top: 0 }));
 </script>
+
+<svelte:window on:popstate={popstateHandler} />
 
 {#if $enabled}
   <div

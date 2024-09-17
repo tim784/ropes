@@ -12,15 +12,21 @@
   import Search from 'lucide-svelte/icons/search';
   import UserSearch from 'lucide-svelte/icons/user-search';
   import Eraser from 'lucide-svelte/icons/eraser';
-  import { type PageDataStore } from '$stores/page';
+  import { type PageDataStore, type SearchDataStore } from '$stores/page';
   import { getContext, setContext } from 'svelte';
-  import {
-    TAGLIST_NAME,
-  } from '$gather/searchForm';
+  import { TAGLIST_NAME } from '$gather/searchForm';
+  import { get } from 'svelte/store';
 
   const pageDataStore = getContext<PageDataStore>('pageDataStore');
-  const localFormDataStore = createLocalFormDataStore($pageDataStore.url);
+
+  const searchDataStore = getContext<SearchDataStore>('searchDataStore');
+
+  const localFormDataStore = createLocalFormDataStore(
+    $pageDataStore.url,
+    get(searchDataStore).searchForm.taglistValue
+  );
   setContext('localFormDataStore', localFormDataStore);
+
   const defaultSearchUrl = '/torrents.php';
 
   $: urlForForm = urlFromFormData($localFormDataStore);
