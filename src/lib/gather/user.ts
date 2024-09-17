@@ -9,7 +9,7 @@ export class User {
   ) {}
 
   static fromNameAndHref(name: string, href: string): User {
-    const url = new URL(href, window.location.href);
+    const url = new URL(href, window.location.origin);
 
     const id = url.searchParams.get('id');
     if (!id) {

@@ -1,7 +1,6 @@
 import { type TransitionConfig } from 'svelte/transition';
 import { cubicInOut } from 'svelte/easing';
 import { split_css_unit } from '$lib/util';
-import { fade } from 'svelte/transition';
 
 type Axis = 'x' | 'y';
 

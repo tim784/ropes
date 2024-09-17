@@ -43,7 +43,7 @@ export type Torrent = {
   isBookmarked: boolean;
 };
 
-const tokenPattern = /[a-z0-9\.\-]+/gim;
+const tokenPattern = /[a-z0-9.-]+/gim;
 const variantTokenPatterns = [
   // resolution
   // standard heights, optional p or i suffix

@@ -39,7 +39,7 @@ export type Pagination = {
 };
 
 function getPageFromUrl(url: string): number {
-  const urlObj = new URL(url, window.location.href);
+  const urlObj = new URL(url, window.location.origin);
   const search = urlObj.searchParams;
   const page = parseInt(search.get('page') || '1');
   return page;

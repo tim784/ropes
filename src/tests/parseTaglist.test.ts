@@ -32,7 +32,7 @@ test.each([
   ['nothing', ['nothing']], // contains not
   ['dupe dupe', ['dupe']]
 ] as [string, string[]][])('legal parseTaglist(%s)', (taglist, expectedStrs) => {
-  let expected = expectedStrs.map(TaglistTag.fromString);
+  const expected = expectedStrs.map(TaglistTag.fromString);
   const parsed = TaglistTag.validateSyntax(taglist);
   expect(parsed).toEqual(expected);
 });
@@ -42,7 +42,7 @@ test.each([
   ['tag1 TAG2 tag3', ['tag1', 'tag2', 'tag3']],
   ['tAgGiNg', ['tagging']],
 ] as [string, string[]][])('normalization parseTaglist(%s)', (taglist, expectedStrs) => {
-  let expected = expectedStrs.map(TaglistTag.fromString);
+  const expected = expectedStrs.map(TaglistTag.fromString);
   const parsed = TaglistTag.validateSyntax(taglist);
   expect(parsed).toEqual(expected);
 });

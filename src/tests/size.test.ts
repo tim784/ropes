@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { SizeRange, type EmpSizeRangeParsed, type EmpSizeRange } from '$lib/size';
+import { SizeRange, type EmpSizeRange } from '$lib/size';
 import { SIZE_MID_NAME, SIZE_UNIT_NAME, SIZE_RANGE_NAME } from '$gather/search';
 
 type SizeRangeParams = Parameters<typeof SizeRange.from>[0];

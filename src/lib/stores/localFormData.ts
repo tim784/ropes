@@ -1,12 +1,10 @@
-import { writable, get } from 'svelte/store';
+import { writable } from 'svelte/store';
 import {
   SORT_CRITERIA_NAME,
   SORT_ORDER_NAME,
   TAGLIST_NAME,
   SET_DEFAULT_NAME
 } from '$gather/searchForm';
-import { type PageDataStore } from '$stores/page';
-import { querySelector } from '$gather/util';
 
 // these are the only keys we support provide controls on the form for
 // currently. ignore the others.
@@ -23,7 +21,7 @@ function formDataFromUrl(initialUrl: string) {
 }
 
 export function urlFromFormData(formData: FormData): string {
-  const url = new URL('/torrents.php', window.location.href);
+  const url = new URL('/torrents.php', window.location.origin);
   for (const [key, value] of formData.entries()) {
     if (!(typeof value === 'string')) {
       continue;

@@ -4,11 +4,11 @@ export enum PageType {
 }
 
 export function determinePageType(href: string = window.location.href): PageType | null {
-  let u = new URL(href, window.location.href);
-  if (u.host === window.location.host) {
-    if (u.pathname === '/torrents.php') {
-      const action = u.searchParams.get('action');
-      if (action === 'advanced' || (!action && !u.searchParams.has('id'))) {
+  const url = new URL(href, window.location.origin);
+  if (url.host === window.location.host) {
+    if (url.pathname === '/torrents.php') {
+      const action = url.searchParams.get('action');
+      if (action === 'advanced' || (!action && !url.searchParams.has('id'))) {
         return PageType.Search;
       }
       // uncomment this if/when we actually start supporting torrent detail pages

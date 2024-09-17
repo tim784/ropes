@@ -17,6 +17,7 @@
 //   version: string;
 // } | undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-var
 var GM_info:
   | {
       script: {
@@ -26,7 +27,7 @@ var GM_info:
         matches: string[];
         name: string;
         namespace: string;
-        resources: Object;
+        resources: object;
         'run-at': string;
         unwrap: boolean;
         version: string;

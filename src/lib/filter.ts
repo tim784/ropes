@@ -17,8 +17,8 @@ export class CombinedFilter {
   ) {}
 
   static fromFilters(filters: Filter[]): CombinedFilter {
-    let allowTags: Set<string> = new Set();
-    let blockTags: Set<string> = new Set();
+    const allowTags: Set<string> = new Set();
+    const blockTags: Set<string> = new Set();
 
     for (const filter of filters) {
       if (!filter.enabled) {

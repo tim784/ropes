@@ -6,7 +6,7 @@ type TagResponse = [string, [string, string][]];
 function getTagsFromResponse(response: TagResponse): CacheTag[] {
   const apiTags: CacheTag[] = [];
   for (const [name, markup] of response[1]) {
-    const count = parseInt(markup.match(/<span class="num">\((\d+)\)<\/span>/)?.[1]!);
+    const count = parseInt(markup.match(/<span class="num">\((\d+)\)<\/span>/)?.[1] as string);
     apiTags.push({ name, count });
   }
   return apiTags;

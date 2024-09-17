@@ -7,13 +7,13 @@ function makeDocument(authKey: string, id: string, includeMatchingScript = true)
   const doc = dom.window.document;
 
   // create a script tag with random stuff
-  let randomScript = doc.createElement('script');
+  const randomScript = doc.createElement('script');
   randomScript.textContent = 'var foo = "bar";';
   doc.head.appendChild(randomScript);
 
   if (includeMatchingScript) {
     // inside, put a script tag with the auth key and id
-    let script = doc.createElement('script');
+    const script = doc.createElement('script');
     script.textContent = `//<![CDATA[
         var authkey = "${authKey}";
         var userid = ${id};
@@ -24,14 +24,14 @@ function makeDocument(authKey: string, id: string, includeMatchingScript = true)
   }
 
   // and another random one
-  let anotherRandomScript = doc.createElement('script');
+  const anotherRandomScript = doc.createElement('script');
   anotherRandomScript.textContent = 'var bar = "baz";';
   doc.head.appendChild(anotherRandomScript);
 
   return doc;
 }
 
-test('getUser', (t) => {
+test('getUser', () => {
   const authKey = 'deadbeefcafebabe';
   const id = '123456';
   const doc = makeDocument(authKey, id);
@@ -39,7 +39,7 @@ test('getUser', (t) => {
   expect(user).toEqual({ authKey, id });
 });
 
-test('getUser no matching script', (t) => {
+test('getUser no matching script', () => {
   const doc = makeDocument('', '', false);
   expect(() => getAuthKeyAndId(doc)).toThrow('Document should have a script');
 });

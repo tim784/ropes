@@ -228,7 +228,7 @@ test.for([
   expectGroupCountEqualOrderInsensitive(names, 1);
 });
 
-test('should order properly', (t) => {
+test('should order properly', () => {
   const groupATorrent1 = makeTestTorrentWithName(
     'VRBangers - Life Is Short. Have An Affair! - Erin Everheart (Oculus 8K)'
   );

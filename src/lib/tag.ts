@@ -65,7 +65,7 @@ export class TaglistTag {
     }
   }
 
-  equals(other: any): boolean {
+  equals(other: unknown): boolean {
     if (!(other instanceof TaglistTag)) {
       return false;
     }
@@ -115,7 +115,7 @@ function validateTaglistSyntax(taglist: string | undefined): TaglistTag[] {
 
   // then, split by operators
   const tokens = whitespaceTokens.flatMap((whitespaceToken) => {
-    let tokens = [];
+    const tokens = [];
     let token = '';
     for (const [index, char] of [...whitespaceToken].entries()) {
       if (index !== 0 && (char === '!' || char === '-')) {

@@ -38,7 +38,7 @@
   $: isoDateTime = torrent.uploadDateTime.toISOString();
 
   function searchTagUrl(tag: string) {
-    const tagUrl = new URL(`/torrents.php`, window.location.href);
+    const tagUrl = new URL(`/torrents.php`, window.location.origin);
     tagUrl.searchParams.append(TAGLIST_NAME, tag);
     return tagUrl.toString();
   }

@@ -41,6 +41,9 @@ class HTTPError extends Error {
 export async function safeFetch(url: string, options: RequestInit, description: string) {
   let response;
 
+  // absolute-ize
+  url = new URL(url, window.location.origin).toString();
+
   try {
     response = await fetch(url, options);
   } catch (error) {
