@@ -27,9 +27,3 @@ export async function fetchAutocompleteTags(
   const suggestions = getTagsFromResponse(data);
   return suggestions;
 }
-/**
- * 3 things: loading, emptyInput, hasSuggestions
- * if loading, spinner
- * if no suggestions, show "match not found"
- * else show suggestions
- */
