@@ -3,13 +3,14 @@ import { querySelector, querySelectorAll } from './util';
 type SearchFormElement = HTMLFormElement;
 
 export type SearchForm = {
-  sortCriteria: Option[];
+  sortKeys: Option[];
   sortOrders: Option[];
-  sizeTypes: Option[];
+  sizeUnits: Option[];
   onlyFreeleech: Checkbox;
   limitToOneHundred: Checkbox;
   categories: Checkbox[];
   taglistValue: string;
+  setDefaultValue: string;
 };
 
 export type Option = {
@@ -23,7 +24,7 @@ export type Checkbox = {
   name: string;
 };
 
-export const SORT_CRITERIA_NAME = 'order_by';
+export const SORT_KEY_NAME = 'order_by';
 export const SORT_ORDER_NAME = 'order_way';
 export const SIZE_MID_NAME = 'sizeall';
 export const SIZE_UNIT_NAME = 'sizetype';
@@ -31,10 +32,7 @@ export const SIZE_RANGE_NAME = 'sizerange';
 export const TAGLIST_NAME = 'taglist';
 export const ONLY_FREELEECH_NAME = 'filter_freeleech';
 export const LIMIT_TO_ONE_HUNDRED_NAME = 'limit_matches';
-
 export const CATEGORY_TABLE_ID = 'cat_list';
-
-// filtered (for now)
 export const TITLE_AND_DESCRIPTION_TERMS_NAME = 'searchtext';
 export const TITLE_TERMS_NAME = 'title';
 export const SET_DEFAULT_NAME = 'setdefault';
@@ -104,16 +102,25 @@ function getTaglistValue(searchForm: SearchFormElement): string {
   return taglist?.value ?? '';
 }
 
+function getSetDefaultValue(searchForm: SearchFormElement): string {
+  const setDefault = querySelector(
+    `input[name="${SET_DEFAULT_NAME}"]`,
+    searchForm
+  ) as HTMLInputElement | null;
+  return setDefault?.value ?? '';
+}
+
 export function getSearchForm(doc: Document): SearchForm {
   const searchForm = getSeachForm(doc);
 
   return {
-    sortCriteria: getSelectOptions(searchForm, SORT_CRITERIA_NAME),
+    sortKeys: getSelectOptions(searchForm, SORT_KEY_NAME),
     sortOrders: getSelectOptions(searchForm, SORT_ORDER_NAME),
-    sizeTypes: getSelectOptions(searchForm, SIZE_UNIT_NAME),
+    sizeUnits: getSelectOptions(searchForm, SIZE_UNIT_NAME),
     onlyFreeleech: getCheckbox(searchForm, ONLY_FREELEECH_NAME),
     limitToOneHundred: getCheckbox(searchForm, LIMIT_TO_ONE_HUNDRED_NAME),
     categories: getCategoryCheckboxes(searchForm),
-    taglistValue: getTaglistValue(searchForm)
+    taglistValue: getTaglistValue(searchForm),
+    setDefaultValue: getSetDefaultValue(searchForm)
   };
 }

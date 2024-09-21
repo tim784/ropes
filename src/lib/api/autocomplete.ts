@@ -1,13 +1,14 @@
-import { type TaglistTag, type CacheTag } from '$lib/tag';
+import { type TaglistTag } from '$lib/tag';
 import { priorities, queueFetch } from '$api/queue';
+import type { CachedTag } from '$stores/tagCache';
 
 type TagResponse = [string, [string, string][]];
 
-function getTagsFromResponse(response: TagResponse): CacheTag[] {
-  const apiTags: CacheTag[] = [];
+function getTagsFromResponse(response: TagResponse): CachedTag[] {
+  const apiTags: CachedTag[] = [];
   for (const [name, markup] of response[1]) {
-    const count = parseInt(markup.match(/<span class="num">\((\d+)\)<\/span>/)?.[1] as string);
-    apiTags.push({ name, count });
+    const useCount = parseInt(markup.match(/<span class="num">\((\d+)\)<\/span>/)?.[1] as string);
+    apiTags.push({ name, useCount });
   }
   return apiTags;
 }
@@ -15,7 +16,7 @@ function getTagsFromResponse(response: TagResponse): CacheTag[] {
 export async function fetchAutocompleteTags(
   partialTag: TaglistTag,
   type: 'validate' | 'autocomplete' = 'autocomplete'
-): Promise<CacheTag[]> {
+): Promise<CachedTag[]> {
   const response = await queueFetch(
     `/tags.php?action=autocomplete&name=${partialTag.name}`,
     { credentials: 'same-origin' },

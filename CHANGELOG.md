@@ -25,8 +25,8 @@ The types of changes are:
 
 ### Changed
 
-- *(Not user-facing)* Refactored how page state is managed so that development
-  is easier.
+- *(Not user-facing)* Refactored how page and form state is managed so that
+  it better leverages Web APIs.
 
 ## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-09-01
 

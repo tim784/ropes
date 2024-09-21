@@ -3,7 +3,7 @@ export enum PageType {
   // Torrent,
 }
 
-export function determinePageType(href: string = window.location.href): PageType | null {
+export function determinePageType(href: string | URL = window.location.href): PageType | null {
   const url = new URL(href, window.location.origin);
   if (url.host === window.location.host) {
     if (url.pathname === '/torrents.php') {

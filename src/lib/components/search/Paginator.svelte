@@ -1,74 +1,45 @@
 <script lang="ts">
-  import { type PageDataStore, type SearchDataStore } from '$stores/page';
+  import { type PageDataStore, type QueryParamStore, type SearchDataStore } from '$stores/page';
   import type { Pagination } from '$gather/pagination';
-  import Button from '$components/ui/Button.svelte';
   import ChevronLeft from 'lucide-svelte/icons/chevron-left';
   import ChevronRight from 'lucide-svelte/icons/chevron-right';
-  import { settings } from '$stores/settings';
   import Skeleton from '$components/ui/skeleton/skeleton.svelte';
   import { getContext } from 'svelte';
+  import PaginatorButton from './PaginatorButton.svelte';
 
   const pageDataStore = getContext<PageDataStore>('pageDataStore');
   const searchDataStore = getContext<SearchDataStore>('searchDataStore');
+  const queryParamsStore = getContext<QueryParamStore>('queryParamsStore');
 
-  $: curUrl = new URL($pageDataStore.url);
+  function makePageRadius(pagination: Pagination, radius = 2): (number | null)[] {
+    const pageNumberSet: Set<number> = new Set();
+
+    pageNumberSet.add(1);
+    pageNumberSet.add(pagination.totalPages);
+
+    const radiusMin = Math.max(1, currentPageNumber - radius);
+    const radiusMax = Math.min(pagination.totalPages, currentPageNumber + radius);
+
+    for (let i = radiusMin; i <= radiusMax; i++) {
+      pageNumberSet.add(i);
+    }
+
+    const pageNumbers: (number | null)[] = Array.from(pageNumberSet).sort((a, b) => a - b);
+
+    if (pageNumbers[1] !== 2) {
+      pageNumbers.splice(1, 0, null);
+    }
+
+    if (pageNumbers[pageNumbers.length - 2] !== pagination.totalPages - 1) {
+      pageNumbers.splice(pageNumbers.length - 1, 0, null);
+    }
+
+    return pageNumbers;
+  }
+
+  $: currentPageNumber = Number($queryParamsStore.get('page') ?? 1);
   $: pagination = $searchDataStore.pagination;
-
-  type PageItem = {
-    number: number;
-    isActive: boolean;
-  };
-
-  type Elision = null;
-
-  function makePageRadius(pagination: Pagination, radius = 2): (PageItem | null)[] {
-    const pages: (PageItem | Elision)[] = [];
-
-    for (let i = pagination.currentPage - radius; i <= pagination.currentPage + radius; i++) {
-      if (i < 1 || i > pagination.totalPages) {
-        continue;
-      }
-
-      pages.push({
-        number: i,
-        isActive: i === pagination.currentPage
-      });
-    }
-
-    // also push first and last iff they aren't already in the radius. if the first and last
-    // are not sequential, push an ellision
-    if (pages[0]?.number !== 1) {
-      pages.unshift({
-        number: 1,
-        isActive: false
-      });
-
-      if (pages[1]?.number !== 2) {
-        // insert after the first
-        pages.splice(1, 0, null);
-      }
-    }
-
-    if (pages[pages.length - 1]?.number !== pagination.totalPages) {
-      pages.push({
-        number: pagination.totalPages,
-        isActive: false
-      });
-
-      if (pages[pages.length - 2]?.number !== pagination.totalPages - 1) {
-        // insert before the last
-        pages.splice(pages.length - 1, 0, null);
-      }
-    }
-
-    return pages;
-  }
-
-  function urlForPage(pageNumber: number): string {
-    const newUrl = new URL(curUrl);
-    newUrl.searchParams.set('page', pageNumber.toString());
-    return newUrl.toString();
-  }
+  $: pageNumbers = makePageRadius(pagination);
 </script>
 
 <ul class="my-4 flex items-center justify-center gap-4">
@@ -79,100 +50,29 @@
       </li>
     {/each}
   {:else}
-    {@const pageRadius = makePageRadius(pagination)}
     <li>
-      {#if pagination.currentPage !== 1}
-        {#if $settings.spaMode}
-          <Button
-            size="sm"
-            variant="outline"
-            class="px-2"
-            on:click={() => {
-              pageDataStore.navigate(urlForPage(pagination.currentPage - 1));
-            }}
-          >
-            <ChevronLeft />
-          </Button>
-        {:else}
-          <Button
-            size="sm"
-            href={urlForPage(pagination.currentPage - 1)}
-            variant="outline"
-            class="px-2"
-          >
-            <ChevronLeft />
-          </Button>
-        {/if}
-      {:else}
-        <Button size="sm" class="px-2" variant="outline" disabled>
-          <ChevronLeft />
-        </Button>
-      {/if}
+      <PaginatorButton pageNumber={currentPageNumber - 1} disabled={currentPageNumber === 1}>
+        <ChevronLeft />
+      </PaginatorButton>
     </li>
-    {#each pageRadius as pageItem}
-      {#if pageItem === null}
-        <li>...</li>
+
+    {#each pageNumbers as pageNumber}
+      {#if pageNumber === null}
+        <li class="select-none">...</li>
       {:else}
-        {@const url = urlForPage(pageItem.number)}
         <li>
-          {#if !pageItem.isActive}
-            {#if $settings.spaMode}
-              <Button
-                size="sm"
-                variant="outline"
-                class="font-bold"
-                on:click={() => {
-                  pageDataStore.navigate(url);
-                }}
-              >
-                {pageItem.number}
-              </Button>
-            {:else}
-              <Button size="sm" class="font-bold" href={url} variant="outline">
-                {pageItem.number}
-              </Button>
-            {/if}
-          {:else}
-            <Button
-              size="sm"
-              class="cursor-default border-2 border-primary font-bold hover:bg-background active:border-primary active:bg-background"
-              variant="outline"
-            >
-              {pageItem.number}
-            </Button>
-          {/if}
+          <PaginatorButton {pageNumber} isActive={pageNumber === currentPageNumber} />
         </li>
       {/if}
     {/each}
 
     <li>
-      {#if pagination.currentPage !== pagination.totalPages}
-        {#if $settings.spaMode}
-          <Button
-            size="sm"
-            variant="outline"
-            class="px-2"
-            on:click={() => {
-              pageDataStore.navigate(urlForPage(pagination.currentPage + 1));
-            }}
-          >
-            <ChevronRight />
-          </Button>
-        {:else}
-          <Button
-            size="sm"
-            href={urlForPage(pagination.currentPage + 1)}
-            variant="outline"
-            class="px-2"
-          >
-            <ChevronRight />
-          </Button>
-        {/if}
-      {:else}
-        <Button size="sm" class="px-2" variant="outline" disabled>
-          <ChevronRight />
-        </Button>
-      {/if}
+      <PaginatorButton
+        pageNumber={currentPageNumber + 1}
+        disabled={currentPageNumber === pagination.totalPages}
+      >
+        <ChevronRight />
+      </PaginatorButton>
     </li>
   {/if}
 </ul>

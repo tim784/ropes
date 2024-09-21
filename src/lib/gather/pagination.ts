@@ -23,11 +23,6 @@ export type Pagination = {
   thisPageRange: ResultRange;
 
   /**
-   * The current page number
-   */
-  currentPage: number;
-
-  /**
    * The total number of pages
    */
   totalPages: number;
@@ -45,7 +40,6 @@ function getPageFromUrl(url: string): number {
   return page;
 }
 
-// strange that this is placed in the search form, but whateva
 function getResultCount(doc: Document) {
   const text = querySelector('.numsearchresults span', doc)!.textContent!;
   const resultCountString = text.split(' ')[0];
@@ -117,7 +111,7 @@ export function getPagination(doc: Document): Pagination {
       resultsOnThisPage: totalResultCount,
       totalResultCount: totalResultCount,
       thisPageRange: { start: totalResultCount === 0 ? 0 : 1, end: totalResultCount },
-      currentPage: 1,
+      // currentPage: 1,
       totalPages: 1
     };
   }
@@ -152,7 +146,7 @@ export function getPagination(doc: Document): Pagination {
     resultsPerPage,
     resultsOnThisPage,
     thisPageRange: rangeOnThisPage,
-    currentPage,
+    // currentPage,
     totalPages,
     totalResultCount
   };

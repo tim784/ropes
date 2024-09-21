@@ -1,160 +1,185 @@
 <script lang="ts">
-  /**
-   * The RichTagInput component provides suggestions to partially entered tags.
-   *
-   * Under the hood, we're using cmdk-sv to manage much of the state and logic,
-   * but with significant customizations. Lotta of
-   * <https://www.youtube.com/watch?v=EzWNBmjyv7Y> energy, possibly at my own
-   * expense.
-   */
-  import { tagCache, type TagCache } from '$stores/tagCache';
-  import { TaglistTag, type CacheTag } from '$lib/tag';
+  import { tagCache, type TagCache, type CachedTagResult } from '$stores/tagCache';
+  import { Taglist, Tag, isNegationChar } from '$lib/tag';
   import { fetchAutocompleteTags } from '$api/autocomplete';
   import pDebounce from 'p-debounce';
   import Kbd from '$components/ui/Kbd.svelte';
-  import AddedTags from './AddedTags.svelte';
-  import * as Command from '$components/ui/command';
-  import { createState } from 'cmdk-sv';
-  import { settings } from '$stores/settings';
   import LoadingSpinner from '$components/ui/LoadingSpinner.svelte';
-  import { wipe } from '$lib/transition';
-  import { TAGLIST_NAME } from '$gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
   import { getContext } from 'svelte';
-  import { type LocalFormDataStore, urlFromFormData } from '$stores/localFormData';
-  import type { PageDataStore } from '$stores/page';
+  import type { Result } from '$lib/result';
+  import type { FormInputEvent } from '$components/ui/input';
+  import Search from 'lucide-svelte/icons/search';
+  import { cn } from '$components/shadcn-utils';
+  import { formatNumber } from '$lib/util';
 
-  const pageDataStore = getContext<PageDataStore>('pageDataStore');
-  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
+  export let taglistString: string;
+  export let taglist: Taglist;
 
   const tagsElementId = makeAppIdentifier('tags-entry');
+  const debounceDurationMilliseconds = 300;
 
-  const inputState = createState();
-
-  $: tags = TaglistTag.validateSyntax($localFormDataStore.get(TAGLIST_NAME)?.toString() || '');
-
+  let containerWidth = 0;
+  let containerHeight = 0;
+  let inputElement: HTMLInputElement | undefined = undefined;
+  let value: string | undefined = undefined;
+  let partialTagResult: Result<Tag, string> | null = null;
+  let matches: CachedTagResult[] = [];
+  let selectedMatchIndex: number | null = null;
   let inputHasFocus = false;
-  let escapedOut = false;
-  let isPointerOverSuggestions = false;
-  let hasJustEnteredTag = false;
-  $: open =
-    (inputHasFocus || isPointerOverSuggestions) &&
-    !escapedOut &&
-    !$settings.sfwMode &&
-    !hasJustEnteredTag;
+  let dropdownOpen = false;
+  let isFetching = false;
 
-  let isLoading = false;
-  let suggestions: CacheTag[] = [];
-
-  let lastTag: TaglistTag | null = null;
-  $: partialTag = TaglistTag.fromString($inputState.search);
-  $: negationChar = partialTag.negationChar;
-  $: [isValid, reason] = partialTag.validate();
-
-  function matchSuggestions(tagCache: TagCache, partialTag: TaglistTag, currentTags: TaglistTag[]) {
-    return tagCache
-      .match(partialTag.name)
-      .filter((t) => !currentTags.some((ct) => ct.name === t.name));
+  $: partialTagResult = getPartialTagResult(value);
+  $: matches = getMatches(partialTagResult, $tagCache);
+  $: retrieveMatchesFromApi(partialTagResult);
+  $: if (matches.length > 0) {
+    selectedMatchIndex = 0;
   }
+  $: scrollSelectedIntoView(selectedMatchIndex);
 
-  function resetInput() {
-    // yeesh, gotta do em both it seems.
-    inputState.update((state) => ({ ...state, value: '', search: '' }));
-    inputElement.value = '';
-  }
+  const submitFunction = getContext<() => void>('submitFunction');
 
-  const fetchMergeAndSuggest = pDebounce(
-    (partialTag: TaglistTag) =>
-      fetchAutocompleteTags(partialTag).then((fetchedTags) => {
-        tagCache.merge(fetchedTags);
-        suggestions = matchSuggestions($tagCache, partialTag, tags);
-        isLoading = false;
-      }),
-    300
-  );
-
-  $: {
-    // state seems to update on a interval regardless of changed input, so lets
-    // make sure we're not doing too much work.
-    if (!(lastTag && partialTag.name === lastTag.name) && partialTag.name !== '') {
-      escapedOut = false;
-      hasJustEnteredTag = false;
-      if (isValid) {
-        suggestions = matchSuggestions($tagCache, partialTag, tags);
-        isLoading = true;
-        fetchMergeAndSuggest(partialTag);
-      } else {
-        suggestions = [];
-        isLoading = false;
-      }
-      lastTag = partialTag;
-    }
-  }
-
-  $: emptyInput = $inputState.search === '';
-
-  // note that this doesn't count the negation character. you're still empty if
-  // you've only typed that.
-  $: emptyName = partialTag.name === '';
-  $: hasSuggestions = suggestions.length > 0;
-
-  $: showHelp = emptyName && !isLoading;
-  $: showNoMatches = !isLoading && !hasSuggestions && !emptyName;
-  $: showInvalid = showNoMatches && !isValid;
-  $: showSuggestions = !emptyName && hasSuggestions;
-
-  let inputHeight: number;
-  let inputWidth: number;
-  let inputElement: HTMLInputElement;
-
-  function addSuggestionToTags(suggestionName: string) {
-    const suggestionTaglistTag = new TaglistTag(negationChar, suggestionName);
-    // localFormData.addTag(suggestionTaglistTag);
-
-    const taglist = $localFormDataStore.get(TAGLIST_NAME);
-    let newTaglist;
-    if (taglist) {
-      newTaglist = `${taglist} ${suggestionTaglistTag.toString()}`;
+  function getPartialTagResult(input: string | undefined): Result<Tag, string> | null {
+    if (input === undefined || input === '' || isNegationChar(input)) {
+      return null;
     } else {
-      newTaglist = suggestionTaglistTag.toString();
+      let badCharIndex: number | null = null;
+      let badChar: string | null = null;
+      for (let index = 0; index < input.length; index++) {
+        if (
+          (index === 0 && !/^[-!a-zA-Z0-9.]$/.test(input[index])) ||
+          (index > 0 && !/^[a-zA-Z0-9.]$/.test(input[index]))
+        ) {
+          badCharIndex = index;
+          badChar = input[index];
+          break;
+        }
+      }
+      if (badCharIndex !== null) {
+        return {
+          success: false,
+          error: `Invalid character \`${badChar}\` at index ${badCharIndex}`
+        };
+      } else {
+        return Tag.fromString(input);
+      }
     }
-    localFormDataStore.update((formData) => {
-      formData.set(TAGLIST_NAME, newTaglist);
-      return formData;
+  }
+
+  function getMatches(
+    partialTagResult: Result<Tag, string> | null,
+    tagCache: TagCache
+  ): CachedTagResult[] {
+    if (partialTagResult === null || !partialTagResult.success) {
+      return [];
+    }
+
+    return tagCache.search(partialTagResult.value.name).filter((t) => !taglist.hasByName(t.name));
+  }
+
+  function retrieveMatchesFromApi_(partialTagResult: Result<Tag, string> | null) {
+    if (partialTagResult === null || !partialTagResult.success) {
+      return;
+    }
+
+    isFetching = true;
+
+    fetchAutocompleteTags(partialTagResult.value, 'autocomplete').then((suggestions) => {
+      suggestions = [...suggestions,
+        {
+          name: 'reallllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly.long.tag',
+          useCount: 12345678
+        }
+      ]
+      tagCache.merge(suggestions);
+      isFetching = false;
     });
-
-    resetInput();
-    hasJustEnteredTag = true;
   }
 
-  function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      escapedOut = true;
-    } else if (e.key === 'Home' || e.key === 'End') {
-      // kinda crazy we need to do this ourselves. seems cmdk-sv tried to rebuild
-      // an <input> element from scratch with keydown handlers and forgot this
-      // one, i think. https://github.com/huntabyte/cmdk-sv/issues/97
-      let position = 0;
-      if (e.key === 'End') {
-        position = $inputState.search.length;
-      }
-      inputElement.setSelectionRange(position, position);
-      e.preventDefault();
-    } else if (e.key === 'Enter') {
-      const selectedSuggestionName = $inputState.value;
-      if (selectedSuggestionName) {
-        addSuggestionToTags(selectedSuggestionName);
-      } else if (emptyInput) {
-        pageDataStore.navigate(urlFromFormData($localFormDataStore));
-        inputElement.blur();
-      }
-      e.preventDefault();
+  const retrieveMatchesFromApi = pDebounce(retrieveMatchesFromApi_, debounceDurationMilliseconds);
+
+  function scrollSelectedIntoView(selectedMatchIndex: number | null) {
+    if (selectedMatchIndex === null) {
+      return;
+    }
+
+    const selectedElement = document.querySelector(`[data-match-index="${selectedMatchIndex}"]`);
+    selectedElement?.scrollIntoView({ block: 'nearest' });
+  }
+
+  function handleKeydown(e: FormInputEvent<KeyboardEvent>) {
+    switch (e.key) {
+      case 'Escape':
+        dropdownOpen = false;
+        break;
+      case 'ArrowDown':
+        if (selectedMatchIndex === null) {
+          selectedMatchIndex = 0;
+        } else {
+          selectedMatchIndex = Math.min(selectedMatchIndex + 1, matches.length - 1);
+        }
+        e.preventDefault(); // don't move input cursor
+        break;
+      case 'ArrowUp':
+        if (selectedMatchIndex === null) {
+          selectedMatchIndex = matches.length - 1;
+        } else {
+          selectedMatchIndex = Math.max(selectedMatchIndex - 1, 0);
+        }
+        e.preventDefault(); // don't move input cursor
+        break;
+      case 'Enter':
+        if (value === '') {
+          submitFunction();
+        } else {
+          addTag();
+        }
+        break;
+      default:
+        dropdownOpen = true;
+        break;
     }
   }
 
-  function handleSelect(suggestion: CacheTag) {
-    addSuggestionToTags(suggestion.name);
-    isPointerOverSuggestions = false;
+  function addTag() {
+    if (selectedMatchIndex !== null && partialTagResult && partialTagResult.success) {
+      const selectedMatch = matches[selectedMatchIndex];
+      const newTag = Tag.create(
+        partialTagResult.value.isNegated ? Tag.DEFAULT_NEGATION_CHAR : undefined,
+        selectedMatch.name
+      );
+      if (!newTag.success) {
+        console.error(newTag.error);
+        return;
+      }
+      taglist.add(newTag.value);
+      taglistString = taglist.toString();
+      value = '';
+      selectedMatchIndex = null;
+      dropdownOpen = false;
+      isFetching = false;
+    }
+  }
+
+  function handleFocus(e: FormInputEvent<FocusEvent>) {
+    inputHasFocus = true;
+    dropdownOpen = true;
+  }
+
+  function handleBlur(e: FormInputEvent<FocusEvent>) {
+    inputHasFocus = false;
+
+    // if relatedTarget has data-match-index, then we're focusing on a match, so
+    // don't close the dropdown (the addTag function will do this after click).
+    // otherwise, close it.
+    if (e.relatedTarget) {
+      const matchIndex = (e.relatedTarget as HTMLElement).dataset.matchIndex;
+      if (matchIndex !== undefined) {
+        return;
+      }
+    }
+    dropdownOpen = false;
   }
 
   function handleSearchFocusKeybind(e: KeyboardEvent) {
@@ -165,100 +190,120 @@
       e.preventDefault();
     }
   }
+
+  $: inputClass = cn(
+    'flex h-10 w-full items-center border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-within:outline-none focus-within:border-primary focus-within:bg-popover group',
+    dropdownOpen ? 'rounded-t-lg border-t border-x' : 'rounded-lg border'
+  );
+
+  // TODO: make it so that, when new matches come in after loading, it doesn't
+  // change the selected match, or just generally isn't disruptive
+  //
+  // TODO: when down-click on button, border-primary on inputclass is removed
+  //
+  // TODO: can't tab past input if value is non-empty. this is a firefox bug,
+  // not present on other browsers, thus, okay to ignore?
+  //
+  // TODO: in production, for tags with lots of uses, the content wraps to the
+  // next line. prevent this. this should always be a single line. ensure no
+  // x-scroll either. maybe flex is the better move here?
+  //
+  // TODO: when scrolling with mouse wheel and pointer is over the dropdown, the
+  // the selected match keeps jumping around (sometimes.)
 </script>
 
 <svelte:window on:keydown={handleSearchFocusKeybind} />
 
-<div class="space-y-4">
-  <Command.Root loop={false} shouldFilter={false} state={inputState} class="group relative">
-    <Command.Input
+<div class="relative" bind:clientHeight={containerHeight} bind:clientWidth={containerWidth}>
+  <div class={inputClass}>
+    <Search class="mr-2 size-4 shrink-0 opacity-50" />
+    <input
+      autocomplete="off"
+      bind:this={inputElement}
+      bind:value
       id={tagsElementId}
-      placeholder="Search for a tag..."
-      on:focus={() => {
-        inputHasFocus = true;
-        escapedOut = false;
-        hasJustEnteredTag = false;
-      }}
-      on:blur={() => (inputHasFocus = false)}
       on:keydown={handleKeydown}
-      bind:clientHeight={inputHeight}
-      bind:clientWidth={inputWidth}
-      suggestionsOpen={open}
-      class=""
-      bind:el={inputElement}
-      keys={['AltOrOption', 'S']}
+      on:focus={handleFocus}
+      on:blur={handleBlur}
+      placeholder="Search for a tag…"
+      class="grow bg-inherit focus-visible:outline-none"
     />
-    {#if open}
-      <Command.List
-        class="absolute z-10 w-full rounded-b-lg border border-ring bg-popover px-2 py-1.5 text-sm text-popover-foreground shadow-md"
-        style={`top: ${inputHeight}px;`}
-      >
-        {#if isLoading}
-          <div class="flex items-center px-1">
-            <LoadingSpinner class="me-2 size-4" />Loading...
-          </div>
-        {/if}
-        {#if showSuggestions}
-          <div
-            on:pointerenter={() => {
-              isPointerOverSuggestions = true;
-            }}
-            on:pointerleave={() => {
-              isPointerOverSuggestions = false;
-            }}
-          >
-            <Command.Group heading="Suggestions">
-              {#each suggestions as suggestion (suggestion.name)}
-                <Command.Item
-                  data-suggestion-name={suggestion.name}
-                  value={suggestion.name}
-                  onSelect={() => handleSelect(suggestion)}
-                  class="cursor-pointer"
-                  ><div
-                    transition:wipe={{ axis: 'y' }}
-                    class:font-bold={suggestion.exact}
-                    class="flex w-full justify-between px-2 py-1.5"
-                  >
-                    <span>{negationChar}{suggestion.name}</span>
-                    <span class="text-sm text-foreground/50">({suggestion.count} uses)</span>
-                  </div></Command.Item
-                >
-              {/each}
-            </Command.Group>
-          </div>
-        {/if}
-        {#if showInvalid}
-          <p class="mb-4 break-words text-sm">
-            Tag <span class="font-mono">{partialTag.toString()}</span> is invalid:
-          </p>
-          <p class="font-mono text-sm">
-            {reason}
-          </p>
-        {:else if showNoMatches}
-          <p class="break-words text-sm">
-            No matches for <span class="font-mono">{partialTag.toString()}</span>
-          </p>
-        {/if}
-        {#if showHelp}
+
+    {#if !inputHasFocus}
+      <Kbd class="text-sm" keys={['AltOrOption', 's']} />
+    {/if}
+    {#if isFetching}
+      <LoadingSpinner class="ml-2 size-4" />
+    {/if}
+  </div>
+
+  {#if dropdownOpen}
+    <div
+      class="absolute z-10 rounded-b-lg border border-primary bg-popover px-3 py-2"
+      style:width={`${containerWidth}px`}
+    >
+      {#if partialTagResult === null}
+        <div class="">
           <p class="mb-4">
             Add tags one at a time. To submit entire search, press <Kbd keys={['Enter']} /> when empty.
           </p>
-          <p class="mb-2 font-bold">Syntax</p>
-          <div class="grid grid-cols-[auto_1fr] gap-2">
-            <div class="justify-self-end font-mono font-bold">tag</div>
+
+          <h3 class="mb-4 text-lg font-bold">Syntax</h3>
+
+          <div class="grid grid-cols-[auto_auto] gap-2">
+            <div class="justify-self-center font-mono font-bold">tag</div>
             <div>Include a tag</div>
 
-            <div class="justify-self-end">
+            <div class="justify-self-center">
               <span class="font-mono font-bold">!tag</span> or&nbsp;<span
                 class="font-mono font-bold">-tag</span
               >
             </div>
             <div>Exclude a tag</div>
           </div>
+        </div>
+      {:else if !partialTagResult.success}
+        <output class="font-mono text-warning">{partialTagResult.error}</output>
+      {:else}
+        {#if matches.length > 0}
+          <ul
+            class="grid max-h-[50dvh] grid-cols-[auto_auto] gap-x-2 overflow-y-scroll focus-visible:outline-none foo"
+          >
+            {#each matches as match, index (match.name)}
+              <li class="col-span-2 grid grid-cols-subgrid">
+                <button
+                  class="col-span-2 grid grid-cols-subgrid items-center rounded px-2 py-1"
+                  class:font-bold={match.exact}
+                  class:bg-accent={selectedMatchIndex === index}
+                  data-match-index={index}
+                  on:pointerenter={() => {
+                    selectedMatchIndex = index;
+                  }}
+                  on:click={addTag}
+                >
+                  <span class="justify-self-start hyphens-auto">{match.name}</span>
+                  <span class="justify-self-end whitespace-nowrap text-sm text-foreground/50"
+                    >({formatNumber(match.useCount)} uses)</span
+                  >
+                </button>
+              </li>
+            {/each}
+          </ul>
         {/if}
-      </Command.List>
-    {/if}
-  </Command.Root>
-
-  {#if tags.length > 0}<AddedTags />{/if}
+        {#if matches.length === 0}
+          {#if !isFetching}
+            <p>No matches found.</p>
+          {:else}
+            <p class="italic">Loading...</p>
+          {/if}
+        {/if}
+      {/if}
+    </div>
+  {/if}
 </div>
+
+<style>
+  .foo {
+    scrollbar-gutter: stable;
+  }
+</style>

@@ -3,22 +3,11 @@
   import { settings } from '$stores/settings';
   import { getSfwTag } from '$src/lib/sfwMode';
   import Link from '$components/ui/Link.svelte';
-  import { TAGLIST_NAME } from '$src/lib/gather/searchForm';
   import { makeAppIdentifier } from '$lib/constants';
-  import { getContext } from 'svelte';
-  import type { LocalFormDataStore } from '$stores/localFormData';
 
-  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
+  export let value: string;
 
   const textAreaId = makeAppIdentifier('tags-entry');
-
-  let value = $localFormDataStore.get(TAGLIST_NAME)?.toString() || '';
-
-  $: localFormDataStore.update((formData) => {
-    formData.set(TAGLIST_NAME, value);
-    return formData;
-  });
-
 </script>
 
 <div class="space-y-2">

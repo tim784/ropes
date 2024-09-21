@@ -11,14 +11,14 @@ import { getTorrents } from '$gather/torrents';
 const domParser = new DOMParser();
 
 export type PageData = {
-  url: string;
+  url: URL;
   doc: Document;
   isLoading: boolean;
   isDirty: boolean;
 };
 
 export function createPageDataStore() {
-  const originalUrl = window.location.href;
+  const originalUrl = new URL(window.location.href);
   const store = writable<PageData>({
     url: originalUrl,
     doc: document,
@@ -29,7 +29,8 @@ export function createPageDataStore() {
 
   history.replaceState({}, '', originalUrl);
 
-  async function navigate(url: string, isBack: boolean = false) {
+  async function navigate(url: string | URL, isBack: boolean = false) {
+    url = new URL(url, window.location.origin);
     if (!isBack) {
       history.pushState({}, '', url);
     }
@@ -59,6 +60,14 @@ export function createPageDataStore() {
 }
 
 export type PageDataStore = ReturnType<typeof createPageDataStore>;
+
+export function createQueryParamsStore(pageDataStore: PageDataStore) {
+  return derived(pageDataStore, ($pageData) => {
+    return $pageData.url.searchParams;
+  });
+}
+
+export type QueryParamStore = ReturnType<typeof createQueryParamsStore>;
 
 // base data that is common to all pages (i.e., if we do a TorrentData type, it
 // would share these properties)

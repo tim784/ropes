@@ -10,7 +10,12 @@
   import ScrollToTop from './ScrollToTop.svelte';
   import { enabled } from '$stores/enabled';
   import { setContext } from 'svelte';
-  import { createPageDataStore, type PageData, createBaseDataStore } from '$stores/page';
+  import {
+    createPageDataStore,
+    type PageData,
+    createQueryParamsStore,
+    createBaseDataStore
+  } from '$stores/page';
   import { determinePageType, PageType } from '$lib/pageType';
   import { createLocalsStore } from '$stores/locals';
   import { settings } from '$stores/settings';
@@ -20,6 +25,9 @@
 
   const pageDataStore = createPageDataStore();
   setContext('pageDataStore', pageDataStore);
+
+  const queryParamsStore = createQueryParamsStore(pageDataStore);
+  setContext('queryParamsStore', queryParamsStore);
 
   const baseDataStore = createBaseDataStore(pageDataStore);
   setContext('baseDataStore', baseDataStore);
@@ -42,8 +50,6 @@
   function popstateHandler(event: PopStateEvent) {
     pageDataStore.navigate(window.location.href, true);
   }
-
-  $: contentComponent = getContentComponent($pageDataStore);
 
   // scroll to the top of the page when the page changes
   onMount(() => pageDataStore.subscribe(() => window.scrollTo({ top: 0 })));
@@ -72,7 +78,7 @@
     </header>
 
     <main class="relative mx-auto max-w-screen-3xl">
-      <svelte:component this={contentComponent} />
+      <svelte:component this={getContentComponent($pageDataStore)} />
     </main>
 
     <ToastContainer />

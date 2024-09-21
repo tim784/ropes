@@ -38,7 +38,7 @@ class HTTPError extends Error {
  *
  * @returns A promise that resolves to the response of the fetch
  */
-export async function safeFetch(url: string, options: RequestInit, description: string) {
+export async function safeFetch(url: string | URL, options: RequestInit, description: string) {
   let response;
 
   // absolute-ize

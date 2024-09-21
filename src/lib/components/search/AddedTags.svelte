@@ -2,21 +2,18 @@
   import { settings } from '$stores/settings';
   import { wipe } from '$lib/transition';
   import Button from '$components/ui/Button.svelte';
-  import { TaglistTag } from '$lib/tag';
+  import { Tag, Taglist } from '$lib/tag';
   import { notTags } from '$stores/notTags';
-  import { tagCache } from '$stores/tagCache';
+  import { tagCache, type CachedTag } from '$stores/tagCache';
   import { fetchAutocompleteTags } from '$api/autocomplete';
   import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
   import X from 'lucide-svelte/icons/x';
   import LoadingSpinner from '$components/ui/LoadingSpinner.svelte';
   import { getSfwTag } from '$lib/sfwMode';
-  import { TAGLIST_NAME } from '$gather/searchForm';
-  import { getContext } from 'svelte';
-  import type { LocalFormDataStore } from '$stores/localFormData';
 
-  const localFormDataStore = getContext<LocalFormDataStore>('localFormDataStore');
+  export let taglist: Taglist;
 
-  $: tags = TaglistTag.validateSyntax($localFormDataStore.get(TAGLIST_NAME)?.toString() || '');
+  // $: tags = TaglistTag.validateSyntax(value);
 
   async function validateExists(tag: TaglistTag) {
     if ($notTags.has(tag.name)) {
@@ -38,33 +35,19 @@
     }
   }
 
-  function negateTag(tag: TaglistTag) {
-    localFormDataStore.update((formData) => {
-      const tags = TaglistTag.validateSyntax((formData.get(TAGLIST_NAME) as string) ?? '');
-
-      const index = tags.findIndex((t) => t.name === tag.name);
-
-      if (index !== -1) {
-        tags[index] = tags[index].negate();
-      }
-
-      formData.set(TAGLIST_NAME, TaglistTag.toTaglist(tags));
-      return formData;
-    });
+  function negateTag(index: number) {
+    tags[index] = tags[index].negate();
+    value = TaglistTag.toTaglist(tags);
   }
 
-  function deleteTag(tag: TaglistTag) {
-    localFormDataStore.update((formData) => {
-      const tags = TaglistTag.validateSyntax((formData.get(TAGLIST_NAME) as string) ?? '');
-      const withoutTag = tags.filter((t) => t.name !== tag.name);
-      formData.set(TAGLIST_NAME, TaglistTag.toTaglist(withoutTag));
-      return formData;
-    });
+  function deleteTag(index: number) {
+    tags.splice(index, 1);
+    value = TaglistTag.toTaglist(tags);
   }
 </script>
 
 <ol class="flex flex-col gap-2">
-  {#each tags as tag (tag.name)}
+  {#each taglist.tags as tag, index (tag.name)}
     {@const displayName = $settings.sfwMode ? getSfwTag() : tag.name}
     {@const validation = validateExists(tag)}
     <li class="flex items-center gap-2" transition:wipe={{ axis: 'y', duration: 200 }}>
@@ -72,9 +55,9 @@
         <Button
           variant="outline"
           class="h-6 w-[5ch] px-1 text-xs font-bold uppercase"
-          on:click={(e) => {
-            negateTag(tag);
-            e.preventDefault();
+          type="button"
+          on:click={() => {
+            negateTag(index);
           }}
           aria-label="Negate Tag"
         >
@@ -97,12 +80,12 @@
         {/await}
       </span>
       <Button
+        type="button"
         variant="ghost"
         size="round-icon-sm"
         aria-label="Delete Tag"
-        on:click={(e) => {
-          deleteTag(tag);
-          e.preventDefault();
+        on:click={() => {
+          deleteTag(index);
         }}
       >
         <X />

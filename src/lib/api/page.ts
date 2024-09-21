@@ -7,7 +7,7 @@ import { safeFetch } from './util';
  *
  * @returns A promise that resolves to the response of the fetch
  */
-export async function fetchPage(url: string) {
+export async function fetchPage(url: string | URL) {
   return await safeFetch(
     url,
     {
