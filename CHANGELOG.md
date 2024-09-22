@@ -16,6 +16,14 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [14.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-22
+
+### Fixed
+
+- The search form is now responsive to changes in the current page's query
+  parameters and search FormData. Specifically, when you press the button to go
+  to your default search, it will work as intended.
+
 ## [13.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-22
 
 ### Added
