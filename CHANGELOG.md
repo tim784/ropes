@@ -23,14 +23,14 @@ The types of changes are:
 - The search form now supports limiting the size of torrent results.
 - Clicking on a torrent image now nagivates to that torrent's page. Expanding
   the torrent image is still possible by clicking the icon in the top-right.
-- Taglist parsing has improved and provides better errors and warnings.
+- Taglist parsing provides better errors and warnings.
 
 ### Changed
 
 - Many non-user-facing changes:
   - Simplified how page state is managed
   - Used more (Svelte) framework features to reduce boilerplate
-  - Did many other small things
+  - Did many, many other small things
 
 
 ## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-09-01
