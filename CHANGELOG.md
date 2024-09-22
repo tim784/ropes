@@ -16,6 +16,13 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [15.0.0](https://github.com/tim784/ropes/commits/v15.0.0) - 2024-09-22
+
+### Fixed
+
+- The page title now properly reverts to its original value when coming back
+  from sfwMode.
+
 ## [14.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-22
 
 ### Fixed
