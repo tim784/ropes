@@ -27,6 +27,10 @@ The types of changes are:
 
 ### Changed
 
+- The default build is, again, minified, which should provide a slight
+  performance benefit. Additionally, you can now download an unminified build
+  from the [the website](https://ropes.win/) if you run into issues and want
+  better log output.
 - Many non-user-facing changes:
   - Simplified how page state is managed
   - Used more (Svelte) framework features to reduce boilerplate
