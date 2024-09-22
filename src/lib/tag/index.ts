@@ -1,6 +1,24 @@
-import { safeTokenize } from './token';
-import { safeParseAst, AstNodeType, type AstNode } from './ast';
+import { safeTokenize, BaseTokenError } from './token';
+import { safeParseAst, AstNodeType, type AstNode, BaseParseAstError } from './ast';
 import { type Result } from '$lib/result';
+
+export class UnsupportedNodeError extends Error {
+  constructor(public node: AstNode) {
+    super(`Unsupported node type '${node.type}'`);
+  }
+}
+
+export class InvalidNegationError extends Error {
+  constructor(public negationChar: string) {
+    super(`Invalid negation character '${negationChar}'`);
+  }
+}
+
+export class DuplicateTagError extends Error {
+  constructor(public tagName: string) {
+    super(`Duplicate tag name '${tagName}'`);
+  }
+}
 
 const negationChars = ['-', '!'] as const;
 type NegationChar = (typeof negationChars)[number];
@@ -17,15 +35,15 @@ export class Tag {
     public readonly name: string
   ) {}
 
-  static create(negationChar: string | undefined, name: string): Result<Tag, string> {
+  static create(negationChar: string | undefined, name: string): Result<Tag, InvalidNegationError> {
     if (negationChar !== undefined && !isNegationChar(negationChar)) {
-      return { success: false, error: `Invalid negation character: ${negationChar}` };
+      return { success: false, error: new InvalidNegationError(negationChar) };
     }
 
-    return { success: true, value: new Tag(negationChar, name) };
+    return { success: true, value: new Tag(negationChar, name.toLowerCase()) };
   }
 
-  static fromNode(node: AstNode): Result<Tag, string> {
+  static fromNode(node: AstNode): Result<Tag, UnsupportedNodeError | InvalidNegationError> {
     if (node.type === AstNodeType.Tag) {
       return Tag.create(undefined, node.tag);
     } else if (node.type === AstNodeType.Not) {
@@ -38,11 +56,13 @@ export class Tag {
         value: tagResult.value.negate()
       };
     } else {
-      return { success: false, error: `Invalid node type: ${node.type}` };
+      return { success: false, error: new UnsupportedNodeError(node) };
     }
   }
 
-  static fromString(s: string): Result<Tag, string> {
+  static fromString(
+    s: string
+  ): Result<Tag, BaseTokenError | BaseParseAstError | UnsupportedNodeError | InvalidNegationError> {
     const tokens = safeTokenize(s);
     if (!tokens.success) {
       return tokens;
@@ -64,38 +84,14 @@ export class Tag {
     return (this.negationChar ?? '') + this.name;
   }
 
-  /**
-   * Creates a new TaglistTag with the same negation status as this one, but with the given name.
-   * @param name the name of the new tag
-   * @returns a new TaglistTag
-   */
-  withName(name: string): Tag {
-    return new Tag(this.negationChar, name);
-  }
-
   negate(): Tag {
     return new Tag(this.isNegated ? undefined : Tag.DEFAULT_NEGATION_CHAR, this.name);
   }
-
-  /**
-   * Compare this tag to another tag.
-   *
-   * @param other Another tag to compare to
-   *
-   * @returns Returns true if the tags names are equal and the negation status is equal.
-   */
-  equals(other: unknown): boolean {
-    if (!(other instanceof Tag)) {
-      return false;
-    }
-    return this.name === other.name && this.isNegated === other.isNegated;
-  }
 }
 
-// TODO: a taglist of only negated tags yields no results. we should fail to
-// parse this case. UPDATE: actually, we should parse, but just warn the user
-// because its possible that they're in the middle of typing a taglist and
-// haven't finished it yet.
+export enum TaglistWarnings {
+  OnlyNegated
+}
 
 /**
  * A taglist.
@@ -105,11 +101,21 @@ export class Tag {
 export class Taglist {
   private constructor(public readonly tags: Tag[]) {}
 
-  static create(tags: Tag[]): Taglist {
-    return new Taglist(tags);
+  private static create(tags: Tag[]): Result<Taglist, DuplicateTagError> {
+    const tagNameSet = new Set<string>();
+    for (const tag of tags) {
+      if (tagNameSet.has(tag.name)) {
+        return { success: false, error: new DuplicateTagError(tag.name) };
+      }
+      tagNameSet.add(tag.name);
+    }
+    return { success: true, value: new Taglist(tags) };
   }
 
-  static fromNode(node: AstNode): Result<Taglist, string> {
+  static fromNode(
+    node: AstNode
+  ): Result<Taglist, DuplicateTagError | UnsupportedNodeError | InvalidNegationError> {
+    let taglistResult: Result<Taglist, DuplicateTagError>;
     if (node.type === AstNodeType.And) {
       const left = Taglist.fromNode(node.left);
       if (!left.success) {
@@ -121,18 +127,31 @@ export class Taglist {
         return right;
       }
 
-      return { success: true, value: Taglist.create([...left.value.tags, ...right.value.tags]) };
+      taglistResult = Taglist.create([...left.value.tags, ...right.value.tags]);
+    } else if (node.type === AstNodeType.Empty) {
+      taglistResult = Taglist.create([]);
     } else {
       const tag = Tag.fromNode(node);
       if (!tag.success) {
         return tag;
       }
 
-      return { success: true, value: Taglist.create([tag.value]) };
+      taglistResult = Taglist.create([tag.value]);
     }
+
+    return taglistResult;
   }
 
-  static fromString(s: string): Result<Taglist, string> {
+  static fromString(
+    s: string
+  ): Result<
+    Taglist,
+    | BaseTokenError
+    | BaseParseAstError
+    | DuplicateTagError
+    | UnsupportedNodeError
+    | InvalidNegationError
+  > {
     const tokens = safeTokenize(s);
     if (!tokens.success) {
       return tokens;
@@ -146,15 +165,33 @@ export class Taglist {
     return Taglist.fromNode(ast.value);
   }
 
+  /**
+   * It's up to the caller to ensure that the tag is not already in the list.
+   * @param tag The tag to add.
+   */
   add(tag: Tag): void {
     this.tags.push(tag);
   }
 
+  removeIndex(index: number): Tag | undefined {
+    if (index < 0 || index >= this.tags.length) {
+      return undefined;
+    }
+    return this.tags.splice(index, 1)[0];
+  }
+
   hasByName(name: string): boolean {
-    return this.tags.some((tag) => tag.name === name);
+    return this.tags.some((tag) => tag.name === name.toLowerCase());
   }
 
   toString(): string {
     return this.tags.map((tag) => tag.toString()).join(' ');
+  }
+
+  get warnings(): TaglistWarnings[] {
+    if (this.tags.length > 0 && this.tags.every((tag) => tag.isNegated)) {
+      return [TaglistWarnings.OnlyNegated];
+    }
+    return [];
   }
 }

@@ -6,7 +6,6 @@
   import { settings, themes } from '$stores/settings';
   import { seenTorrents } from '$stores/seen';
   import { tagCache } from '$stores/tagCache';
-  import { notTags } from '$stores/notTags';
   import { Switch } from '$components/ui/switch';
   import ConfirmButton from '$components/ui/ConfirmButton.svelte';
   import { toasts } from '$stores/toasts';
@@ -140,7 +139,6 @@
         <ConfirmButton
           on:confirm={() => {
             tagCache.clear();
-            notTags.clear();
             toasts.add(TextToast, { text: 'Cached tags cleared!' });
           }}
           size="sm"

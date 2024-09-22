@@ -16,17 +16,22 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [13.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-17
+## [13.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-22
 
 ### Added
 
+- The search form now supports limiting the size of torrent results.
 - Clicking on a torrent image now nagivates to that torrent's page. Expanding
   the torrent image is still possible by clicking the icon in the top-right.
+- Taglist parsing has improved and provides better errors and warnings.
 
 ### Changed
 
-- *(Not user-facing)* Refactored how page and form state is managed so that
-  it better leverages Web APIs.
+- Many non-user-facing changes:
+  - Simplified how page state is managed
+  - Used more (Svelte) framework features to reduce boilerplate
+  - Did many other small things
+
 
 ## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-09-01
 

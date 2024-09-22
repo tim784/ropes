@@ -27,9 +27,10 @@
 
 <div class="relative flex flex-col items-start overflow-visible bg-inherit md:flex-row">
   <aside
+    tabindex="-1"
     class="w-full bg-background p-4 md:sticky md:left-0 md:top-[var(--header-height)] md:h-[calc(100vh_-_var(--header-height))] md:min-w-[var(--search-form-width)] md:max-w-[var(--search-form-width)] md:overflow-y-scroll md:border-r"
   >
-    <Form />
+    <Form />  
   </aside>
 
   <div class="w-full space-y-4 px-16 py-4">

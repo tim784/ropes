@@ -45,9 +45,16 @@ jobs:
 
       - name: Build Userscript
         id: build
-        run: npm run build && echo "userscriptPath=$(pwd)/dist/index.user.js" >> "$GITHUB_OUTPUT"
+        run: |
+          # build minified
+          npm run build
+          echo "userscriptPath=$(pwd)/dist/index.user.js" >> "$GITHUB_OUTPUT"
+
+          # build unminified
+          npm run build:unmin
+          echo "userscriptUnminPath=$(pwd)/dist/index.unmin.user.js" >> "$GITHUB_OUTPUT"
 
       - name: Cut Release
-        run: gh release create ${{ github.event.inputs.tag }} ${{ steps.build.outputs.userscriptPath }} --generate-notes --verify-tag --notes "See [CHANGELOG.md](https://github.com/tim784/ropes/blob/master/CHANGELOG.md) for changelog."
+        run: gh release create ${{ github.event.inputs.tag }} ${{ steps.build.outputs.userscriptPath }}  ${{ steps.build.outputs.userscriptUnminPath }} --generate-notes --verify-tag --notes "See [CHANGELOG.md](https://github.com/tim784/ropes/blob/master/CHANGELOG.md) for changelog."
         env:
           GH_TOKEN: ${{ github.token }}

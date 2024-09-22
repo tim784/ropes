@@ -1,4 +1,4 @@
-import { type TaglistTag } from '$lib/tag';
+import { type Tag } from '$lib/tag';
 import { priorities, queueFetch } from '$api/queue';
 import type { CachedTag } from '$stores/tagCache';
 
@@ -14,7 +14,7 @@ function getTagsFromResponse(response: TagResponse): CachedTag[] {
 }
 
 export async function fetchAutocompleteTags(
-  partialTag: TaglistTag,
+  partialTag: Tag,
   type: 'validate' | 'autocomplete' = 'autocomplete'
 ): Promise<CachedTag[]> {
   const response = await queueFetch(

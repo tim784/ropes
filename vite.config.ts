@@ -12,6 +12,18 @@ function formatVersionDate(date?: Date): string {
   return (date ?? new Date()).toISOString();
 }
 
+function parseBooleanEnv(env: string | undefined, defaultValue: boolean): boolean {
+  if (env === undefined) {
+    return defaultValue;
+  }
+
+  return ['true', '1', 'yes'].includes(env.toLowerCase());
+}
+
+const shouldIncludeVisualizer = parseBooleanEnv(process.env.VISUALIZE, false);
+const minify = parseBooleanEnv(process.env.MINIFY, true);
+const buildFile = minify ? 'index.user.js' : 'index.unmin.user.js';
+
 const getDevelopmentMetadata = () =>
   new UserscriptMetadata({
     name: 'Ropes for Empornium',
@@ -31,14 +43,12 @@ const getProductionMetadata = () => {
     match: developmentMetadata.match,
     version: packageJson.version,
     description: developmentMetadata.description,
-    updateURL: 'https://ropes.win/index.user.js',
+    updateURL: `https://ropes.win/${buildFile}`,
     homepageURL: 'https://github.com/tim784/ropes',
     icon: developmentMetadata.icon,
     grants: developmentMetadata.grants
   });
 };
-
-const shouldIncludeVisualizer = process.env.VISUALIZE === 'true';
 
 // plugin to inject a banner into the generated code. we use for the userscript
 // metadata
@@ -46,7 +56,7 @@ function prependUserscriptMetadata(metadata: UserscriptMetadata) {
   return {
     name: 'vite-plugin-banner',
     generateBundle(_options: OutputOptions, bundle: OutputBundle) {
-      for (const [_, assetInfo] of Object.entries(bundle)) {
+      for (const assetInfo of Object.values(bundle)) {
         if (assetInfo.type === 'chunk') {
           assetInfo.code = `${metadata.toString()}\n${assetInfo.code}`;
         }
@@ -92,7 +102,7 @@ export default defineConfig(({ mode }) => {
 
       rollupOptions: {
         output: {
-          entryFileNames: `[name].user.js`
+          entryFileNames: buildFile
         },
 
         input: {
@@ -100,7 +110,7 @@ export default defineConfig(({ mode }) => {
         }
       },
 
-      minify: false
+      minify
     },
 
     server: {
@@ -122,9 +132,7 @@ export default defineConfig(({ mode }) => {
 
     test: {
       include: ['src/**/*.{test,spec}.{js,ts}'],
-      setupFiles: [
-        'src/tests/globalSetup.ts',
-      ]
+      setupFiles: ['src/tests/globalSetup.ts']
     }
   };
 });

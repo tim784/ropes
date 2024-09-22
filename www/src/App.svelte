@@ -9,6 +9,8 @@
     <img src={ropesLogo} class="logo" alt="Ropes Logo" />
   </a>
 
+  <p>Or, install the <a href="/index.unmin.user.js">unminifed development version</a>.</p>
+
   <h1>Ropes <span>for Empornium</span></h1>
 
   <p class="github">

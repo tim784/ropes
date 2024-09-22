@@ -11,8 +11,7 @@
   import { formatNumber } from '$src/lib/util';
   import * as Tooltip from '$components/ui/tooltip/index.js';
   import { getContext } from 'svelte';
-  import type { Writable } from 'svelte/store';
-  import {type Locals, type LocalsStore} from '$stores/locals';
+  import { type LocalsStore} from '$stores/locals';
 
   const localsStore = getContext<LocalsStore>('localsStore');
 

@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { type PageDataStore, type SearchDataStore, createSearchPageStore } from '$stores/page';
+  import { type PageDataStore } from '$stores/page';
   import { type Torrent, groupTorrents } from '$lib/torrent';
-  import type { Me } from '$gather/me';
   import { seenTorrents } from '$stores/seen';
   import { onDestroy, setContext, getContext } from 'svelte';
   import TorrentSkeleton from './TorrentSkeleton.svelte';

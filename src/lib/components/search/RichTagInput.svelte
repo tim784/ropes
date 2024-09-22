@@ -1,29 +1,54 @@
 <script lang="ts">
   import { tagCache, type TagCache, type CachedTagResult } from '$stores/tagCache';
-  import { Taglist, Tag, isNegationChar } from '$lib/tag';
+  import {
+    Taglist,
+    Tag,
+    isNegationChar,
+    InvalidNegationError,
+    UnsupportedNodeError
+  } from '$lib/tag';
   import { fetchAutocompleteTags } from '$api/autocomplete';
   import pDebounce from 'p-debounce';
   import Kbd from '$components/ui/Kbd.svelte';
   import LoadingSpinner from '$components/ui/LoadingSpinner.svelte';
   import { makeAppIdentifier } from '$lib/constants';
-  import { getContext } from 'svelte';
   import type { Result } from '$lib/result';
   import type { FormInputEvent } from '$components/ui/input';
   import Search from 'lucide-svelte/icons/search';
   import { cn } from '$components/shadcn-utils';
   import { formatNumber } from '$lib/util';
+  import { getContext, createEventDispatcher } from 'svelte';
+  import { notTags } from '$stores/notTags';
+  import type { BaseParseAstError } from '$src/lib/tag/ast';
+  import type { BaseTokenError } from '$src/lib/tag/token';
 
-  export let taglistString: string;
   export let taglist: Taglist;
+
+  class TagFormatError extends Error {
+    constructor() {
+      super('Incorrect tag format');
+    }
+  }
+
+  type TagEntryResult = Result<
+    Tag,
+    | BaseTokenError
+    | BaseParseAstError
+    | UnsupportedNodeError
+    | InvalidNegationError
+    | TagFormatError
+  >;
 
   const tagsElementId = makeAppIdentifier('tags-entry');
   const debounceDurationMilliseconds = 300;
+  const dispatch = createEventDispatcher();
 
   let containerWidth = 0;
   let containerHeight = 0;
+  let thisElement: HTMLElement | undefined = undefined;
   let inputElement: HTMLInputElement | undefined = undefined;
-  let value: string | undefined = undefined;
-  let partialTagResult: Result<Tag, string> | null = null;
+  let value: string = '';
+  let partialTagResult: TagEntryResult | null = null;
   let matches: CachedTagResult[] = [];
   let selectedMatchIndex: number | null = null;
   let inputHasFocus = false;
@@ -40,35 +65,21 @@
 
   const submitFunction = getContext<() => void>('submitFunction');
 
-  function getPartialTagResult(input: string | undefined): Result<Tag, string> | null {
-    if (input === undefined || input === '' || isNegationChar(input)) {
+  function getPartialTagResult(input: string): TagEntryResult | null {
+    if (input === '' || isNegationChar(input)) {
       return null;
     } else {
-      let badCharIndex: number | null = null;
-      let badChar: string | null = null;
-      for (let index = 0; index < input.length; index++) {
-        if (
-          (index === 0 && !/^[-!a-zA-Z0-9.]$/.test(input[index])) ||
-          (index > 0 && !/^[a-zA-Z0-9.]$/.test(input[index]))
-        ) {
-          badCharIndex = index;
-          badChar = input[index];
-          break;
-        }
+      // we can parse this input value with our taglist AST parser, but there
+      // are some additional constraints on the input format
+      if (!/^[-!]?[a-zA-Z0-9.]{1,}$/.test(input)) {
+        return { success: false, error: new TagFormatError() };
       }
-      if (badCharIndex !== null) {
-        return {
-          success: false,
-          error: `Invalid character \`${badChar}\` at index ${badCharIndex}`
-        };
-      } else {
-        return Tag.fromString(input);
-      }
+      return Tag.fromString(input);
     }
   }
 
   function getMatches(
-    partialTagResult: Result<Tag, string> | null,
+    partialTagResult: TagEntryResult | null,
     tagCache: TagCache
   ): CachedTagResult[] {
     if (partialTagResult === null || !partialTagResult.success) {
@@ -78,21 +89,20 @@
     return tagCache.search(partialTagResult.value.name).filter((t) => !taglist.hasByName(t.name));
   }
 
-  function retrieveMatchesFromApi_(partialTagResult: Result<Tag, string> | null) {
+  function retrieveMatchesFromApi_(partialTagResult: TagEntryResult | null) {
     if (partialTagResult === null || !partialTagResult.success) {
       return;
     }
 
     isFetching = true;
 
-    fetchAutocompleteTags(partialTagResult.value, 'autocomplete').then((suggestions) => {
-      suggestions = [...suggestions,
-        {
-          name: 'reallllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly.long.tag',
-          useCount: 12345678
-        }
-      ]
-      tagCache.merge(suggestions);
+    fetchAutocompleteTags(partialTagResult.value, 'autocomplete').then((matches) => {
+      tagCache.merge(matches);
+
+      if (!matches.map((m) => m.name).includes(partialTagResult.value.name)) {
+        $notTags.add(partialTagResult.value.name);
+      }
+
       isFetching = false;
     });
   }
@@ -130,13 +140,19 @@
         e.preventDefault(); // don't move input cursor
         break;
       case 'Enter':
+        console.log(value);
         if (value === '') {
           submitFunction();
+          console.log('hi');
         } else {
           addTag();
         }
         break;
+      case 'Tab':
+        dropdownOpen = false;
+        break;
       default:
+        // when user types something, (re)open dropdown
         dropdownOpen = true;
         break;
     }
@@ -153,8 +169,7 @@
         console.error(newTag.error);
         return;
       }
-      taglist.add(newTag.value);
-      taglistString = taglist.toString();
+      dispatch('tagadd', newTag.value);
       value = '';
       selectedMatchIndex = null;
       dropdownOpen = false;
@@ -169,17 +184,18 @@
 
   function handleBlur(e: FormInputEvent<FocusEvent>) {
     inputHasFocus = false;
+  }
 
-    // if relatedTarget has data-match-index, then we're focusing on a match, so
-    // don't close the dropdown (the addTag function will do this after click).
-    // otherwise, close it.
-    if (e.relatedTarget) {
-      const matchIndex = (e.relatedTarget as HTMLElement).dataset.matchIndex;
-      if (matchIndex !== undefined) {
-        return;
-      }
+  function handleOutsideClick(e: MouseEvent) {
+    if (!thisElement?.contains(e.target as Node)) {
+      dropdownOpen = false;
     }
-    dropdownOpen = false;
+  }
+
+  function handleWindowFocusIn(e: FocusEvent) {
+    if (e.target && !thisElement?.contains(e.target as Node) && e.target !== inputElement) {
+      dropdownOpen = false;
+    }
   }
 
   function handleSearchFocusKeybind(e: KeyboardEvent) {
@@ -192,29 +208,23 @@
   }
 
   $: inputClass = cn(
-    'flex h-10 w-full items-center border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-within:outline-none focus-within:border-primary focus-within:bg-popover group',
-    dropdownOpen ? 'rounded-t-lg border-t border-x' : 'rounded-lg border'
+    'flex h-10 w-full items-center border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-within:outline-none focus-within:border-primary focus-within:bg-popover',
+    dropdownOpen ? 'rounded-t-lg border-t border-x border-primary bg-popover' : 'rounded-lg border'
   );
-
-  // TODO: make it so that, when new matches come in after loading, it doesn't
-  // change the selected match, or just generally isn't disruptive
-  //
-  // TODO: when down-click on button, border-primary on inputclass is removed
-  //
-  // TODO: can't tab past input if value is non-empty. this is a firefox bug,
-  // not present on other browsers, thus, okay to ignore?
-  //
-  // TODO: in production, for tags with lots of uses, the content wraps to the
-  // next line. prevent this. this should always be a single line. ensure no
-  // x-scroll either. maybe flex is the better move here?
-  //
-  // TODO: when scrolling with mouse wheel and pointer is over the dropdown, the
-  // the selected match keeps jumping around (sometimes.)
 </script>
 
-<svelte:window on:keydown={handleSearchFocusKeybind} />
+<svelte:window
+  on:keydown={handleSearchFocusKeybind}
+  on:click={handleOutsideClick}
+  on:focusin={handleWindowFocusIn}
+/>
 
-<div class="relative" bind:clientHeight={containerHeight} bind:clientWidth={containerWidth}>
+<div
+  class="relative"
+  bind:clientHeight={containerHeight}
+  bind:clientWidth={containerWidth}
+  bind:this={thisElement}
+>
   <div class={inputClass}>
     <Search class="mr-2 size-4 shrink-0 opacity-50" />
     <input
@@ -229,10 +239,10 @@
       class="grow bg-inherit focus-visible:outline-none"
     />
 
-    {#if !inputHasFocus}
+    {#if !inputHasFocus && !dropdownOpen}
       <Kbd class="text-sm" keys={['AltOrOption', 's']} />
     {/if}
-    {#if isFetching}
+    {#if isFetching && dropdownOpen}
       <LoadingSpinner class="ml-2 size-4" />
     {/if}
   </div>
@@ -263,29 +273,30 @@
           </div>
         </div>
       {:else if !partialTagResult.success}
-        <output class="font-mono text-warning">{partialTagResult.error}</output>
+        <output class="text-warning">Invalid character in input</output>
       {:else}
         {#if matches.length > 0}
-          <ul
-            class="grid max-h-[50dvh] grid-cols-[auto_auto] gap-x-2 overflow-y-scroll focus-visible:outline-none foo"
-          >
+          <!-- tabindex to -1 because, when scrollable, it accepts focus, which messes with tabbing order -->
+          <ul class="max-h-[50dvh] overflow-y-scroll" tabindex="-1">
             {#each matches as match, index (match.name)}
-              <li class="col-span-2 grid grid-cols-subgrid">
-                <button
-                  class="col-span-2 grid grid-cols-subgrid items-center rounded px-2 py-1"
-                  class:font-bold={match.exact}
-                  class:bg-accent={selectedMatchIndex === index}
-                  data-match-index={index}
-                  on:pointerenter={() => {
-                    selectedMatchIndex = index;
-                  }}
-                  on:click={addTag}
+              <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+              <li
+                class="grid w-full cursor-pointer grid-cols-[auto_auto] items-center justify-between gap-2 rounded px-2 py-1"
+                class:font-bold={match.exact}
+                class:bg-accent={selectedMatchIndex === index}
+                data-match-index={index}
+                on:pointerenter={() => {
+                  selectedMatchIndex = index;
+                }}
+                on:click={() => {
+                  inputElement?.focus();
+                  addTag();
+                }}
+              >
+                <span class="break-all">{match.name}</span>
+                <span class="whitespace-nowrap text-sm text-foreground/50"
+                  >({formatNumber(match.useCount)} uses)</span
                 >
-                  <span class="justify-self-start hyphens-auto">{match.name}</span>
-                  <span class="justify-self-end whitespace-nowrap text-sm text-foreground/50"
-                    >({formatNumber(match.useCount)} uses)</span
-                  >
-                </button>
               </li>
             {/each}
           </ul>
@@ -301,9 +312,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  .foo {
-    scrollbar-gutter: stable;
-  }
-</style>

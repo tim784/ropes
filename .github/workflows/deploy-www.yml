@@ -27,6 +27,10 @@ jobs:
           LATEST_URL=$(gh release view --json assets --jq '.assets[0].url')
           echo "userscriptUrl=${LATEST_URL}" >> "$GITHUB_OUTPUT"
           echo "::notice title=userscriptUrl::${LATEST_URL}"
+
+          LATEST_UNMIN_URL=$(gh release view --json assets --jq '.assets[1].url')
+          echo "userscriptUnminUrl=${LATEST_UNMIN_URL}" >> "$GITHUB_OUTPUT"
+          echo "::notice title=userscriptUnminUrl::${LATEST_UNMIN_URL}"
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -49,7 +53,9 @@ jobs:
         run: npm run build-www
 
       - name: Download latest release userscript
-        run: curl --location --remote-name --output-dir www/dist/ ${{ steps.getUserscript.outputs.userscriptUrl }}
+        run: |
+          curl --location --remote-name --output-dir www/dist/ ${{ steps.getUserscript.outputs.userscriptUrl }}
+          curl --location --remote-name --output-dir www/dist/ ${{ steps.getUserscript.outputs.userscriptUnminUrl }}
 
       # for faster feedback troubleshooting, website is available on action page
       - name: Upload Artifact

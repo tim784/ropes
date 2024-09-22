@@ -2,54 +2,49 @@
   import { settings } from '$stores/settings';
   import { wipe } from '$lib/transition';
   import Button from '$components/ui/Button.svelte';
-  import { Tag, Taglist } from '$lib/tag';
+  import { Taglist, Tag } from '$lib/tag';
+  import { tagCache } from '$stores/tagCache';
   import { notTags } from '$stores/notTags';
-  import { tagCache, type CachedTag } from '$stores/tagCache';
   import { fetchAutocompleteTags } from '$api/autocomplete';
-  import TriangleAlert from 'lucide-svelte/icons/triangle-alert';
   import X from 'lucide-svelte/icons/x';
   import LoadingSpinner from '$components/ui/LoadingSpinner.svelte';
   import { getSfwTag } from '$lib/sfwMode';
+  import { createEventDispatcher } from 'svelte';
+  import * as Tooltip from '$components/ui/tooltip/index.js';
 
   export let taglist: Taglist;
+  $: validations = taglist.tags.map((tag) => validateExists(tag));
 
-  // $: tags = TaglistTag.validateSyntax(value);
+  const dispatch = createEventDispatcher();
 
-  async function validateExists(tag: TaglistTag) {
+  async function validateExists(tag: Tag) {
     if ($notTags.has(tag.name)) {
       return false;
     } else if ($tagCache.has(tag.name) || $settings.sfwMode) {
       return true;
     } else {
-      const suggestions = await fetchAutocompleteTags(tag, 'validate');
-      tagCache.merge(suggestions);
-      if (!suggestions.map((s) => s.name).includes(tag.name)) {
-        notTags.update((value) => {
-          value.add(tag.name);
-          return value;
-        });
-        return false;
-      } else {
-        return true;
+      const matches = await fetchAutocompleteTags(tag, 'validate');
+      tagCache.merge(matches);
+      const exists = $tagCache.has(tag.name);
+      if (!matches.map((m) => m.name).includes(tag.name)) {
+        $notTags.add(tag.name);
       }
+      return exists;
     }
   }
 
   function negateTag(index: number) {
-    tags[index] = tags[index].negate();
-    value = TaglistTag.toTaglist(tags);
+    dispatch('tagnegate', index);
   }
 
   function deleteTag(index: number) {
-    tags.splice(index, 1);
-    value = TaglistTag.toTaglist(tags);
+    dispatch('tagdelete', index);
   }
 </script>
 
 <ol class="flex flex-col gap-2">
   {#each taglist.tags as tag, index (tag.name)}
     {@const displayName = $settings.sfwMode ? getSfwTag() : tag.name}
-    {@const validation = validateExists(tag)}
     <li class="flex items-center gap-2" transition:wipe={{ axis: 'y', duration: 200 }}>
       <div class="text-xs font-bold uppercase">
         <Button
@@ -69,13 +64,25 @@
         </Button>
       </div>
       <span class="break-all font-bold">
-        {#await validation}
-          {displayName}
+        {#await validations[index]}
+          <span>{displayName}</span>
         {:then isValid}
-          {#if isValid}
-            {displayName}
+          {#if !isValid}
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild let:builder>
+                <span
+                  class="cursor-help underline decoration-warning decoration-wavy"
+                  use:builder.action
+                  {...builder}>{displayName}</span
+                ><span class="sr-only">Tag {displayName} does not exist</span>
+              </Tooltip.Trigger>
+              <Tooltip.Content
+                >Tag <span class="font-mono font-bold">{displayName}</span>
+                does not exist</Tooltip.Content
+              ></Tooltip.Root
+            >
           {:else}
-            <span class="underline decoration-warning decoration-wavy">{displayName}</span>
+            <span>{displayName}</span>
           {/if}
         {/await}
       </span>
@@ -90,15 +97,8 @@
       >
         <X />
       </Button>
-      {#await validation}
+      {#await validations[index]}
         <LoadingSpinner class="size-4" />
-      {:then isValid}
-        {#if !isValid}
-          <span class="flex items-center gap-1 text-warning">
-            <TriangleAlert class="size-4 shrink-0" />
-            <span class="text-center font-mono text-xs">not found</span>
-          </span>
-        {/if}
       {/await}
     </li>
   {/each}

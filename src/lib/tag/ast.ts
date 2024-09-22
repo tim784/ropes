@@ -1,10 +1,33 @@
 import { type Token, TokenType } from './token';
 import { type Result } from '$lib/result';
 
-export class ParseAstError extends Error {
+export abstract class BaseParseAstError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'ParseError';
+  }
+}
+
+export class ExpectedTokenError extends BaseParseAstError {
+  constructor(
+    public index: number | undefined,
+    public tokenType: TokenType
+  ) {
+    super(`Expected token type ${tokenType} at index ${index}`);
+  }
+}
+
+export class UnexpectedTokenError extends BaseParseAstError {
+  constructor(
+    public index: number | undefined,
+    public tokenType: TokenType
+  ) {
+    super(`Unexpected token type ${tokenType} at index ${index}`);
+  }
+}
+
+export class EndOfInputError extends BaseParseAstError {
+  constructor() {
+    super(`Unexpected end of input`);
   }
 }
 
@@ -13,7 +36,8 @@ export enum AstNodeType {
   And = 'And', // binary operator
   Or = 'Or', // binary operator
   Not = 'Not', // unary operator
-  Group = 'Group' // grouping
+  Group = 'Group', // grouping
+  Empty = 'Empty' // empty
 }
 
 export type AstNode =
@@ -21,10 +45,15 @@ export type AstNode =
   | { type: AstNodeType.And; left: AstNode; right: AstNode; token?: Token }
   | { type: AstNodeType.Or; left: AstNode; right: AstNode; token: Token }
   | { type: AstNodeType.Group; inner: AstNode; openToken: Token; closeToken: Token }
-  | { type: AstNodeType.Not; tagNode: AstNode; token: Token };
+  | { type: AstNodeType.Not; tagNode: AstNode; token: Token }
+  | { type: AstNodeType.Empty };
 
 export function parseAst(tokens: Token[]): AstNode {
   let index = 0;
+
+  if (tokens.length === 0) {
+    return { type: AstNodeType.Empty };
+  }
 
   // Utility functions for managing the token stream
   function peek(): Token | null {
@@ -40,10 +69,10 @@ export function parseAst(tokens: Token[]): AstNode {
     const node = parseExpression();
     const closeToken = consume(); // Expect ')'
     if (closeToken === undefined) {
-      throw new ParseAstError('Expected GroupClose `)` at end of input');
+      throw new ExpectedTokenError(undefined, TokenType.CloseGroup);
     }
     if (closeToken.type !== TokenType.CloseGroup) {
-      throw new ParseAstError(`Expected GroupClose ')' at index ${closeToken.startIndex}`);
+      throw new ExpectedTokenError(closeToken.startIndex, TokenType.CloseGroup);
     }
     return { type: AstNodeType.Group, inner: node, openToken, closeToken };
   }
@@ -53,9 +82,9 @@ export function parseAst(tokens: Token[]): AstNode {
 
     const operand = peek();
     if (!operand) {
-      throw new ParseAstError('Expected operand after NOT at end of input');
+      throw new EndOfInputError();
     } else if (operand.type === TokenType.Not) {
-      throw new ParseAstError(`Unexpected double-negation at index ${operand.startIndex}`);
+      throw new UnexpectedTokenError(operand.startIndex, TokenType.Not);
     }
 
     const node = parseTerm();
@@ -67,7 +96,7 @@ export function parseAst(tokens: Token[]): AstNode {
     const token = peek();
 
     if (!token) {
-      throw new ParseAstError('Unexpected end of input');
+      throw new EndOfInputError();
     }
 
     if (token.type === TokenType.OpenGroup) {
@@ -82,9 +111,7 @@ export function parseAst(tokens: Token[]): AstNode {
       return { type: AstNodeType.Tag, tag: consume().value as string, token: token };
     }
 
-    throw new ParseAstError(
-      `Unexpected token ${token.type} \`${token.value}\` at index ${token.startIndex}`
-    );
+    throw new UnexpectedTokenError(token.startIndex, token.type);
   }
 
   // Parse AND expressions, including implicit AND
@@ -131,15 +158,22 @@ export function parseAst(tokens: Token[]): AstNode {
     return parseOrExpression(); // OR has the lowest precedence, so we start here
   }
 
-  return parseExpression();
+  const node = parseExpression();
+
+  // didn't consume all tokens
+  if (index < tokens.length) {
+    throw new UnexpectedTokenError(tokens[index].startIndex, tokens[index].type);
+  }
+
+  return node;
 }
 
-export function safeParseAst(tokens: Token[]): Result<AstNode, string> {
+export function safeParseAst(tokens: Token[]): Result<AstNode, BaseParseAstError> {
   try {
     return { success: true, value: parseAst(tokens) };
   } catch (e) {
-    if (e instanceof ParseAstError) {
-      return { success: false, error: e.message };
+    if (e instanceof BaseParseAstError) {
+      return { success: false, error: e };
     }
     throw e;
   }
