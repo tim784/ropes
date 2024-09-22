@@ -22,7 +22,7 @@ The types of changes are:
 
 - The search form is now responsive to changes in the current page's query
   parameters and search FormData. Specifically, when you press the button to go
-  to your default search, it will work as intended.
+  to your default search, the taglist will update as expected.
 
 ## [13.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-22
 
@@ -37,7 +37,7 @@ The types of changes are:
 
 - The default build is, again, minified, which should provide a slight
   performance benefit. Additionally, you can now download an unminified build
-  from the [the website](https://ropes.win/) if you run into issues and want
+  from [the website](https://ropes.win/) if you run into issues and want
   better log output.
 - Many non-user-facing changes:
   - Simplified how page state is managed
