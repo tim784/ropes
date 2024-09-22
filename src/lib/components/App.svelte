@@ -35,6 +35,8 @@
   const localsStore = createLocalsStore(baseDataStore);
   setContext('localsStore', localsStore);
 
+  $: initialTitle = $pageDataStore.doc.title;
+
   function getContentComponent(page: PageData) {
     switch (determinePageType(page.url)) {
       case PageType.Search:
@@ -61,6 +63,8 @@
   <!-- sanitize document title in sfw mode -->
   {#if $settings.sfwMode}
     <title>{`${appTitle} - ${sfwAppSubtitle}`}</title>
+  {:else}
+    <title>{initialTitle}</title>
   {/if}
 </svelte:head>
 
