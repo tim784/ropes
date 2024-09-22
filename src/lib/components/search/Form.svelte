@@ -11,7 +11,7 @@
   import Search from 'lucide-svelte/icons/search';
   import UserSearch from 'lucide-svelte/icons/user-search';
   import Eraser from 'lucide-svelte/icons/eraser';
-  import { type PageDataStore, type SearchDataStore } from '$stores/page';
+  import { type PageDataStore, type SearchDataStore, type SearchData } from '$stores/page';
   import { getContext, setContext } from 'svelte';
   import {
     SORT_KEY_NAME,
@@ -40,15 +40,27 @@
   };
 
   const form: Form = {
-    [TAGLIST_NAME]:
-      $queryParamsStore.get(TAGLIST_NAME) ?? $searchDataStore.searchForm.taglistValue ?? '',
-    [SORT_KEY_NAME]: $queryParamsStore.get(SORT_KEY_NAME) ?? 'time',
-    [SORT_ORDER_NAME]: $queryParamsStore.get(SORT_ORDER_NAME) ?? 'desc',
-    [SIZE_MID_NAME]: $queryParamsStore.get(SIZE_MID_NAME) ?? '',
-    [SIZE_RANGE_NAME]: $queryParamsStore.get(SIZE_RANGE_NAME) ?? '',
-    [SIZE_UNIT_NAME]: $queryParamsStore.get(SIZE_UNIT_NAME) ?? 'gb',
+    [TAGLIST_NAME]: '',
+    [SORT_KEY_NAME]: 'time',
+    [SORT_ORDER_NAME]: 'desc',
+    [SIZE_MID_NAME]: '',
+    [SIZE_RANGE_NAME]: '',
+    [SIZE_UNIT_NAME]: 'gb',
     [SET_DEFAULT_NAME]: ''
   };
+
+  function update(queryParams: URLSearchParams, searchData: SearchData) {
+    form[TAGLIST_NAME] = queryParams.get(TAGLIST_NAME) ?? searchData.searchForm.taglistValue ?? '';
+    form[SORT_KEY_NAME] = queryParams.get(SORT_KEY_NAME) ?? 'time';
+    form[SORT_ORDER_NAME] = queryParams.get(SORT_ORDER_NAME) ?? 'desc';
+    form[SIZE_MID_NAME] = queryParams.get(SIZE_MID_NAME) ?? '';
+    form[SIZE_RANGE_NAME] = queryParams.get(SIZE_RANGE_NAME) ?? '';
+    form[SIZE_UNIT_NAME] = queryParams.get(SIZE_UNIT_NAME) ?? 'gb';
+    form[SET_DEFAULT_NAME] = '';
+  }
+
+  $: update($queryParamsStore, $searchDataStore);
+
   function clearTags() {
     form[TAGLIST_NAME] = '';
   }
