@@ -7,13 +7,13 @@
   type VariantRecord = Record<NonNullable<Variant>, string>;
 
   export const variants = tv({
-    base: 'ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+    base: 'ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=checked]:cursor-default',
     variants: {
       variant: {
         outline:
-          'border-2 data-[state=checked]:cursor-default data-[state=checked]:border-primary data-[state=checked]:hover:bg-inherit data-[state=checked]:active:border-primary data-[state=checked]:active:bg-background',
+          'border-2 data-[state=checked]:border-primary data-[state=checked]:hover:bg-inherit data-[state=checked]:active:border-primary data-[state=checked]:active:border-primary',
         ghost:
-          'data-[state=checked]:cursor-default data-[state=checked]:bg-primary data-[state=checked]:active:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:hover:bg-inherit'
+          'data-[state=checked]:bg-primary data-[state=checked]:active:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:hover:bg-primary'
       } as VariantRecord
     },
     defaultVariants: {
