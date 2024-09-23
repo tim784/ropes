@@ -91,11 +91,13 @@
   {#if torrent.imageHref !== null}
     <div class="relative w-full">
       <Link href={torrent.pageHref} variant="none" class="block">
-        <img
-          class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
-          src={torrent.imageHref}
-          alt={torrent.name}
-        />
+        {#key torrent.imageHref}
+          <img
+            class="opactiy-0 max-h-64 w-full animate-fade-in object-contain object-top"
+            src={torrent.imageHref}
+            alt={torrent.name}
+          />
+        {/key}
       </Link>
       <Dialog.Root portal={$portal}>
         <Dialog.Trigger asChild let:builder>

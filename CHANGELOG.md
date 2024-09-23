@@ -16,6 +16,13 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [16.0.0](https://github.com/tim784/ropes/commits/v16.0.0) - 2024-09-23
+
+### Changed
+
+- Turning on SFW Mode now immediately destroys the old image element for faster
+  swapping.
+
 ## [15.0.0](https://github.com/tim784/ropes/commits/v15.0.0) - 2024-09-23
 
 ### Changed
@@ -26,7 +33,7 @@ The types of changes are:
 ### Fixed
 
 - The page title now properly reverts to its original value when coming back
-  from sfwMode.
+  from SFW Mode.
 - The size inputs no longer attempt to autocomplete with previously entered
   values.
 
