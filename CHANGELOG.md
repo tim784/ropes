@@ -16,12 +16,19 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [15.0.0](https://github.com/tim784/ropes/commits/v15.0.0) - 2024-09-22
+## [15.0.0](https://github.com/tim784/ropes/commits/v15.0.0) - 2024-09-23
+
+### Changed
+
+- The results heading now uses a clearer format to describe the number of
+  torrents shown.
 
 ### Fixed
 
 - The page title now properly reverts to its original value when coming back
   from sfwMode.
+- The size inputs no longer attempt to autocomplete with previously entered
+  values.
 
 ## [14.0.0](https://github.com/tim784/ropes/commits/v13.0.0) - 2024-09-22
 
@@ -50,7 +57,6 @@ The types of changes are:
   - Simplified how page state is managed
   - Used more (Svelte) framework features to reduce boilerplate
   - Did many, many other small things
-
 
 ## [12.0.0](https://github.com/tim784/ropes/commits/v12.0.0) - 2024-09-01
 
