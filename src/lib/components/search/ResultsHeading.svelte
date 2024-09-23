@@ -12,14 +12,17 @@
   $: totalResultCount = formatNumber($searchDataStore.pagination.totalResultCount);
   $: start = formatNumber($searchDataStore.pagination.thisPageRange.start);
   $: end = formatNumber($searchDataStore.pagination.thisPageRange.end);
-  $: filteredTorrents = $searchDataStore.torrents.length - $filteredTorrentsStore.length;
+  $: hiddenByFiltersCount = $searchDataStore.torrents.length - $filteredTorrentsStore.length;
 </script>
 
 <div>
   <h2 class="inline text-2xl font-bold">Results</h2>
-  <span class="text-xl">{start}–{end} of {totalResultCount}</span>
-  {#if filteredTorrents > 0}
-    <InlineSeparator />
-    <span class="text-xl"> {formatNumber(filteredTorrents)} filtered</span>
-  {/if}
+  <span class="text-xl"
+    >{start}–{end}
+    {#if hiddenByFiltersCount > 0}
+      ({formatNumber(hiddenByFiltersCount)} hidden by filters)
+    {/if}</span
+  >
+  <InlineSeparator />
+  <span class="text-xl">{totalResultCount} total</span>
 </div>
