@@ -6,4 +6,4 @@
   export { className as class };
 </script>
 
-<span class={cn('mx-1', className)}>{char}</span>
+<span class={cn('mx-1 select-none', className)}>{char}</span>
