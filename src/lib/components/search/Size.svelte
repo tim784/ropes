@@ -122,9 +122,9 @@
       <label for={rangeInputId}>Range &plusmn;</label>
       <label for={unitSelectId}>Unit</label>
 
-      <Input name={SIZE_MID_NAME} id={midInputId} bind:value={midValue} />
+      <Input name={SIZE_MID_NAME} id={midInputId} bind:value={midValue} autocomplete="off" />
 
-      <Input name={SIZE_RANGE_NAME} id={rangeInputId} bind:value={rangeValue} />
+      <Input name={SIZE_RANGE_NAME} id={rangeInputId} bind:value={rangeValue} autocomplete="off" />
 
       <Select.Root
         bind:selected={selectedUnit}
