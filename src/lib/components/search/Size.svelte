@@ -98,26 +98,27 @@
   $: setInfo(midValue, rangeValue);
 </script>
 
-<div class="grid grid-cols-2 items-baseline justify-between gap-2">
-  <label class="mb-2 block text-xl font-bold" for={enabledId} id={sizeLimitLabelId}
-    >Size Limit</label
-  >
-
-  <Switch
-    id={enabledId}
-    class="justify-self-end"
-    bind:checked={enabled}
-    onCheckedChange={(checked) => {
-      if (!checked) {
-        midValue = '';
-        rangeValue = '';
-      }
-    }}
-    aria-labelledby={sizeLimitLabelId}
-  />
+<div class="grid grid-flow-row gap-2">
+  <div class="flex items-baseline justify-between gap-2">
+    <label class="mb-2 block text-xl font-bold" for={enabledId} id={sizeLimitLabelId}
+      >Size Limit</label
+    >
+    <Switch
+      id={enabledId}
+      class="justify-self-end"
+      bind:checked={enabled}
+      onCheckedChange={(checked) => {
+        if (!checked) {
+          midValue = '';
+          rangeValue = '';
+        }
+      }}
+      aria-labelledby={sizeLimitLabelId}
+    />
+  </div>
 
   {#if enabled}
-    <div class="col-span-2 grid grid-cols-3 gap-2">
+    <div class="grid grid-cols-3 gap-2">
       <label for={midInputId}>Midpoint</label>
       <label for={rangeInputId}>Range &plusmn;</label>
       <label for={unitSelectId}>Unit</label>
@@ -143,7 +144,7 @@
       </Select.Root>
     </div>
 
-    <div class="col-span-2 text-sm">
+    <div class="text-sm">
       {#if errorMessage}
         <p class="text-error">{errorMessage}</p>
       {/if}
