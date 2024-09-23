@@ -72,8 +72,8 @@
         <h3>Open Links in New Tab</h3>
         <Switch bind:checked={$settings.openNonRopesInNewTab} />
       </div>
-      <p>If set, links (that aren't search pages) will open in a new tab.</p>
-      <p>If unset, all links will open in this tab.</p>
+      <p>If set, links will open in a new tab.</p>
+      <p>If unset, links will open in this tab.</p>
     </li>
 
     <li>
@@ -83,7 +83,7 @@
       </div>
       <p>
         Use Rich Tag Mode (one-at-a-time, autocompleted) by default or not. You can always switch
-        modes as long if your search is supported.
+        modes as long if your taglist is valid.
       </p>
     </li>
 
@@ -93,10 +93,11 @@
         <Switch bind:checked={$settings.showLatestForumThreads} />
       </div>
       <p>
-        Note that you must have <Link
-          href={`${$baseDataStore.navigation.settingsUrl}#latest_forum_topics`}
-          >forum topics selected in your settings</Link
-        > for these to show up at all.
+        Show the latest forum posts in the header box at the top of the results
+        page. Note that you must have <Link
+        href={`${$baseDataStore.navigation.settingsUrl}#latest_forum_topics`}
+        >forum topics selected in your settings</Link > as a prerequisite for
+        this to work.
       </p>
     </li>
 
