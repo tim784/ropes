@@ -50,6 +50,7 @@
   };
 
   function update(queryParams: URLSearchParams, searchData: SearchData) {
+    if ($pageDataStore.isLoading) return;
     form[TAGLIST_NAME] = queryParams.get(TAGLIST_NAME) ?? searchData.searchForm.taglistValue ?? '';
     form[SORT_KEY_NAME] = queryParams.get(SORT_KEY_NAME) ?? 'time';
     form[SORT_ORDER_NAME] = queryParams.get(SORT_ORDER_NAME) ?? 'desc';

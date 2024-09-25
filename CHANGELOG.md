@@ -16,6 +16,13 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
+## [17.0.0](https://github.com/tim784/ropes/commits/v17.0.0) - 2024-09-25
+
+### Fixed
+
+- Navigating to your default search with the button in the search form should no
+  longer cause the taglist to switch in and out of an empty-tag state.
+
 ## [16.0.0](https://github.com/tim784/ropes/commits/v16.0.0) - 2024-09-25
 
 ### Changed
