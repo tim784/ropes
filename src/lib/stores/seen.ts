@@ -1,4 +1,4 @@
-import { localStorageBacked } from './localStorageBacked';
+import { storageBacked } from './storageBacked';
 import { makeAppIdentifier } from '../constants';
 
 const batchIntervalMilliseconds = 500;
@@ -6,7 +6,7 @@ const key = makeAppIdentifier('seen-torrents');
 const defaultSeen: () => Set<string> = () => new Set();
 
 function createSeenTorrentsStore() {
-  const store = localStorageBacked<Set<string>>(
+  const store = storageBacked<Set<string>>(
     key,
     defaultSeen,
     (set) => JSON.stringify([...set]),

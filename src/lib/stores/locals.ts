@@ -8,7 +8,7 @@
  *    count when one is used.
  */
 import { makeAppIdentifier } from '$lib/constants';
-import { localStorageBacked } from './localStorageBacked';
+import { storageBacked } from './storageBacked';
 import { type Alert } from '$gather/me';
 import type { BaseDataStore } from './page';
 
@@ -41,7 +41,7 @@ function defaultLocals(): Locals {
 const key = makeAppIdentifier('locals');
 
 export function createLocalsStore(baseDataStore: BaseDataStore) {
-  const store = localStorageBacked<Locals>(key, defaultLocals, JSON.stringify, (str) => ({
+  const store = storageBacked<Locals>(key, defaultLocals, JSON.stringify, (str) => ({
     ...defaultLocals(),
     ...JSON.parse(str)
   }));

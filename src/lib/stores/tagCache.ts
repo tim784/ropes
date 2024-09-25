@@ -1,4 +1,4 @@
-import { localStorageBacked } from './localStorageBacked';
+import { storageBacked } from './storageBacked';
 import { makeAppIdentifier } from '$lib/constants';
 import { z } from 'zod';
 
@@ -77,7 +77,7 @@ export class TagCache {
 const key = makeAppIdentifier('tag-cache');
 
 export function createTagCacheStore() {
-  const store = localStorageBacked<TagCache>(
+  const store = storageBacked<TagCache>(
     key,
     TagCache.default,
     (tagCache) => tagCache.serialize(),

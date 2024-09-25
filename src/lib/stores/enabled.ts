@@ -1,5 +1,5 @@
 import { makeAppIdentifier } from "../constants";
-import { localStorageBacked } from "./localStorageBacked";
+import { storageBacked } from "./storageBacked";
 
 const key = makeAppIdentifier("enabled");
-export const enabled = localStorageBacked(key, () => false, String, (str) => str === "true");
+export const enabled = storageBacked(key, () => false, String, (str) => str === "true");

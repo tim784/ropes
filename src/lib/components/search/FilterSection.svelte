@@ -1,21 +1,13 @@
 <script lang="ts">
   import Link from '$components/ui/Link.svelte';
-  import { filterStore } from '$stores/filters';
+  import { onFilterStore, filterStore } from '$stores/filters';
   import Filters from '$components/modals/Filters.svelte';
   import * as Dialog from '$components/ui/dialog';
   import * as ButtonGroup from '$components/ui/button-group';
 
-  let enabledFilterIds = $filterStore.filter((filter) => filter.enabled).map((filter) => filter.id);
+  let enabledFilterIds = Array.from($onFilterStore);
 
-  function changeEnabled(filterIds: string[]) {
-    filterStore.update((filters) => {
-      filters.forEach((filter) => {
-        filter.enabled = filterIds.includes(filter.id);
-      });
-      return filters;
-    });
-  }
-  $: changeEnabled(enabledFilterIds);
+  $: onFilterStore.set(new Set(enabledFilterIds));
 
   let filtersDialogOpen: boolean = false;
 

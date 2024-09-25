@@ -12,9 +12,9 @@
   }
 </script>
 
-<nav class="mx-4 my-2 flex flex-col gap-4">
+<nav class="m-4 flex flex-col gap-4">
   <ButtonRadioGroup.Root bind:value={selectedFilterId} orientation="horizontal">
-    <ul class="space-y-2">
+    <ul class="space-y-2 list-disc ms-4">
       {#each $filterStore as filter}
         <li>
           <ButtonRadioGroup.Item value={filter.id} variant="ghost" size="sm" class="max-w-full">
@@ -22,9 +22,12 @@
           </ButtonRadioGroup.Item>
         </li>
       {/each}
-      <li>
-        <AddNewButton on:add={updateSelectedFilterId} />
-      </li>
     </ul>
   </ButtonRadioGroup.Root>
+
+  {#if $filterStore.length > 0}
+    <hr class="h-px w-full bg-border" />
+  {/if}
+
+  <AddNewButton on:add={updateSelectedFilterId} />
 </nav>

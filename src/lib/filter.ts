@@ -3,11 +3,11 @@ import type { Torrent } from '$lib/torrent';
 export type FilterTags = string[];
 
 export type Filter = {
+  id: string;
   name: string;
   blockTags: FilterTags;
   allowTags: FilterTags;
-  id: string;
-  enabled: boolean;
+  onByDefault: boolean;
 };
 
 export class CombinedFilter {
@@ -21,9 +21,6 @@ export class CombinedFilter {
     const blockTags: Set<string> = new Set();
 
     for (const filter of filters) {
-      if (!filter.enabled) {
-        continue;
-      }
       for (const tag of filter.allowTags) {
         allowTags.add(tag);
       }

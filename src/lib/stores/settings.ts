@@ -1,5 +1,5 @@
 import { makeAppIdentifier } from '$lib/constants';
-import { localStorageBacked } from './localStorageBacked';
+import { storageBacked } from './storageBacked';
 
 export const themes = [
   'zinc',
@@ -41,7 +41,7 @@ function defaultSettings(): Settings {
 const key = makeAppIdentifier('settings');
 
 function createSettingsStore() {
-  const settings = localStorageBacked<Settings>(key, defaultSettings, JSON.stringify, (str) => ({
+  const settings = storageBacked<Settings>(key, defaultSettings, JSON.stringify, (str) => ({
     ...defaultSettings(),
     ...JSON.parse(str)
   }));

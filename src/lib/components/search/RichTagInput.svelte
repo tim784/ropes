@@ -140,10 +140,8 @@
         e.preventDefault(); // don't move input cursor
         break;
       case 'Enter':
-        console.log(value);
         if (value === '') {
           submitFunction();
-          console.log('hi');
         } else {
           addTag();
         }

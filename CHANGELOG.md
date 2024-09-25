@@ -20,6 +20,12 @@ The types of changes are:
 
 ### Changed
 
+- Whether a filter is enabled/disabled is now per-tab state instead of being
+  shared amongst all tabs. Additionally, you can now set which filters are on by
+  default in the Filters modal.
+- The Filter modal now provides better feedback about errors in filter
+  configuration, such as notifying when a tag is simultaneously in the Include
+  and Exclude lists.
 - Turning on SFW Mode now immediately destroys the old image element for faster
   swapping.
 

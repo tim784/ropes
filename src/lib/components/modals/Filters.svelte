@@ -5,14 +5,22 @@
   import { fade } from 'svelte/transition';
   import Editor from './filters/Editor.svelte';
   import FilterList from './filters/FilterList.svelte';
+  import type { ComponentEvents } from 'svelte';
   import { filterStore } from '$stores/filters';
 
   export let closeFn: () => void;
 
   let selectedFilterId: string | undefined = undefined;
-  $: selectedFilter = $filterStore.find((filter) => filter.id === selectedFilterId);
 
   let editorContainer: HTMLElement | null = null;
+
+  function handleDelete(event: ComponentEvents<Editor>['delete']) {
+    const deleteId = selectedFilterId;
+    const index = $filterStore.findIndex((filter) => filter.id === deleteId);
+    const newSelectedId = $filterStore[index + 1]?.id ?? $filterStore[index - 1]?.id ?? undefined;
+    filterStore.update((filters) => filters.filter((filter) => filter.id !== deleteId));
+    selectedFilterId = newSelectedId;
+  }
 </script>
 
 <Dialog.Content
@@ -39,9 +47,15 @@
     </aside>
 
     <div class="h-[50dvh] overflow-y-scroll" bind:this={editorContainer}>
-      {#if selectedFilter}
+      {#if selectedFilterId}
+        <!-- keyed so that the scroll to top onMount function is called when
+      switching filters-->
         {#key selectedFilterId}
-          <Editor filter={selectedFilter} scrollingContainer={editorContainer} />
+          <Editor
+            filterId={selectedFilterId}
+            scrollingContainer={editorContainer}
+            on:delete={handleDelete}
+          />
         {/key}
       {/if}
     </div>
