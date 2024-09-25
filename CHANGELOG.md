@@ -16,7 +16,7 @@ The types of changes are:
 - `Fixed` for any bug fixes.
 - `Security` in case of vulnerabilities.
 
-## [16.0.0](https://github.com/tim784/ropes/commits/v16.0.0) - 2024-09-23
+## [16.0.0](https://github.com/tim784/ropes/commits/v16.0.0) - 2024-09-25
 
 ### Changed
 
@@ -28,6 +28,11 @@ The types of changes are:
   and Exclude lists.
 - Turning on SFW Mode now immediately destroys the old image element for faster
   swapping.
+
+### Fixed
+
+- The paginator at the top and bottom of the results section no longer shows an
+  ellipsis when it's not needed.
 
 ## [15.0.0](https://github.com/tim784/ropes/commits/v15.0.0) - 2024-09-23
 

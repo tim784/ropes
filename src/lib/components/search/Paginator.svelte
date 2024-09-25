@@ -26,12 +26,14 @@
 
     const pageNumbers: (number | null)[] = Array.from(pageNumberSet).sort((a, b) => a - b);
 
-    if (pageNumbers[1] !== 2) {
-      pageNumbers.splice(1, 0, null);
-    }
+    if (pageNumbers.length > 1) {
+      if (pageNumbers[1] !== 2) {
+        pageNumbers.splice(1, 0, null);
+      }
 
-    if (pageNumbers[pageNumbers.length - 2] !== pagination.totalPages - 1) {
-      pageNumbers.splice(pageNumbers.length - 1, 0, null);
+      if (pageNumbers[pageNumbers.length - 2] !== pagination.totalPages - 1) {
+        pageNumbers.splice(pageNumbers.length - 1, 0, null);
+      }
     }
 
     return pageNumbers;
