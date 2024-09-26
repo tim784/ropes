@@ -171,7 +171,7 @@ function renameVariantString(variantTokens: string[], groupLength: number) {
 
 type GroupItem = {
   titleTokens: Set<string>;
-  group: TorrentInGroup[];
+  torrents: TorrentInGroup[];
 };
 
 export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
@@ -184,9 +184,9 @@ export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
     let foundGroup = false;
     for (const group of groups) {
       if (setsAreEqual(titleSet, group.titleTokens)) {
-        group.group.push({
+        group.torrents.push({
           torrent,
-          variantString: renameVariantString(variantTokens, group.group.length)
+          variantString: renameVariantString(variantTokens, group.torrents.length)
         });
         foundGroup = true;
         break;
@@ -195,10 +195,10 @@ export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
     if (!foundGroup) {
       groups.push({
         titleTokens: titleSet,
-        group: [{ torrent, variantString: renameVariantString(variantTokens, 0) }]
+        torrents: [{ torrent, variantString: renameVariantString(variantTokens, 0) }]
       });
     }
   }
 
-  return groups.map(({ group }) => group);
+  return groups.map(({ torrents: group }) => group);
 }
