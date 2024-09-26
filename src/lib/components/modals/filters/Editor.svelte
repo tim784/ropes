@@ -27,7 +27,7 @@
   const allowTagsInputId = makeAppIdentifier('filter-allow-tags-input');
   const tagPattern = /^[a-zA-Z0-9.]+$/;
   const getFilters = () => get(filterStore);
-  $: schema = z
+  const schema = z
     .object({
       name: z
         .string()
@@ -106,9 +106,9 @@
   let blockTagsElement: HTMLTextAreaElement | undefined = undefined;
   let allowTagsElement: HTMLTextAreaElement | undefined = undefined;
 
-  $: nameErrors = blah(parse, 'name', nameElement);
-  $: blockTagsErrors = blah(parse, 'blockTags', blockTagsElement);
-  $: allowTagsErrors = blah(parse, 'allowTags', allowTagsElement);
+  $: nameErrors = getErrors(parse, 'name', nameElement);
+  $: blockTagsErrors = getErrors(parse, 'blockTags', blockTagsElement);
+  $: allowTagsErrors = getErrors(parse, 'allowTags', allowTagsElement);
 
   function updateFilter(formFilter: FormFilter) {
     filterStore.update((filterStore) => {
@@ -121,7 +121,7 @@
     });
   }
 
-  function blah(
+  function getErrors(
     parsed: ReturnType<typeof schema.safeParse>,
     path: string,
     element: HTMLInputElement | HTMLTextAreaElement | undefined
