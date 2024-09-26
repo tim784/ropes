@@ -1,14 +1,10 @@
 <!-- development color scheme testing -->
 <script lang="ts">
-  import { Input } from '$components/ui/input/index.js';
   import { toasts } from '$stores/toasts';
   import ErrorToast from './toasts/ErrorToast.svelte';
   import TextToast from './toasts/TextToast.svelte';
   import Button from '$components/ui/Button.svelte';
   import Link from '$components/ui/Link.svelte';
-  import * as ButtonRadioGroup from '$components/ui/button-radio-group';
-
-  let value: string;
 </script>
 
 <div class="flex flex-wrap p-4 *:p-4">
@@ -21,7 +17,6 @@
   <div class="bg-card text-card-foreground">Card</div>
   <div class="bg-background text-foreground">Foreground on Background</div>
   <div class="border-2">bordered</div>
-  <Input class="m-1 w-auto" placeholder="input" value="Input" />
   <div class="text-success">Success</div>
   <div class="text-warning">Warning</div>
   <div class="text-error">Error</div>
@@ -44,20 +39,6 @@
   <Button variant="outline">outline</Button>
   <Button variant="secondary">secondary</Button>
   <Button variant="ghost">ghost</Button>
-  <Link href="https://example.com">https://example.com"</Link>
+  <Link href="https://example.com">https://example.com</Link>
   <Link href="/torrents.php">/torrents.php</Link>
-  <Link href="/torrents.php?id=123">/torrents.php?id=123</Link>
-  <Link href="/torrents.php?action=advanced">/torrents.php?action=advanced</Link>
-
-  <ButtonRadioGroup.Root bind:value orientation="horizontal">
-    <ButtonRadioGroup.Item value="foo">Foo</ButtonRadioGroup.Item>
-    <ButtonRadioGroup.Item value="bar">Bar</ButtonRadioGroup.Item>
-    <ButtonRadioGroup.Item value="baz">Baz</ButtonRadioGroup.Item>
-  </ButtonRadioGroup.Root>
-
-  <ButtonRadioGroup.Root bind:value orientation="horizontal">
-    <ButtonRadioGroup.Item value="foo" variant="ghost">Foo</ButtonRadioGroup.Item>
-    <ButtonRadioGroup.Item value="bar" variant="ghost">Bar</ButtonRadioGroup.Item>
-    <ButtonRadioGroup.Item value="baz" variant="ghost">Baz</ButtonRadioGroup.Item>
-  </ButtonRadioGroup.Root>
 </div>
