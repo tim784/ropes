@@ -52,7 +52,7 @@
 
       <ButtonRadioGroup.Root bind:value={$settings.theme} orientation="horizontal">
         <ul class="not-prose grid grid-cols-[repeat(auto-fill,_minmax(100px,_1fr))] gap-2">
-          {#each themes as theme}
+          {#each themes as theme (theme)}
             <li>
               <ButtonRadioGroup.Item
                 value={theme}

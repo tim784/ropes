@@ -20,7 +20,7 @@
   {#if $filterStore.length > 0}
     <ButtonGroup.Root type="multiple" bind:value={enabledFilterIds} orientation="horizontal">
       <ul class="flex flex-wrap gap-4">
-        {#each $filterStore as filter}
+        {#each $filterStore as filter (filter.id)}
           <li>
             <ButtonGroup.Item value={filter.id} class="font-bold">
               {filter.name}

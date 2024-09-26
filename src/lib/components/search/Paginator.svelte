@@ -58,7 +58,7 @@
       </PaginatorButton>
     </li>
 
-    {#each pageNumbers as pageNumber}
+    {#each pageNumbers as pageNumber (pageNumber)}
       {#if pageNumber === null}
         <li class="select-none">...</li>
       {:else}

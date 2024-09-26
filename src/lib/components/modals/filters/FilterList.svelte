@@ -15,7 +15,7 @@
 <nav class="m-4 flex flex-col gap-4">
   <ButtonRadioGroup.Root bind:value={selectedFilterId} orientation="horizontal">
     <ul class="space-y-2 list-disc ms-4">
-      {#each $filterStore as filter}
+      {#each $filterStore as filter (filter.id)}
         <li>
           <ButtonRadioGroup.Item value={filter.id} variant="ghost" size="sm" class="max-w-full">
             <span class="max-w-full grow truncate">{filter.name}</span>
