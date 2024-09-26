@@ -18,6 +18,11 @@ The types of changes are:
 
 ## [17.0.0](https://github.com/tim784/ropes/commits/v17.0.0) - 2024-09-25
 
+### Changed
+
+- Non-user-facing: The torrent grouping algorithm is now simpler and more
+  extensible.
+
 ### Fixed
 
 - Navigating to your default search with the button in the search form should no

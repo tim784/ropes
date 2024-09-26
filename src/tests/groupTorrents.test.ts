@@ -1,8 +1,7 @@
 import {
   type Torrent,
   groupTorrents,
-  type TorrentInGroup,
-  makeDefaultVariantString
+  type TorrentInGroup
 } from '$lib/torrent';
 import { expect, test } from 'vitest';
 import { makeTestTorrent } from './util';
@@ -224,7 +223,7 @@ test.for([
 ])('should use default variant string %s', (names) => {
   const torrents = names.map(makeTestTorrentWithName);
   const groups = groupTorrents(torrents);
-  expectVariantStringEqual(groups, [names.map((_, i) => makeDefaultVariantString(i + 1))]);
+  expectVariantStringEqual(groups, [names.map((_, i) => `Variant ${i + 1}`)]);
   expectGroupCountEqualOrderInsensitive(names, 1);
 });
 

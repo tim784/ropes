@@ -43,182 +43,162 @@ export type Torrent = {
   isBookmarked: boolean;
 };
 
-const tokenPattern = /[a-z0-9.-]+/gim;
-const variantTokenPatterns = [
-  // resolution
-  // standard heights, optional p or i suffix
-  /^(?:120|144|240|360|480|720|1080|2160|4320|8640)(?:p|i)?$/i,
-  // arbirartry heights, but must have p or i suffix to avoid matching years or
-  // other numbers
-  /^\d{3,4}(?:p|i)$/i,
-  // 2k, 4k, 8K, 16k(?), etc
-  /^\d{1,2}k$/i,
-  // sd, hd, uhd
-  /^(?:s|h|uh)d$/i,
-
-  // VR tags
-  //
-  // psvr, gearvr, oculus, go, vive, rift, apple vision pro (this is a hack, our
-  // implementation doesn't support multi-word tokens, fix this later)
-  /^(?:(?:(?:ps|gear)vr)|oculus|go|vive|rift|apple|vision|pro)$/i,
-
-  // encoders
-  // x264, h265, h.265, etc
-  /^[xh]\.?26[45]$/i,
-  // hevc, avc
-  /^(?:hevc|avc)$/i,
-
-  // containers (that might themselves be encoders too)
-  /^(?:mp4|mkv|avi|mov|wmv|flv|webm|mpeg|mpg|vob|divx|xvid)$/i
-];
-
-const ignoredTokenPatterns = [/^req(?:uest)?$/i, /^re(?:-)?encode$/i, /^ai$/i, /^upscale$/i];
-
-function matchesPatterns(s: string, patterns: RegExp[]): boolean {
-  return patterns.some((pattern) => pattern.test(s));
-}
-
-function isVariantToken(token: string): boolean {
-  return matchesPatterns(token, variantTokenPatterns);
-}
-
-function isIgnoredToken(token: string): boolean {
-  return matchesPatterns(token, ignoredTokenPatterns);
-}
-
-function tokenize(s: string): Set<string> {
-  const matches = s.match(tokenPattern);
-  if (matches === null) {
-    return new Set();
-  }
-
-  return new Set(matches);
-}
-
-type TokenizedTorrent = {
-  torrent: Torrent;
-  tokens: Set<string>;
-};
-
 export type TorrentInGroup = {
   torrent: Torrent;
   variantString: string;
 };
 
-function caseInsensitiveIntersection(a: Set<string>, b: Set<string>): Set<string> {
-  const intersection = new Set<string>();
-  const bLower = new Set([...b].map((token) => token.toLowerCase()));
-  for (const token of a) {
-    const tokenLower = token.toLowerCase();
-    if (bLower.has(tokenLower)) {
-      intersection.add(token);
+// lookbehind for punctuation, whitespace, or start-of-string (but don't consume
+// it). this is like \b but includes more characters. also, start a
+// non-caputuring group
+const startTokenPattern = '(?<=^|[\\p{P}\\p{Z}])(?:';
+
+// close the non-capturing group and again, match punctuation, whitespace, or
+// end-of-string with a lookahead assertion
+const endTokenPattern = ')(?=[\\p{P}\\p{Z}]|$)';
+
+// create a mega regex that matches all the variant tokens we care about. this
+// is done by joining all the regexes with | and then wrapping them in a
+// non-capturing group. we also lookahead and lookbehind for valid token
+// boundaries
+const variantTokenPatterns = new RegExp(
+  startTokenPattern +
+    [
+      // resolution
+      /(?:(?:120|144|240|360|480|720|1080|2160|4320|8640)[pi]?)/,
+
+      // arbirartry heights, but must have p or i suffix to avoid matching years
+      // or other numbers
+      /(?:\d{3,4}[pi])/,
+
+      // 2k, 4k, 8K, 16k(?), etc
+      /(?:\d{1,2}k)/,
+
+      // sd, hd, uhd
+      /(?:s|(?:u?h))d/,
+
+      // VR tags
+      /(?:(?:(?:ps|gear)vr)|oculus|go|vive|rift|apple\s+vision\s+pro)/,
+
+      // encoders
+      /(?:[xh]\.?26[45])/,
+      /(?:hevc|avc)/,
+
+      // containers (that might themselves be encoders too)
+      /(?:mp4|mkv|avi|mov|wmv|flv|webm|mpeg|mpg|vob|divx|xvid)/
+    ]
+      .map((r) => r.source)
+      .join('|') +
+    endTokenPattern,
+  'igu'
+);
+
+// similar to above, but for tokens we want to ignore
+const ignoredTokenPatterns = new RegExp(
+  startTokenPattern +
+    [/(?:req(?:uest)?)/, /(?:re(?:-)?encode)/, /(?:ai)/, /(?:upscale)/]
+      .map((r) => r.source)
+      .join('|') +
+    endTokenPattern,
+  'igu'
+);
+
+// contiguous strings of chars that are not whitespace or punctuation
+const notWhitespaceOrPunctuation = /[^\p{P}\p{Z}]+/gu;
+
+type ParsedTitle = {
+  titleTokens: string[];
+  variantTokens: string[];
+  ignoredTokens: string[];
+};
+
+function parseTitle(title: string): ParsedTitle {
+  // collect all the variant tokens and then remove them from the title
+  const variantTokens = title.match(variantTokenPatterns) || [];
+  const afterVariants = title.replace(variantTokenPatterns, '');
+
+  // collect all the ignored tokens and then remove them from the title
+  const ignoredTokens = afterVariants.match(ignoredTokenPatterns) || [];
+  const afterIgnore = afterVariants.replace(ignoredTokenPatterns, '');
+
+  // remove anything considered punctuation or whitespace: then you got the
+  // title tokens
+  const titleTokens = afterIgnore.match(notWhitespaceOrPunctuation) || [];
+
+  return { titleTokens, variantTokens, ignoredTokens };
+}
+
+function setsAreEqual<T>(setA: Set<T>, setB: Set<T>): boolean {
+  // Check if both sets have the same size
+  if (setA.size !== setB.size) {
+    return false;
+  }
+
+  // Check if every element in setA exists in setB
+  for (const elem of setA) {
+    if (!setB.has(elem)) {
+      return false;
     }
   }
 
-  return intersection;
-}
-
-export function makeDefaultVariantString(i: number) {
-  return `Variant ${i}`;
+  // If all checks passed, the sets are equal
+  return true;
 }
 
 /**
- * Break down an array of torrents into groups of similar torrents, based on
- * their names.
+ * Rename the variant string. If there are no variant tokens, use "Variant
+ * <group length>". Otherwise, join the variant tokens with a space
  *
- * The basic algorithm is:
+ * This need may be more apparent with an example. Say you have two torrents:
  *
- * 1. Create a group array, a 2-dimensional array of torrents.
- * 2. Tokenize the name of each torrent into a set of words: sequences of
- *    /a-z0-9\.+/, case-insensitive.
- * 3. For each torrent, check if it's similar to any existing group: This is
- *    done by comparing the given torrent's tokens to those of each torrent
- *    already in a group and calculating the 1) intersection, 2) left
- *    difference, and 3) right difference. Reject the torrent if any of the
- *    following are true:
- *    - The intersection is an empty set
- *    - The difference has tokens that are not a "variant" tokens (resolution,
- *      encoder, container, VR tag, etc)
+ * 1. Foobar
+ * 2. Foobar (1080p)
  *
- *    Otherwise, add the torrent to the group.
- * 4. If no group is found, create a new group with just that torrent.
- * 5. Return the groups.
+ * These two torrents should be in the same group, but what do we name the first
+ * one? The best we can do is some kind of placeholder name, like "Variant 1". And that's
+ * what this function does.
  *
- * @param torrents Array of torrents to group
+ * @param variantTokens A possibly-empty array of variant tokens
  *
- * @returns A 2-dimensional array of grouped torrents
+ * @param groupLength The length of the group to which this torrent would be
+ * added. The returned string will contain this number plus 1.
+ *
+ * @returns An appropriate variant string
  */
+function renameVariantString(variantTokens: string[], groupLength: number) {
+  return variantTokens.length === 0 ? `Variant ${groupLength + 1}` : variantTokens.join(' ');
+}
+
+type GroupItem = {
+  titleTokens: Set<string>;
+  group: TorrentInGroup[];
+};
+
 export function groupTorrents(torrents: Torrent[]): TorrentInGroup[][] {
-  const groups: TokenizedTorrent[][] = [];
+  const groups: GroupItem[] = [];
 
-  const tokenizedTorrents: TokenizedTorrent[] = torrents.map((torrent) => {
-    const tokens = tokenize(torrent.name);
-    return { torrent, tokens } as TokenizedTorrent;
-  });
+  for (const torrent of torrents) {
+    const { titleTokens, variantTokens } = parseTitle(torrent.name);
+    const titleSet = new Set(titleTokens);
 
-  // a deeply nested loop, but n is at most 100, so it's fine
-  for (const torrent of tokenizedTorrents) {
     let foundGroup = false;
     for (const group of groups) {
-      let isSimilarToGroup = true;
-      for (const groupTorrent of group) {
-        const commonTokens = caseInsensitiveIntersection(torrent.tokens, groupTorrent.tokens);
-        if (commonTokens.size === 0) {
-          isSimilarToGroup = false;
-          break;
-        }
-
-        // check both the "left" and "right" difference between the two
-        // torrents. "left" and "right" refer to the either left or right subregions
-        // in a venn diagram of the two torrents' tokens.
-        //
-        // don't need case-insensitivity here, our regexes have case-insensitive
-        // flag
-        const leftDifferenceTokens = torrent.tokens.difference(groupTorrent.tokens);
-        const rightDifferenceTokens = groupTorrent.tokens.difference(torrent.tokens);
-        if (
-          [...leftDifferenceTokens, ...rightDifferenceTokens].some(
-            (token) => !isVariantToken(token) && !isIgnoredToken(token)
-          )
-        ) {
-          isSimilarToGroup = false;
-          break;
-        }
-      }
-
-      if (isSimilarToGroup) {
-        group.push(torrent);
+      if (setsAreEqual(titleSet, group.titleTokens)) {
+        group.group.push({
+          torrent,
+          variantString: renameVariantString(variantTokens, group.group.length)
+        });
         foundGroup = true;
         break;
       }
     }
-
     if (!foundGroup) {
-      groups.push([torrent]);
+      groups.push({
+        titleTokens: titleSet,
+        group: [{ torrent, variantString: renameVariantString(variantTokens, 0) }]
+      });
     }
   }
 
-  // Name the TokenizedTorrent by its variant tokens, if it has any. If there
-  // are no variant tokens, such as when the torrents all have the same name or
-  // only ignored tokens are varied, name the TokenizedTorrent "Variant <n>",
-  // where n is a counter.
-  let variantCounter = 1;
-  function nameVariant(t: TokenizedTorrent): string {
-    const defaultVariantString = [...tokenize(t.torrent.name)].filter(isVariantToken).join(' ');
-    if (defaultVariantString !== '') {
-      return defaultVariantString;
-    }
-    return makeDefaultVariantString(variantCounter++);
-  }
-
-  // convert the groups to TorrentInGroup objects. TorrentInGroup is a Torrent
-  // with a variantString.
-  return groups.map((group) =>
-    group.map((t) => {
-      return {
-        torrent: t.torrent,
-        variantString: nameVariant(t)
-      };
-    })
-  );
+  return groups.map(({ group }) => group);
 }
