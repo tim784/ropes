@@ -18,6 +18,10 @@ The types of changes are:
 
 ## [17.0.0](https://github.com/tim784/ropes/commits/v17.0.0) - 2024-09-25
 
+### Added
+
+- The Home page is now accessible from the navigation menu.
+
 ### Changed
 
 - Non-user-facing: The torrent grouping algorithm is now simpler and more

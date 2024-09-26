@@ -5,6 +5,7 @@ import { getUserUrl } from './user';
 // woof, this is a lot. fortunately, most of it is fixed or just requires a user
 // id, and doesn't need to be scraped.
 export type EmporniumNavigation = {
+  homeUrl: string;
   // personal data/stats
 
   // torrents im seeding
@@ -120,6 +121,7 @@ export function getEmporiumNavigation(document: Document): EmporniumNavigation {
   const { id: userId } = getAuthKeyAndId(document);
 
   return {
+    homeUrl: '/',
     seedingUrl: `/torrents.php?type=seeding&userid=${userId}`,
     leechingUrl: `/torrents.php?type=leeching&userid=${userId}`,
     tokenHistoryUrl: '/userhistory.php?action=token_history',

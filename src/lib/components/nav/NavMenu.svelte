@@ -27,6 +27,23 @@
   </DropdownMenu.Trigger>
   <DropdownMenu.Content class="w-56">
     <DropdownMenu.Group>
+
+      <!-- General -->
+      <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger>
+          <House class="mr-2 h-4 w-4" />
+          <span>Site General</span>
+        </DropdownMenu.SubTrigger>
+        <DropdownMenu.SubContent class="min-w-max">
+          <DropdownMenu.Item href={nav.homeUrl} {...t}>Home</DropdownMenu.Item>
+          <DropdownMenu.Item href={nav.tagsUrl} {...t}>Tags</DropdownMenu.Item>
+          <DropdownMenu.Item href={nav.requestsUrl} {...t}>Requests</DropdownMenu.Item>
+          <DropdownMenu.Item href={nav.collagesUrl} {...t}>Collages</DropdownMenu.Item>
+          <DropdownMenu.Item href={nav.chatUrl} {...t}>Chat</DropdownMenu.Item>
+          <DropdownMenu.Item href={nav.top10Url} {...t}>Top 10</DropdownMenu.Item>
+        </DropdownMenu.SubContent>
+      </DropdownMenu.Sub>
+
       <!-- your stuff -->
       <DropdownMenu.Sub>
         <DropdownMenu.SubTrigger>
@@ -86,21 +103,6 @@
           <DropdownMenu.Item href={nav.postHistoryUrl} {...t}>Post History</DropdownMenu.Item>
           <DropdownMenu.Item href={nav.commentHistoryUrl} {...t}>Comment History</DropdownMenu.Item>
           <DropdownMenu.Item href={nav.sandboxUrl} {...t}>Sandbox</DropdownMenu.Item>
-        </DropdownMenu.SubContent>
-      </DropdownMenu.Sub>
-
-      <!-- General -->
-      <DropdownMenu.Sub>
-        <DropdownMenu.SubTrigger>
-          <House class="mr-2 h-4 w-4" />
-          <span>Site General</span>
-        </DropdownMenu.SubTrigger>
-        <DropdownMenu.SubContent class="min-w-max">
-          <DropdownMenu.Item href={nav.tagsUrl} {...t}>Tags</DropdownMenu.Item>
-          <DropdownMenu.Item href={nav.requestsUrl} {...t}>Requests</DropdownMenu.Item>
-          <DropdownMenu.Item href={nav.collagesUrl} {...t}>Collages</DropdownMenu.Item>
-          <DropdownMenu.Item href={nav.chatUrl} {...t}>Chat</DropdownMenu.Item>
-          <DropdownMenu.Item href={nav.top10Url} {...t}>Top 10</DropdownMenu.Item>
         </DropdownMenu.SubContent>
       </DropdownMenu.Sub>
 
