@@ -16,8 +16,6 @@
 
   const searchDataStore = getContext<SearchDataStore>('searchDataStore');
 
-  // const defaultUnitValue = 'gb';
-
   const sizeUnits: Option[] = $searchDataStore.searchForm.sizeUnits;
   const labelsByValue: Map<string, string> = new Map(sizeUnits.map((su) => [su.value, su.label]));
 

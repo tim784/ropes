@@ -48,63 +48,62 @@ export type TorrentInGroup = {
   variantString: string;
 };
 
-// lookbehind for punctuation, whitespace, or start-of-string (but don't consume
-// it). this is like \b but includes more characters. also, start a
-// non-caputuring group
-const startTokenPattern = '(?<=^|[\\p{P}\\p{Z}])(?:';
+// lookbehind for punctuation, whitespace, or start-of-string. this is like \b
+// but includes more characters. also, start a group
+const startTokenPattern = '(?<=^|[\\p{P}\\p{Z}])(';
 
-// close the non-capturing group and again, match punctuation, whitespace, or
-// end-of-string with a lookahead assertion
+// close the group and again, match punctuation, whitespace, or end-of-string
+// with a lookahead assertion
 const endTokenPattern = ')(?=[\\p{P}\\p{Z}]|$)';
 
 // create a mega regex that matches all the variant tokens we care about. this
-// is done by joining all the regexes with | and then wrapping them in a
-// non-capturing group. we also lookahead and lookbehind for valid token
-// boundaries
+// is done by joining all the regexes with | and then wrapping them in a group.
+// we construct the regex this way for maintainability: it gives us, like,
+// sub-patterns which can be line-broken and comments in source code.
 const variantTokenPatterns = new RegExp(
   startTokenPattern +
     [
-      // resolution
-      /(?:(?:120|144|240|360|480|720|1080|2160|4320|8640)[pi]?)/,
+      // standard resolutions (heights) with optional p or i suffix
+      /((120|144|240|360|480|720|1080|2160|4320|8640)[pi]?)/,
 
-      // arbirartry heights, but must have p or i suffix to avoid matching years
-      // or other numbers
-      /(?:\d{3,4}[pi])/,
+      // arbirartry resolutions (heights), but with required p or i suffix to
+      // avoid matching years or other numbers with semantic meaning
+      /(\d{3,4}[pi])/,
 
       // 2k, 4k, 8K, 16k(?), etc
-      /(?:\d{1,2}k)/,
+      /(\d{1,2}k)/,
 
       // sd, hd, uhd
-      /(?:s|(?:u?h))d/,
+      /(s|(u?h))d/,
 
       // VR tags
-      /(?:(?:(?:ps|gear)vr)|oculus|go|vive|rift|apple\s+vision\s+pro)/,
+      /(((ps|gear)vr)|oculus|go|vive|rift|apple\s+vision\s+pro)/,
 
       // encoders
-      /(?:[xh]\.?26[45])/,
-      /(?:hevc|avc)/,
+      /([xh]\.?26[45])/,
+      /(hevc|avc)/,
 
       // containers (that might themselves be encoders too)
-      /(?:mp4|mkv|avi|mov|wmv|flv|webm|mpeg|mpg|vob|divx|xvid)/
+      /(mp4|mkv|avi|mov|wmv|flv|webm|mpeg|mpg|vob|divx|xvid)/
     ]
       .map((r) => r.source)
       .join('|') +
     endTokenPattern,
+  // i for case-insensitivity, g for all matches (in a string.match call), u for
+  // unicode-construct support
   'igu'
 );
 
 // similar to above, but for tokens we want to ignore
 const ignoredTokenPatterns = new RegExp(
   startTokenPattern +
-    [/(?:req(?:uest)?)/, /(?:re(?:-)?encode)/, /(?:ai)/, /(?:upscale)/]
-      .map((r) => r.source)
-      .join('|') +
+    [/(req(uest)?)/, /(re(-)?encode)/, /(ai)/, /(upscale)/].map((r) => r.source).join('|') +
     endTokenPattern,
   'igu'
 );
 
 // contiguous strings of chars that are not whitespace or punctuation
-const notWhitespaceOrPunctuation = /[^\p{P}\p{Z}]+/gu;
+const notWhitespaceOrPunctuation = /[^\p{P}\p{Z}]+/igu;
 
 type ParsedTitle = {
   titleTokens: string[];
