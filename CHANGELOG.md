@@ -20,17 +20,20 @@ The types of changes are:
 
 ### Added
 
-- The Home page is now accessible from the navigation menu.
+- The Home page is now accessible from the navigation menu under "Site General".
+
+### Fixed
+
+- Navigating to your default search with the button in the search form should no
+  longer cause the taglist flash with an empty list.
+- Torrents no longer become "Seen" after toggling filters on or off.
+- All torrents in groups now become seen when they scroll into the viewport,
+  versus just the currently-selected one.
 
 ### Changed
 
 - Non-user-facing: The torrent grouping algorithm is now simpler and more
   extensible.
-
-### Fixed
-
-- Navigating to your default search with the button in the search form should no
-  longer cause the taglist to switch in and out of an empty-tag state.
 
 ## [16.0.0](https://github.com/tim784/ropes/commits/v16.0.0) - 2024-09-25
 

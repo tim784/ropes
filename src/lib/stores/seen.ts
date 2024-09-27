@@ -1,5 +1,6 @@
 import { storageBacked } from './storageBacked';
 import { makeAppIdentifier } from '../constants';
+import pDebounce from 'p-debounce';
 
 const batchIntervalMilliseconds = 500;
 const key = makeAppIdentifier('seen-torrents');
@@ -61,20 +62,20 @@ function createSeenTorrentsStore() {
     }
   }
 
-  setInterval(commitBatch, batchIntervalMilliseconds);
+  const commitBatchDebounced = pDebounce(commitBatch, batchIntervalMilliseconds);
 
   return {
     subscribe,
 
     /**
      * Attempt to add one torrent's id to the seen list. Note that this is not
-     * added immediately, but is batched and added on some regular short
-     * interval.
+     * added immediately, but is debounced.
      *
      * @param id The id of the torrent to add to the seen list.
      */
     add: (id: string) => {
       batch.add(id);
+      commitBatchDebounced();
     },
     clear: () => {
       update(() => defaultSeen());

@@ -3,13 +3,11 @@
   import TorrentMeta from './TorrentMeta.svelte';
   import Button from '$components/ui/Button.svelte';
   import TorrentActions from './TorrentActions.svelte';
-  import { getContext, onMount } from 'svelte';
+  import { getContext } from 'svelte';
   import { bookmark, type Action as BookmarkAction } from '$api/bookmark';
   import { toasts } from '$stores/toasts';
   import Maximize2 from 'lucide-svelte/icons/maximize-2';
   import TorrentImageExpand from '$components/modals/TorrentImageExpand.svelte';
-  import { get } from 'svelte/store';
-  import { seenTorrents } from '$stores/seen';
   import BookmarkToast from '$components/toasts/BookmarkToast.svelte';
   import SlotUsedToast from '$components/toasts/SlotUsedToast.svelte';
   import { fade } from 'svelte/transition';
@@ -22,11 +20,13 @@
   import { type BaseDataStore } from '$stores/page';
   import { type LocalsStore } from '$stores/locals';
   import Link from '$components/ui/Link.svelte';
+  import type { Readable } from 'svelte/store';
 
   const localsStore = getContext<LocalsStore>('localsStore');
   const baseDataStore = getContext<BaseDataStore>('baseDataStore');
-
-  const observer = getContext<IntersectionObserver>('intersectionObserver');
+  const seenTorrentsThisPageLoadStore = getContext<Readable<Set<string>>>(
+    'seenTorrentsThisPageLoadStore'
+  );
 
   export let group: TorrentInGroup[];
   $: me = $baseDataStore.me;
@@ -48,12 +48,7 @@
     ? getSfwTorrent(group[groupIndex].torrent)
     : group[groupIndex].torrent;
 
-  // we don't want this to be reactive on seenTorrents. otherwise, everything
-  // would be immediately called seen.
-  const seenTorrentsOnLoad = get(seenTorrents);
-  $: hasSeenAtLoad = seenTorrentsOnLoad.has(torrent.id);
-
-  let el: HTMLElement;
+  $: hasSeenAtLoad = $seenTorrentsThisPageLoadStore.has(torrent.id);
 
   async function toggleBookmark() {
     const action: BookmarkAction = localState.isBookmarked ? 'remove' : 'add';
@@ -73,19 +68,10 @@
     toasts.add(SlotUsedToast, { slotType: 'doubleseed', torrent });
     localState.isPersonalDoubleseed = true;
   }
-
-  onMount(() => {
-    observer.observe(el);
-    return () => {
-      observer.unobserve(el);
-    };
-  });
 </script>
 
 <div
   class="group flex max-w-full flex-col items-center overflow-hidden rounded-lg border bg-card"
-  data-torrent-id={torrent.id}
-  bind:this={el}
   transition:fade
 >
   {#if torrent.imageHref !== null}
