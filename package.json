@@ -47,7 +47,7 @@
     "axios": "^1.7.2",
     "cross-env": "^7.0.3",
     "date-fns": "^3.6.0",
-    "eslint": "^9.11.0",
+    "eslint": "^9.13.0",
     "eslint-plugin-svelte": "^2.44.1",
     "express": "^4.19.2",
     "form-data": "^4.0.0",
